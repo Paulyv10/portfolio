@@ -1,0 +1,124 @@
+---
+title: Project proposal
+author: project-01-giving-cap
+format: html
+---
+## Dataset
+
+This dataset comes from a 2023 survey conducted by world champion barista James Hoffmann and coffee company Cometeer. The participants were told to fill out a survey where they described 4 coffees they ordered from Cometeer. They described several factors such as their coffee preferences, brewing methods, spending habits, and demographic details. Additionally, they described the coffee’s bitterness, acidity, and their personal preference rating.
+
+The dimensions of the dataset are 4042 responses to 57 columns.
+
+We chose the coffee dataset because it contains a large amount of structured data on coffee quality, demographics, and attributes, making it ideal for analysis. Additionally, the dataset's detailed attributes make it well-suited for data visualization and statistical analysis.
+
+The explanations for columns are included in the data README file. 
+
+
+```{r}
+#| label: load-packages
+#| message: false
+library(tidyverse)
+coffee_df = read.csv("data/coffee_survey.csv") 
+dim(coffee_df)
+glimpse(coffee_df)
+```
+
+## Questions
+
+1.  What are the coffee consumption patterns of individuals with different demographics?
+- Demographic
+  - Age
+  - Gender
+  - Ethncity_race
+  - Employment_status
+  - Number_children
+  - Political_affiliation
+  - Education_level
+- Potential comparison 
+  - Most_willing
+  - Most_paid
+
+2.  How do factors like work from home or in person and employment status influence an individual's overall coffee preference on dairy type, strength,caffeine, sweetener, style, and roast level?
+- Preference
+  - Strength
+  - Roast_level
+  - Dairy
+  - Sweetener
+  - Caffeine
+  - Style
+- Work Condition
+  - employment_status
+  - wfh(work from home or in person)
+
+
+## Analysis plan
+
+### Question 1
+
+**step 1: Data cleaning**
+
+Check and handle the missing values. Convert the categorical variables into meaningful groups
+
+Since the educational_level contains multiple text-based categories, we will group them into three levels:
+
+- Low Education(Less than high school/High school graduate)
+- Medium Education(Some college or associate's degree/Bachelor's degree)
+- High Education(Master's degree/Doctorate or professional degree)
+
+For other variables, we will keep their original categorical values.
+
+Demographic variables:
+- Age(<18 / 18-24 / 25-34 / 35-44 / 45-54 / 55-64 / >65)
+- Gender(Male / Female / Non-binary)
+- Ethnicity_race(White or Caucasian / Asian or Pacific Islander / Hispanic or Latino / Black or African American / Other)
+- Number_children(NA / 1 / 2 / 3 / >3)
+- Political_affiliation(Independent / No affiliation / Republican / Democrat)
+- Educational_level(Low / Medium / High)
+
+Coffee consumption variables:
+
+- Most_willing($10-$15 / $15-$20 / $2-$4 / $4-$6 / $6-$8 / $8-$10 / Less than $2 / More than $20)
+- Most_paid($10-$15 / $15-$20 / $2-$4 / $4-$6 / $6-$8 / $8-$10 / Less than $2 / More than $20)
+
+Calculate the frequency of and count proportion for each of the categorical variables
+
+
+**step 2: Bivariate analysis**
+
+Compare total spending and willingness to pay across age groups, genders, and political affiliations using violin plots
+
+-   X: demographics group
+-   Y: spending category
+
+
+### Question 2
+
+**step 1: Data cleaning**
+
+Data cleaning the columns and removing all the null values. Group the data into meaningful categories (strength, caffeine, etc)
+
+Potential Continuous/Discrete Variables
+
+- Strength (Weak / Somewhat light / Medium / Somewhat strong / Very Strong)
+- Caffeine (Full caffeine / Half caff / Decaf)
+
+Discrete Variables
+
+- Dairy (Whole milk / Half and half / Oat milk / Skim milk / Almond milk / Soy milk / Flavored coffee creamer / Coffee creamer)
+- Sweetener (Granulated Sugar / Artificial Sweeteners (e.g., Splenda) / Stevia / Raw Sugar (Turbinado) / Brown Sugar / Agave Nectar / Honey / Maple Syrup)
+- Roast level (Light / Blonde / Medium / Nordic / Dark / Italian / French)
+- Style (Complex / Light / Sweet / Full Bodied / Fruity / Bright / Nutty / Caramelized / Bold / Chocolatey / Floral / Juicy)
+
+Work Condition Variables
+
+- employment_status (Employed full-time / Unemployed / Student / Employed part-time / Retired / Homemaker)
+- wfh (Home / In Person / Mix)
+
+Calculate the frequency of and count proportion for each of the categorical variables
+
+**step 2: Visualization**
+
+-   Faceting Plots: Stacked Bar plots
+    -   X: employment_status and wfh
+    -   Y: Preferences
+    -   Plots: each bar will be representing the frequency of different preferences depending on work conditions. 

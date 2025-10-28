@@ -1,0 +1,42 @@
+---
+title: "HW 06 - Using interactivity for data communication"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Your name"
+date: today
+format: typst
+engine: knitr
+params:
+  netid: "TODO"
+---
+
+
+# Exercises
+
+## Exercise 1
+
+`r stringr::str_glue("<https://pages.github.coecis.cornell.edu/info3312-sp25/hw-06-{params$netid}/animate.html>")`
+
+```{embed}
+#| file: animate.qmd
+#| lang: "markdown"
+```
+
+## Exercise 2
+
+`r stringr::str_glue("<https://pages.github.coecis.cornell.edu/info3312-sp25/hw-06-{params$netid}/scrollytell.html>")`
+
+```{embed}
+#| file: scrollytell.qmd
+#| lang: "markdown"
+```
+
+## Exercise 3
+
+`r stringr::str_glue("<https://pages.github.coecis.cornell.edu/info3312-sp25/hw-06-{params$netid}/dashboard.html>")`
+
+```{embed}
+#| file: dashboard.qmd
+#| lang: "markdown"
+```
+
+# GAI self-reflection

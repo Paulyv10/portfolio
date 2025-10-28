@@ -1,0 +1,308 @@
+---
+title: "AE 07: Federal judges and the Ivy League"
+author: Paul Vermette
+format: html
+---
+
+::: callout-important
+These are suggested answers. This document should be used as reference only, it's not designed to be an exhaustive key.
+:::
+
+```{r}
+#| label: packages
+
+library(tidyverse)
+library(scales)
+library(skimr)
+```
+
+# Article III judges
+
+The [Federal Judicial Center](https://www.fjc.gov/history/judges) maintains detailed biographical data on all **Article III judges** in the United States.^[Article III judges are federal judges appointed under the authority of Article III of the United States Constitution. They are appointed for life and possess significant independence from the other branches of government. They include justices of the Supreme Court, as well as judges on the Courts of Appeals, the District Courts, and several other specialized courts.] This data is organized in a **relational structure**, with tables organized by:
+
+- **Demographics**: Basic biographical information on each judge
+- **Federal judicial service**: Information on each judge's service in the federal judiciary
+- **Other federal service**: Information on each judge's service in other federal judicial offices
+- **Education**: Information on each judge's education
+- **Professional career**: Information on each judge's professional career
+- **Other nominations/recess appointments**: Information on individual's other nominations^[Including failed nominations which were never confirmed by the U.S. Senate.] and recess appointments^[Individuals appointed to the judiciary while the Senate was in recess - these appointments are temporary and expire at the end of the Senate's next session.]
+
+## Data
+
+The data is available in `fjc-judges.RData`.
+
+::: callout-tip
+
+## `.Rdata`
+
+`.RData` files are binary files that store one or more R objects. We can load the data using the `load()` function.
+
+:::
+
+```{r}
+#| label: load-data
+
+load("data/fjc-judges.RData")
+```
+
+## Relational structure
+
+The data is organized in a **relational structure**. This means that the data is organized in multiple tables, and the tables are linked by common identifiers. For example, the `demographics` table contains basic biographical information on each judge, and the `education` table contains information on each judge's education. The two tables are linked by the `nid` variable, which is a unique identifier for each judge.
+
+::: callout-tip
+
+## Identify the key columns
+
+Every table contains a `nid` column, which is a unique identifier for each judge. For some tables such as `demographics`, there is one row for each judge. In other tables judges may have multiple rows, such as `education` (where each row represents a degree earned by the judge) or `service_fjs` (where each row represents a single appointment to the judiciary, and some judges have been appointed to multiple positions). For tables where judges appear in multiple rows, the `sequence` column uniquely identifies each row for a given judge. For example, the first appointment to the judiciary for a judge will have `sequence = 1`, the second appointment will have `sequence = 2`, and so on. While they have the same name, these columns do not necessary represent the same variable across tables.
+
+:::
+
+# Ivy League influence
+
+In recent decades, scholars and policymakers have expressed concern about the lack of diversity in political institutions such as the federal judiciary. One aspect of this concern is the overrepresentation of graduates from a small number of elite colleges and universities.^[[Harvard & Yale Still Dominate as Biden Focuses on Diversifying the Judiciary](https://www.law.com/nationallawjournal/2022/07/29/harvard-yale-still-dominate-as-biden-focuses-on-diversifying-the-judiciary/)] ^[[Supreme Court shouldn’t be covered in Ivy, 2 lawmakers say](https://apnews.com/article/stephen-breyer-joe-biden-us-supreme-court-law-schools-lindsey-graham-f7c3968b6a956ab36b8523d490fe9f4e)] ^[[The New Diversity Crisis in the Federal Judiciary](https://heinonline.org/HOL/LandingPage?handle=hein.journals/tenn84&div=9&id=&page=)]
+
+The **Ivy League** is a group of eight private colleges and universities in the northeastern United States. The Ivy League is known for its academic excellence and social prestige, and include:
+
+- Brown University
+- Columbia University
+- Cornell University
+- Dartmouth College
+- Harvard University
+- University of Pennsylvania
+- Princeton University
+- Yale University
+
+We will use this data to answer the question: **What percentage of judges appointed to the federal judiciary attended an Ivy League school?**
+
+To clarify the scope of our analysis, we will focus on judges appointed to the federal judiciary since 1945 (the post-World War II era). Furthermore we will limit our analysis to judges appointed to the **Courts of Appeals** and the **District Courts**.^[While the Supreme Court is the most influential court in the United States, it is also the smallest, with only nine justices at any given time. The Courts of Appeals and the District Courts are the workhorses of the federal judiciary, and are the primary focus of our analysis.] And finally, we want to examine how this trend has evolved over time by examining the percentage of Ivy League graduates among judges appointed in each presidential administration. This will also allow us to consider the role of **presidential partisanship**. Are Democratic or Republican presidents more likely to make appointments from the Ivy League?
+
+## Joining the data
+
+**Your turn:** First we need to identify the relevant tables for our analysis. Use the `skimr::skim()` function to examine the structure of the all the tables in the `fjc-judges.RData` file. Based on the output of the `skim()` function, identify the tables that contain the relevant information for our analysis, an appropriate `*_join()` function to combine them for our analysis, and the relevant key column(s).
+
+```{r}
+#| label: skim-data
+
+skim(demographics)
+skim(service_fjs)
+skim(service_other)
+skim(education)
+skim(professional)
+skim(other_appointments)
+```
+
+```{r}
+#| label: join-data
+
+inner_join(
+  x = education, 
+  y = service_fjs,
+  by = join_by(nid, judge_name)
+)
+```
+
+## Determine if a judge has an Ivy League degree
+
+We will use the `education` table to determine if a judge earned a degree from an Ivy League institution. The `school` column contains the name of the school where the judge earned their degree.
+
+**Your turn:** We need to know for every judge whether or not at least one of their degrees (e.g. undergraduate, law, etc.) was earned at an Ivy League institution. Create a data frame with one-row-per-judge and a variable `ivy_league` that is `TRUE` if the judge earned a degree from an Ivy League institution and `FALSE` otherwise.
+
+::: callout-tip
+
+## Identifying Ivy League schools in the dataset
+
+Unfortunately the names of schools in the database are not standardized, so we need to use a list of Ivy League schools to identify which judges attended an Ivy League institution. You can use this character vector to identify Ivy League schools:
+
+```r
+ivy_league <- c(
+  # Brown
+  "Brown University", "Rhode Island College (now Brown University)",
+  # Columbia
+  "Columbia University", "Columbia Law School", "King's College (now Columbia University)",
+  # Cornell
+  "Cornell University", "Cornell Law School", "Cornell University Department of Law",
+  # Dartmouth
+  "Dartmouth College",
+  # Harvard
+  "Harvard Law School", "Harvard University", "Harvard University, Kennedy School of Government",
+  "Harvard College",
+  # UPenn
+  "University of Pennsylvania", "University of Pennsylvania, Wharton School",
+  "College of Philadelphia (now University of Pennsylvania)",
+  "University of Pennsylvania Law School (now Carey Law School)",
+  # Princeton
+  "Princeton University", "College of New Jersey (now Princeton University)",
+  "Princeton University, Woodrow Wilson School of Public and International Affairs (now Princeton School of Public and International Affairs)",
+  # Yale
+  "Yale University", "Yale College", "Yale Law School", "Yale School of Architecture",
+  "Yale School of Organization and Management"
+)
+```
+
+:::
+
+```{r}
+#| label: ivy-league
+
+ivy_league <- c(
+  # Brown
+  "Brown University", "Rhode Island College (now Brown University)",
+  # Columbia
+  "Columbia University", "Columbia Law School", "King's College (now Columbia University)",
+  # Cornell
+  "Cornell University", "Cornell Law School", "Cornell University Department of Law",
+  # Dartmouth
+  "Dartmouth College",
+  # Harvard
+  "Harvard Law School", "Harvard University", "Harvard University, Kennedy School of Government",
+  "Harvard College",
+  # UPenn
+  "University of Pennsylvania", "University of Pennsylvania, Wharton School",
+  "College of Philadelphia (now University of Pennsylvania)",
+  "University of Pennsylvania Law School (now Carey Law School)",
+  # Princeton
+  "Princeton University", "College of New Jersey (now Princeton University)",
+  "Princeton University, Woodrow Wilson School of Public and International Affairs (now Princeton School of Public and International Affairs)",
+  # Yale
+  "Yale University", "Yale College", "Yale Law School", "Yale School of Architecture",
+  "Yale School of Organization and Management"
+)
+
+judges_ivy <- education |>
+  group_by(nid, judge_name) |>
+  summarize(
+    ivy_league = any(school %in% ivy_league),
+    .groups = "drop"
+  )
+judges_ivy |>
+  count(ivy_league) |>
+  mutate(percent = n / sum(n) * 100)
+
+head(judges_ivy)
+```
+
+## Combine with judicial appointments
+
+**Your turn:** Combined the summarized education data with information on each appointment to the federal judiciary.
+
+```{r}
+#| label: join-service
+
+judges_combined <- judges_ivy |>
+  inner_join(service_fjs, by = c("nid", "judge_name"))
+
+
+glimpse(judges_combined)
+```
+
+## Filter the data
+
+**Your turn:** Filter the data to limit our analysis to judges appointed:
+
+- To the **Courts of Appeals** and the **District Courts**,
+- Since 1945, and
+- By a Democratic or Republican president^[Some appointments in the dataset were **reassignments** from one judicial seat to another, and are classified under the `party_of_appointing_president` as "None (reassignment)".]
+
+```{r}
+#| label: filter-judges
+
+#| label: filter-judges
+
+judges_filtered <- judges_combined |>
+  filter(
+    # courts of appeals + district courts
+    court_type %in% c("District Court", "Court of Appeals"),
+    # After 1945
+    commission_date >= "1945-01-01",
+    # Only Democratic or Republican appointments
+    party_of_appointing_president %in% c("Democratic", "Republican")
+  )
+
+# take a look
+glimpse(judges_filtered)
+```
+
+## Calculate proportion of Ivy League appointments
+
+**Your turn:** Calculate the proportion of judicial appointments that were Ivy League graduates, for each Courts of Appeals and District Courts, president, and presidential party.
+
+```{r}
+#| label: calculate-proportion
+
+
+glimpse(judges_filtered)
+
+# debug
+judges_combined |>
+  count(court_type)
+
+judges_combined |>
+  summarize(
+    min_date = min(commission_date, na.rm = TRUE),
+    max_date = max(commission_date, na.rm = TRUE)
+  )
+
+judges_combined |>
+  count(party_of_appointing_president)
+```
+
+## Visualize the data
+
+**Demo:** Let's generate an initial draft of our plot. Since we want to visualize proportions, a **bar chart** is a reasonable starting point.
+
+```{r}
+#| label: initial-plot
+
+... |>
+  # standard bar plot
+  ggplot(mapping = aes(
+    x = appointing_president, y = prop_ivy_league,
+    fill = party_of_appointing_president
+  )) +
+  geom_col() +
+  # facet by court type, have the panels top and bottom
+  facet_wrap(facets = vars(court_type), scales = "free_y", ncol = 1)
+```
+
+It's a decent first step. Some things we need to improve still:
+
+- Reverse the axes to make it a horizontal bar chart. Ensures all presidential names are visible.
+- Logical ordering of the presidents. We should order them chronologically based on their terms in office.
+- Remove Franklin D. Roosevelt. He died in office in early 1945 and only made a couple of appointments that year, so we don't really have enough data to justify including him on the chart.
+- Optimal color palette
+- Better labels
+- Move the legend to the top to provide more horizontal space for the plot
+
+```{r}
+#| label: plot-polish
+
+#| label: plot-polish
+judges_summary %>%
+  ggplot(aes(
+    y = reorder(appointing_president, commission_date),   
+    x = prop_ivy_league,
+    fill = party_of_appointing_president
+  )) +
+  geom_col() +
+  facet_wrap(facets = vars(court_type), ncol = 1) +
+  scale_fill_manual(
+    values = c("Democratic" = "blue3", "Republican" = "red3"),
+    name = "Party"
+  ) +
+  scale_x_continuous(labels = scales::percent) +
+  labs(
+    title = "Proportion of Federal Judges with Ivy League Degrees",
+    subtitle = "By appointing president and court type, 1945-present",
+    x = "Percentage of appointments",
+    y = "Appointing President"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    axis.text.y = element_text(size = 8)
+  )
+```
+
+How does this answer our original question? 
+
+*Add response here.*

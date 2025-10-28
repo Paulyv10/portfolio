@@ -1,0 +1,190 @@
+---
+title: "Big Men & 3s: Evolution Over Decades"
+author: "Team Giving-Leopard"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This analysis explores the evolution of 3-point shooting among NBA big men (centers and power forwards) from the early 1980s to the present day. We investigate how perimeter shooting has transformed from a rarity to a requirement for frontcourt players, reflecting the broader strategic evolution of basketball. Understanding this transformation provides insights into how NBA gameplay and player skill sets have evolved over time and how positional roles have become increasingly fluid.
+
+## Data and Methods
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+options(knitr.table.format = "html")
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+library(tidyverse)
+library(scales)
+library(ggplot2)
+library(viridis)
+library(knitr)
+library(kableExtra)
+library(plotly)
+```
+
+```{r data-import}
+# Load player stats and index
+traditional_stats <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_traditionnal_rs.csv")
+advanced_stats <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_advanced_rs.csv")
+defense_stats <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_defense_rs.csv")
+usage_stats   <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_usage_rs.csv")
+player_index  <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_index.csv")
+```
+
+```{r data-preprocessing}
+# Combine first and last names for joining
+player_index <- player_index %>%
+  mutate(PLAYER_NAME = paste(PLAYER_FIRST_NAME, PLAYER_LAST_NAME)) %>%
+  select(PLAYER_NAME, POSITION)
+
+# Merge position data
+traditional_stats <- traditional_stats %>%
+  mutate(season_year = as.numeric(str_extract(SEASON, "^\\d{4}")),
+         GP = ifelse(is.na(GP), 82, GP),
+         MIN = ifelse(is.na(MIN), 0, MIN)) %>%
+  left_join(player_index, by = "PLAYER_NAME") %>%
+  filter(!is.na(POSITION))
+
+# Create per-game stats
+big_men_stats <- traditional_stats %>%
+  mutate(
+    decade = paste0(floor(season_year / 10) * 10, "s"),
+    threes_per_game = FG3A / GP,
+    reb_per_game = REB / GP,
+    blk_per_game = BLK / GP,
+    min_per_game = MIN / GP,
+    position_group = case_when(
+      str_detect(POSITION, "C") ~ "Center",
+      str_detect(POSITION, "F") ~ "Power Forward",
+      TRUE ~ "Other Players"
+    )
+  ) %>%
+  filter(position_group != "Other Players", FG3A > 0, GP > 0) 
+```
+
+```{r data-aggregation}
+big_men_avg_by_season <- big_men_stats %>%
+  group_by(SEASON, season_year, position_group) %>%
+  summarize(avg_3pa_per_game = weighted.mean(threes_per_game, GP), total_players = n(), .groups = "drop")
+
+big_men_avg_by_decade <- big_men_stats %>%
+  group_by(decade, position_group) %>%
+  summarize(avg_3pa_per_game = weighted.mean(threes_per_game, GP), total_players = n(), .groups = "drop") %>%
+  arrange(decade, position_group)
+```
+
+## Results
+
+### 1. Evolution of 3-Point Attempts Among Big Men
+
+**Method** 
+We calculated the average number of 3-point attempts per game (3PA/G) for each player and grouped them by official position (Center or Power Forward), based on data from player_index.csv. Players were filtered to exclude those with 0 games played or 0 three-point attempts to prevent skewed results.
+We then aggregated these values by season, using a weighted average based on games played (GP), to ensure high-minute players had more influence than benchwarmers. This allowed us to visualize year-by-year trends in 3-point shooting by position over the past four decades.
+
+
+```{r viz-trend-over-time, fig.width=10, fig.height=6}
+decade_formatter <- function(x) {
+  ifelse(x %% 10 == 0, paste0("'", substr(as.character(x), 3, 4), "s"), "")
+}
+
+trend_plot <- ggplot(big_men_avg_by_season, 
+                     aes(x = season_year, y = avg_3pa_per_game, color = position_group)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 2.5, alpha = 0.7) +
+  scale_color_viridis_d(end = 0.8) +
+  scale_x_continuous(breaks = seq(1980, 2020, 5), labels = decade_formatter) +
+  labs(
+    title = "3PA per Game: Centers vs Power Forwards",
+    subtitle = "Average 3PA by season (1980–2020)",
+    x = "Season",
+    y = "3PA per Game",
+    color = "Position"
+  ) +
+  theme_minimal()
+
+# Make the plot interactive
+ggplotly(trend_plot)
+```
+**Interpretation:**
+This plot now correctly shows a steady rise in 3-point attempts per game among both centers and power forwards from 1980 through 2023. Power forwards led the way, gradually increasing 3PA over the decades, while centers started catching up notably post-2010. The post-2015 era reflects modern "stretch bigs" being embedded in team strategies. This trend supports the narrative of positional fluidity and league-wide spacing strategies.
+
+### 2. Decade-by-Decade Comparison
+
+**Method**
+In this analysis, we compare the average number of 3-point attempts per game (3PA) by decade for centers and power forwards. The data is grouped by decade and player position, with the average number of 3-point attempts calculated using a weighted average based on games played (GP). This ensures that players with more playing time have a more significant impact on the average.
+
+##To calculate this, we:
+	1.	Grouped the data by decade and position (Center or Power Forward).
+	2.	Calculated the average number of 3-point attempts per game for each group.
+	3.	Used the geom_col function to create a bar chart that visualizes the average 3-point attempts by decade for each position.
+	
+```{r viz-decade-comparison, fig.width=10, fig.height=6}
+decade_plot <- ggplot(big_men_avg_by_decade, aes(x = decade, y = avg_3pa_per_game, fill = position_group)) +
+  geom_col(position = "dodge") +
+  geom_text(aes(label = sprintf("%.1f", avg_3pa_per_game)), vjust = -0.5, position = position_dodge(0.9)) +
+  scale_fill_viridis_d(end = 0.8) +
+  labs(
+    title = "Average 3PA per Game by Decade",
+    subtitle = "Grouped by official player position",
+    x = "Decade",
+    y = "3PA per Game",
+    fill = "Position"
+  ) +
+  theme_minimal()
+
+# interactive
+ggplotly(decade_plot)
+```
+**Interpretation**
+Averaging over decades smooths out year-by-year variation and reinforces what the first graph suggests: Power forwards have consistently led in 3PA, but centers have more than tripled their 3-point volume over time. This aligns with the emergence of players like Brook Lopez, Al Horford, and Nikola Jokić, who redefine what it means to play the center position in a spacing-heavy modern NBA.
+
+
+
+
+# 3. Big Men’s Share of Total League 3PA
+
+**Method**
+To understand the growing importance of big men in 3-point shooting, we calculated their share of the total league 3-point attempts (3PA). This analysis shows how the contribution of centers and power forwards to the overall league 3PA has changed over time.
+
+## We calculated this as follows:
+	1.	First, we computed the total 3-point attempts (FG3A) for all players in the league each season.
+	2.	Then, we calculated the total 3-point attempts made by centers and power forwards in the same period.
+	3.	The share of total 3PA by big men was computed as the ratio of 3-point attempts by big men to the total 3-point attempts in the league for each season.
+
+```{r viz-bigmen-share-league, fig.width=10, fig.height=6}
+league_volume <- traditional_stats %>%
+  filter(FG3A > 0, GP > 0) %>%
+  group_by(SEASON, season_year) %>%
+  summarize(total_3pa_league = sum(FG3A, na.rm = TRUE), .groups = "drop")
+
+big_men_volume <- big_men_stats %>%
+  group_by(SEASON, season_year) %>%
+  summarize(total_3pa_bigmen = sum(FG3A, na.rm = TRUE), .groups = "drop")
+
+share_df <- left_join(league_volume, big_men_volume, by = c("SEASON", "season_year")) %>% 
+  mutate(
+    total_3pa_bigmen = replace_na(total_3pa_bigmen, 0),
+    share_bigmen = total_3pa_bigmen / total_3pa_league
+  )
+
+share_plot <- ggplot(share_df, aes(x = season_year, y = share_bigmen)) +
+  geom_line(color = "#BB2222", size = 1.2) +
+  geom_point(size = 2.5, alpha = 0.8, color = "#BB2222") +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  scale_x_continuous(breaks = seq(1980, 2020, 5)) +
+  labs(
+    title = "Big Men’s Share of Total League 3PA",
+    subtitle = "How much of the league’s 3-point volume comes from Centers and PFs?",
+    x = "Season",
+    y = "Share of Total League 3PA"
+  ) +
+  theme_minimal()
+
+# Make the plot interactive
+ggplotly(share_plot)
+```
+**Interpretation**
+Despite early expectations that bigs would rarely shoot from deep, this chart shows that big men now contribute **50% or more** of the total 3-point volume in recent seasons. This reflects the growing number of wings and forwards listed as PFs who also serve as stretch shooters, as well as centers adapting to the spacing-centric pace of modern offenses. The upward trajectory confirms this is not just a stylistic anomaly, but a sustained league-wide evolution.

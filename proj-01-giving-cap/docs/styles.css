@@ -1,0 +1,7 @@
+/* css styles */
+.reveal {
+    background-image: url("theme2.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}

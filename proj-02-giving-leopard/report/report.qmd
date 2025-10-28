@@ -1,0 +1,113 @@
+---
+title: "NBA Data Analysis Report"
+author: "Giving-leopard"
+format: html
+execute:
+  echo: true
+---
+
+## Introduction
+
+In modern professional sports, the importance of data analysis is increasingly prominent. With the advancement of technology, data-driven decision-making is now an indispensable part of major sports organizations. Among them, the NBA stands out due to its complex salary system, diverse player roles and changeable tactical evolution, which gives rise to many data sets worthy of analysis.
+
+This project aims to build an interactive web platform using the R language, conduct visual analysis and data exploration on the performance of NBA players using public NBA data, and explore several factors related to salary. We focus on the following core issues:
+
+1. Is the effort value of the players reasonably reflected by their salaries?
+2. Is Is there a connection between defensive ability and career lifespan?
+3. How can traditional centers complete their transformation in the "small-ball era"?
+4. Do high-utilization players truly demonstrate the salary returns they deserve?
+
+These issues are related to multiple stakeholders. For example, the team management seeks to optimize the budget, players hope to receive fair compensation, and fans are increasingly concerned about the performance of players. Our analysis provides evidence-based insights to help improve the player performance evaluation system and also offers data support for the team's salary management and cost control.
+
+## Question 1: Is the effort value of the players reasonably reflected by their salaries?
+
+### Justification of approach
+### The Relationship Between Hustle Stat and Salary
+![Hustle Stat (Pct Steals) vs Salary](pic/Q1/Hustle-vs-Salary.png)
+First, we selected Pct Steals as a proxy for hustle due to its availability and interpretability, and chose Minutes Played and Salary as objective indicators of player value and team investment. Hence, we took Pct Steals as the horizontal axis, Salary as the vertical axis, and colored it with Minutes Played to explore the direct correlation between hustle stat and salary. In the graph, we notice that some players with high effort values have relatively low salaries, while the effort values of some high-salary players are at a medium to low level. This indicates that the effort level of players is not always proportional to their salaries, and there is a certain unreasonable phenomenon.
+
+![Hustle Stat vs Minutes Played](pic/Q1/Hustle-vs MinutesPlayed.png)
+Next, we plotted a scatter plot of Pct Steals and Minutes Played to observe their relationship, but this time using salary as the color mapping. This chart reveals that in most cases, players with higher effort values do have more playing time, but high effort does not always lead to high salaries.
+
+![Minutes Played by Hustle Quartile](pic/Q1/MinutesPlayedbyHustleQuartile.png)
+To better compare the differences among groups, we divided all the players into four Hustle Quartiles according to their effort values and plotted the box plots of their playing time respectively. This design helps us identify whether there is systemic injustice in the distribution of treatment at different levels of effort. We originally intended to plot the box plot with Salary, but because there are too many extreme values, using Minutes Played as the metric can provide a more stable analysis perspective.
+
+
+### Limitation
+Although the analytical design structure is clear, there are still some limitations and hypothetical risks in this part. First, the metric dimension of hustle stat is relatively narrow. In this project, Pct Steals is used as the representative variable of "hustle stat", but in reality, efforts also include blocking, rushing, helping to defend and many other behaviors. Due to the limitation of data dimensions, we failed to comprehensively construct a multi-index effort composite index. In addition, there is also the externality of the salary system. NBA salaries are not only determined by players' performance, but also subject to factors such as the year of contract signing, salary cap structure, and market factors. In addition, data integrity and extreme value processing also have an impact on visualization. Very few players' data have cases where hustle stat = 0 or salary = 0. We retain these data to keep the full information, but this might pull down the overall trend.  Therefore, our current analysis emphasizes general patterns over extreme cases.  In future modeling, special processing is required for this type of outliers.
+
+
+## Question 2: Is Is there a connection between defensive ability and career lifespan?
+
+### Justification of approach
+### The Relationship Between Defensive Ability and Career Lifespan.
+![Defensive Rating vs Career Length](pic/Q2/Defensive Rating vs Career Length.png)
+
+To explore the potential connection between defensive ability and player lifespan, we use defensive grade as a proxy for defensive performance. Defensive grade is a recognized indicator for measuring a player's contribution to the team's defense. The lower the defensive grade, the better the defensive performance.
+
+The first scatterplot, Defensive Rating vs Career Length, plots each player’s best single-season defensive rating against their total number of NBA seasons played. This visualization reveals that while there is a large spread in defensive rating among players with short careers, those who have enjoyed the longest tenures—often more than a decade in the league—tend to have achieved strong defensive ratings at some point in their careers. However, not all long-career players were elite defenders
+
+![Career Length by Defensive Tier](pic/Q2/Career Length by Defensive Tier.png)
+Next, we created a boxplot to compare career length between defensive tiers. Specifically, we focused on the top 25% of defenders. The boxplot shows that players in this elite defensive tier tend to have longer careers with several reaching exceptional longevity (up to 22 seasons). This supports the hypothesis that better defenders tend to enjoy more stable careers.
+
+![Median Defensive Rating by Era](pic/Q2/Median Defensive Rating by Era.png)
+Finally, in order to solve the time deviation, we studied the changes of the median of the defense level in different periods. We observed that the defensive score value has a significant upward trend over time, which confirms that we need to consider the era effect.
+
+By combining dot plot, hierarchical comparison and vertical analysis, we provide a multi-angle approach to evaluate the relationship between defense level and professional length. The results show that although defense is not the only factor determining the length of a career, it is an important positive correlation factor.
+
+### Limitation
+Although our analysis reveals the potential connection between defensive ability and career lifespan, we must admit some limitations. First, the defensive level will be influenced by factors such as the team's performance, the pace of the game, and the defensive plan. It may not fully reflect a person's true defensive contribution, especially for the players of teams with weak defense.
+
+Secondly, career lifespan is influenced by many external factors, not just performance, such as injury history, team needs, player roles, and even off-field behavior. Our model does not control for these confounding variables, which may blur or exaggerate the observed patterns.
+
+## Question 3: How can traditional centers complete their transformation in the "small-ball era"?
+
+### Justification of approach
+### Evolution of Bigs Over Decades.
+![Evolution of 3-Point Attempts Among Big Men](pic/Q3/Evolution of 3-Point Attempts Among Big Men.png)
+Question 3 analyzed the evolution of three-point shooting by NBA big men (centers and power forwards) from the early 1980s to the present. We investigated how outside shooting has shifted from being rare to a demand of frontcourt players, reflecting the broader strategic evolution of basketball.
+
+First, we drew a line graph showing the number of three-point attempts made by centers and power forwards each season, observing the evolution trends of the two from the perspective of time. As can be seen from the chart, the number of three-point attempts by centers has significantly increased since the mid-2010s. This trend supports the narrative of position mobility and creating space across the entire league.
+
+![Decade-by-Decade Comparison](pic/Q3/ Decade-by-Decade Comparison.png)
+Subsequently, we grouped the data by year and drew a bar chart for the four periods from the 1990s to the 2020s, showing players' average number of three-point attempts at different positions. This approach helps to eliminate the impact of annual fluctuations and determine from the overall trend whether the center is gradually approaching the main power forward for outside shooting. It can be seen from the chart that centers have significantly increased their three-point attempts since the late 2010s, narrowing the gap with power forwards.
+
+![Big Men’s Share of Total League 3PA](pic/Q3/Big Men’s Share of Total League 3PA.png)
+Finally, we also drew a line chart to show the changes in the proportion of big men (at the three position and above) among all the three-point shooters in the league. From a macro perspective, this chart reflects that the overall participation of centers and power forwards in perimeter tactics is constantly increasing, indicating that the transformation of centers is not only an individual behavior but also a manifestation of the evolution of the entire league's tactics.
+
+### Limitation
+Although this section presents the changing trends of center three-point shooting in the small-ball era from multiple perspectives, the following limitations remain. The first issue is the ambiguity of position definitions. We use a player's registered position to divide "center" and "power forward". However, position mobility has increased in modern basketball, and many players' actual responsibilities in the game have exceeded the traditional definitions. A "center" may take more outside shots in an offensive play, while a "power forward" may frequently engage in low-post duels. Therefore, position classification cannot fully reflect the proper tactical roles of players. The second is the incomprehensiveness of the indicator selection. We use "3PA per Game" to measure the centers' transformation degree. Still, this indicator fails to cover more comprehensive performances such as three-point shooting percentage, shooting efficiency, or tactical position. Although some centers have attempted more three-pointers, their shooting percentage is low, which may instead weaken the team's offensive efficiency.
+
+In conclusion, although the data trends provide supportive evidence for the "center-forward transition", more refined variable design, stricter causal identification methods, and supplementary verification combined with qualitative tactical analysis are still needed to fully understand this phenomenon.
+
+
+
+## Question 4:Do high-utilization players truly demonstrate the salary returns they deserve?
+
+### Justification of approach
+### NBA Player Salary vs. Performance Metrics
+![Salary vs. Usage Rate (Interactive)](pic/Q4/Salary-Usage Rate.png)
+We construct an analytical perspective from three dimensions to explore whether players with high utilization rates have received reasonable salary returns. First, we drew a scatter plot between the player Usage Rate and salary, visually presenting the relationship between the usage frequency and the salary level. The chart shows that although the salary distribution of players with high usage rates shows a slight upward trend, the overall dispersion is relatively large, and there are a large number of players with high usage rates but low salaries.
+
+![Salary vs. Player Impact Estimate (PIE) – Interactive](pic/Q4/Salary-PIE.png)
+Secondly, we introduced the comprehensive performance indicator PIE (Player Impact Estimate) and compared it with the salary to further determine whether the players' actual influence matches their income. This graph shows a certain degree of positive correlation, indicating that some outstanding players have indeed earned higher incomes, but there are still many high-PIE players whose salaries have not reached the expected level.
+
+![Usage and Salary vs. Team Win %](pic/Q4/Usage-Salary-Team-Win.png)
+
+Finally, to evaluate the actual impact of these high-usage players on the team's performance, we take the Usage Rate and salary as the horizontal axis, color mapping, and the vertical axis as the team's playoff winning rate. This graph helps us identify whether high usage and salaries can translate into winning rate advantages. The results show that the distribution of players with high usage rates is relatively wide, and the improvement in winning rates is not significant. This suggests that we cannot simply define "high returns" by the proportion of shot attempts or high salaries.
+
+Through this triple visualization design, we cross-verified from multiple perspectives, such as "usage" and "performance," to "team effectiveness," comprehensively evaluating the relationship between usage rate and salary return and avoiding the bias caused by single-dimensional analysis.
+
+
+### Limitation
+Although this part uses key indicators such as Usage Rate and PIE, and combines the team's playoff winning rate to evaluate the relationship between player usage rate and salary return, there are still some limiting factors in the analysis. First of all, the Usage Rate only measures the player's shooting and ball-handling participation on the offensive end. It cannot fully reflect their contribution, especially the critical influence on the game, which results in defense and off-the-ball movement.
+
+Secondly, although the PIE indicator can reflect players' influence on the game to a certain extent, it is still limited by its calculation method and may be biased towards players with high playing time. The correlation analysis between salary and winning rate did not take into account complex factors such as coaching strategies, lineup combinations, injuries, and the depth of substitutes. Therefore, asserting that a high usage rate definitely brings high cost-effectiveness is difficult.
+
+In addition, when processing data, some extreme values (such as players with extremely high salaries but average performance) may pull the overall trend. In subsequent analyses, robust indicators such as regression residuals or medians can be further used to improve accuracy.
+
+
+## Conclusion
+
+Our analysis revealed that NBA player value is not always aligned with effort, impact, or team success.  Hustle stats are often undercompensated, elite defenders enjoy longer careers, centers have adapted to modern spacing with more three-point attempts, and high-usage players don’t always bring better returns.  These findings highlight gaps between performance and salary, showing that basketball valuation is complex and shaped by more than numbers alone.  Our visualizations offer insights for analysts, team managers, and fans seeking a deeper understanding of the game.
+

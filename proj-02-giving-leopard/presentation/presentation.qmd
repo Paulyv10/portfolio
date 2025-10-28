@@ -1,0 +1,137 @@
+---
+title: "NBA Player Value Explorer"
+subtitle: |
+  Paul, Oliver, Yuzu
+author: "Team Giving-Leopard"
+format: revealjs
+editor: visual
+---
+
+## Introduction
+
+- **Objective**: Explore what aspects have changed for nba players through out decades and how NBA player value is reflected through performance, salary, and longevity.
+- **Motivation**: NBA contracts are massive — but do they align with effort, impact, or results?
+  - Are hustle stats rewarded with minutes or salaries?
+  - Do top defenders enjoy longer careers?
+  - Does playoff impact correlate with winning or salary?
+  - How have big men’s roles evolved with the rise of 3-point shooting?
+
+---
+
+## What We Built
+
+- A **multi-page interactive Quarto website** with:
+  - **Dynamic filters** (season, team)
+  - **Interactive plots** using `plotly` + `crosstalk`
+  - Linked pages exploring different dimensions of player value
+
+---
+
+## Page 1: Hustle Stats vs. Salary
+
+- Focus: Do players who excel in **steals** (Pct Steals) get paid more or play more?
+
+### Visualizations:
+1. **Steals vs Salary**: Colored by minutes played
+2. **Steals vs Minutes**: Colored by salary
+3. **Boxplot by Hustle Quartile**: Do higher hustle players play more?
+
+### Key Method:
+- `SharedData` + `filter_select()` to allow **interactive team/season filtering**
+
+---
+
+## Page 2: Defense vs Career Longevity
+
+- Focus: How do **defensive performance metrics** affect career length?
+
+### Visualizations:
+1. **Defensive Rating vs Career Seasons**
+2. **Boxplot: Career Length by Defensive Tier**
+3. **Median Defensive Rating Over Time by Era**
+
+---
+
+## Page 2: Defense vs Career Longevity
+
+### Methods:
+- Grouped players by era and calculated career stats
+- Used lowest defensive rating (best) and avg. win shares
+
+### Takeaway:
+- Better defenders **tend to last longer**, especially those in top quartile
+- Defensive skill is a **strong predictor of longevity**
+
+---
+
+## Page 3: Big Men & 3s — Evolution Over Decades
+
+- Focus: How have 3-point shooting roles for **centers and power forwards** evolved?
+
+### Visualizations:
+1. **3PA per Game over Time**: Shows steady rise from 1980 to 2023
+2. **Decade-by-Decade Barplot**: Average 3PA by position, weighted by games played
+3. **Bigs’ Share of 3PA**: % of all 3PA from centers and PFs
+
+---
+
+## Page 3: Big Men & 3s — Evolution Over Decades
+
+### Methods:
+- Grouped players by position and decade
+- Used weighted averages to reflect playing time
+- Computed bigs’ total 3PA as a share of league totals
+
+### Takeaway:
+- Power Forwards led the transition early, but Centers caught up post-2015
+- Big men now contribute **50% of total league 3PAs**
+
+---
+
+## Page 4: Playoff Salary vs. Performance Metrics
+
+- Focus: How do salary, usage rate, and PIE(Player Impact Estimate) relate to each other and to team playoff success?
+
+### Visualizations:
+1. **Salary vs Usage Rate** (interactive with filters)
+2. **Salary vs PIE** (interactive)
+3. **Usage & Salary vs Team Win %** (interactive, high-usage sample)
+
+---
+
+## Page 4: Playoff Salary vs Performance Metrics
+
+### Methods:
+- Added decade labels and filters for era comparisons
+- Applied regression lines and tooltips for interpretation
+
+### Takeaway:
+- Salary is loosely correlated with usage and PIE
+- **Playoff success** does **not strongly correlate** with salary 
+- Usage and PIE rise in the modern era, reflecting shifts in offensive roles
+
+---
+
+## Design Considerations
+
+- Used **interactivity where it supports exploration**
+- Highlighted **statistical relationships**, not just raw data
+
+### Implementation Tools:
+- `tidyverse` for wrangling
+- `plotly` for rich, interactive charts
+- `crosstalk` for lightweight dropdown filtering
+- `Quarto` for integrated documentation + publishing
+
+---
+
+## Insights
+
+- **Effort metrics** like hustle and defense **correlate** with minutes and longevity, but not always with pay
+- **High usage or impact** does not guarantee playoff success — many other team factors matter
+- **Big men’s roles** have radically changed — 3-point shooting is now essential
+- **High usage or salary** does not guarantee playoff success — many other team factors matter
+- Our tool lets users **generate their own insights** by filtering, comparing seasons and teams
+
+
+# Thank You

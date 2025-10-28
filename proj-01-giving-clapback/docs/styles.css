@@ -1,0 +1,77 @@
+:root {
+  --r-background-color: #fdf6e3;  /* Solarized Light background */
+  --r-main-color: #93a1a1;        /* Solarized Light text color */
+  --r-heading-color: #586e75;     /* Slightly darker for headings */
+  --r-link-color: #268bd2;        /* Solarized blue for links */
+  --r-selection-background-color: #93a1a1;
+  --r-selection-color: #fdf6e3;
+}
+
+.reveal {
+  font-family: "Source Sans Pro", Helvetica, sans-serif;
+  font-size: 40px;
+  font-weight: normal;
+  color: var(--r-main-color);
+}
+
+
+
+.reveal h2 {
+  color: var(--r-heading-color);
+  margin-bottom: 0.5em;
+}
+
+.reveal p {
+  line-height: 1.4;
+}
+
+.reveal ul,
+.reveal ol {
+  display: block;
+  text-align: left;
+  margin: 0 0 0 1em;
+}
+
+.reveal li {
+  margin: 0.5em 0;
+}
+
+.reveal a {
+  color: var(--r-link-color);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+  color: #1a6091;
+  text-shadow: none;
+  border: none;
+}
+
+.reveal img {
+  margin: 0.5em 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.reveal .slide-number {
+  color: var(--r-main-color);
+}
+
+.reveal .progress {
+  color: #268bd2;
+}
+
+
+.reveal .author {
+  font-size: 0.8em;
+  margin-bottom: 2em;
+}
+
+/* Code blocks */
+.reveal pre {
+  background-color: #eee8d5;
+  border-radius: 5px;
+  padding: 15px;
+}
+
+/* css styles */

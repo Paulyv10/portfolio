@@ -1,0 +1,20 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Project 01 (INFO 3312/5312)"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Write-up
+      - href: proposal.qmd
+        text: Proposal
+      - href: presentation.qmd
+        text: Presentation
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true

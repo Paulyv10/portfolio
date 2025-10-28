@@ -1,0 +1,51 @@
+---
+title: "NBA Player Analysis"
+format:
+  html:
+    toc: false
+    code-fold: false
+---
+
+# Welcome to NBA Player Analysis
+
+This interactive website explores key questions in NBA analytics by examining modern player data through the lens of performance, value, and longevity.
+
+We use player statistics, salary information, and gameplay metrics to uncover trends and insights about how the league is evolving—especially in areas like hustle, defense, injury risk, and the changing role of big men.
+
+---
+
+## 🔍 Explore the Analysis
+
+### 📊 [Hustle vs Salary](hustle-salary.qmd)
+How do effort stats like deflections and loose balls correlate with player salaries and minutes? Are hustle players underpaid?
+
+### 🛡️ [Defense & Longevity](defense-longevity.qmd)
+Do good defenders last longer in the NBA? This section explores the relationship between defense metrics and career length.
+
+### 🏀 [Evolution of Bigs](evolution-bigs.qmd)
+How have traditional big men adapted to the modern NBA? We examine trends in shooting, spacing, and playstyle over time.
+
+### 💰 [Salary vs Performance](salary-performance.qmd)
+Do players with higher usage and PIE earn proportionally more? This analysis explores salary fairness, player impact, and team playoff success — including decade comparisons.
+
+---
+
+## 📂 Data Sources & Tools
+
+All data used in this analysis comes from publicly available NBA stat repositories, and the site is built using:
+
+- **R & Quarto**
+- **Shiny for interactivity**
+- **Plotly & ggplot2 for visualization**
+
+---
+
+## 📢 Feedback
+
+If you have ideas, feedback, or want to contribute, feel free to reach out!
+
+---
+
+<footer>
+Built with️ using Quarto and Shiny.  
+</footer>

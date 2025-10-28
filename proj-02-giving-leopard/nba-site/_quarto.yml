@@ -1,0 +1,28 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "NBA Player Analysis"
+  navbar:
+    left:
+      - href: index.qmd
+        text: "Home"
+      - href: hustle-salary.qmd
+        text: "Hustle vs Salary"
+      - href: defense-longevity.qmd
+        text: "Defense & Longevity"
+      - href: evolution-bigs.qmd
+        text: "Evolution of Bigs"
+      - href: salary-performance.qmd
+        text: "Salary vs Performance"
+  page-footer:
+    left: "Built with Quarto and Shiny"
+    right: "© 2025 NBA Analytics Project"
+
+format:
+  html:
+    theme: minty
+    toc: true
+    code-fold: true
+    embed-resources: true

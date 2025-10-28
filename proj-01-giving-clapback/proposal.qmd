@@ -1,0 +1,63 @@
+---
+title: Olympic Divide
+author: GivingClapback <br> Israel Davidson <br>Emma Chase <br> Paul Vermette
+ <br>Catherine Liu
+format: html
+---
+
+```{r}
+#| label: load-packagesv
+#| message: false
+library(tidyverse)
+
+olympics <- read_csv("data/olympics.csv")
+
+olympics
+
+
+```
+
+## Dataset
+
+A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+
+Make sure to load the data and use inline code for some of this information.
+
+The Olympics dataset was taken from [OlympicData](https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results) and has `r nrow(olympics)` rows and `r  ncol(olympics)` columns. We chose this dataset as it clearly outlines all of relevant columns that we may need such as the country, location of the game. The main important columns that are included are the sports,event and medals columns. The dataset also requires very little cleaning so it would give more time to come up with better visualizations to better fit it.
+
+```{r}
+library(tidyverse)
+
+```
+
+## Questions
+
+How has the participation of developing countries in the Olympics changed over time?
+
+What is the age distribution of gold, silver, and bronze medals for contact sports like Judo or Boxing?
+
+## Analysis plan
+
+A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+
+**How has the participation of low-income and lower-middle-income countries in the Olympics changed over time?**
+
+The main relevant columns will include the id column, noc (country identifier), and year. Since this question explores only low-income and lower-middle-income countries, we will need an outside dataset and metrics to determine what classifies a country as low-income and lower-middle-income. We identified a dataset from Tidy Tuesday's World Bureaucracy Index, which lists the income-level of every country as of their latest record date. We recognize the limitations of these data, as the definition of these countries We will need to merge this dataset and use it to classify each country as low-income/lower-middle income or not (1 or 0). The merged dataset can then be subsetted to only account for low-income and lower-middle-income nations. The extra dataset we plan to use is the Worldwide Bureaucracy Index from Tidyverse Tuesdays 2024 folder. The WBI contains information regarding each country's income level (from low-income to high-income). Low income and medium countries will be delegated as "developing", while high income countries will be considered "developed." Naturally, this may be somewhat vague in the data, so for specific countries which may have high income, but are still considered "developing" on the global stage, we will make exceptions.
+
+In order to visualize participation, one potential method is to sum the id column to measure the amount of athletes that participate from each country. We can use a line graph to visualize this, with the sum of the athletes being represented on the y axis, and year being represented on the x axis, since we are graphing over time. The data will be grouped by country. Another option could be to use proportional analysis by measuring the proportion of athletes from each country. This could be done by using a stacked bar chart. We can also facet by sport to display each country's participation across the years by sport. This will add another level of nuance that could help our understanding of participation across developing countries.
+
+**What is the age distribution of gold, silver, and bronze medals for contact sports like Judo or Boxing?**
+
+We will have to: Filter the dataset to gather all sports. We will then remove missing age values. After that, we will group by "Medal" and summarize mean, median, standard deviation, min/max age, and interquartile range of age.
+
+```{r}
+#library(tidytuesdayR)
+#wwbi_data <- tidytuesdayR::tt_load(2024, week = 18)
+#country_data <- wwbi_data$wwbi_country
+
+#glimpse(country_data)
+
+#wwbi_country <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-04-30/wwbi_country.csv')
+
+
+```

@@ -1,0 +1,196 @@
+---
+title: "NBA Player Salary vs. Performance Metrics"
+author: "Team Giving-Leopard"
+format: html 
+editor: visual
+---
+
+## Introduction
+
+This analysis investigates how player usage and performance metrics relate to salary and team success in the NBA Playoffs. Specifically, we explore the correlation between usage percentage, Player Impact Estimate (PIE), and salary. We also analyze how these factors relate to playoff team wins and winning percentages. To capture historical trends, we compare usage and salary patterns across decades, accounting for inflation-adjusted salary values.
+
+## Data and Methods
+
+We merge several NBA playoff datasets, including advanced, scoring, usage, salary, and team performance. Player stats are joined on player name and season, and team data is merged using team IDs and seasons. We also introduce an inflation-adjusted salary variable for accurate decade-to-decade comparisons.
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(broom)
+library(scales)
+library(ggplot2)
+library(knitr)
+library(lubridate)
+library(plotly)
+library(crosstalk)
+```
+
+```{r load-and-merge, warning=FALSE}
+# Load datasets
+index <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_index.csv")
+salary <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/salary/player_salary.csv")
+usage <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_usage_po.csv")
+scoring <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_scoring_po.csv")
+advanced <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_advanced_po.csv")
+team <- read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/team/team_stats_traditional_po.csv")
+
+# Keep only relevant columns
+usage_small <- usage %>% select(PLAYER_NAME, SEASON, TEAM_ABBREVIATION, USG_PCT, TEAM_ID)
+advanced_small <- advanced %>% select(PLAYER_NAME, SEASON, TEAM_ABBREVIATION, PIE,TEAM_ID)
+scoring_small <- scoring %>% select(PLAYER_NAME, SEASON, TEAM_ABBREVIATION,TEAM_ID)
+
+# Join datasets
+player_data <- usage_small %>%
+  inner_join(scoring_small, by = c("PLAYER_NAME", "SEASON", "TEAM_ABBREVIATION")) %>%
+  inner_join(advanced_small, by = c("PLAYER_NAME", "SEASON", "TEAM_ABBREVIATION")) %>%
+  mutate(PLAYER_NAME = toupper(PLAYER_NAME))
+
+# Clean and merge salary
+salary_clean <- salary %>%
+  mutate(name_clean = toupper(name),
+         season_clean = str_replace(season, "^(\\d{4})-(\\d{4})$", function(x) paste0(substr(x,1,4), "-", substr(x,6,7))),
+         salary_num = readr::parse_number(salary))
+
+player_data <- player_data %>%
+  mutate(name_clean = toupper(PLAYER_NAME)) %>%
+  left_join(salary_clean %>% select(name_clean, season_clean, salary_num), 
+            by = c("name_clean", "SEASON" = "season_clean"))
+
+# Add player position from index
+index <- index %>% mutate(PLAYER_NAME = paste(PLAYER_FIRST_NAME, PLAYER_LAST_NAME))
+player_data <- player_data %>% left_join(index %>% select(PLAYER_NAME, POSITION, HEIGHT, WEIGHT), by = "PLAYER_NAME")
+
+# Add team win percentage
+team_data <- team %>% select(SEASON, TEAM_ID, W, L, W_PCT)
+player_data <- player_data %>% left_join(team_data, by = c("SEASON", "TEAM_ID"))
+
+# Clean and filter
+player_data <- player_data %>%
+  filter(!is.na(USG_PCT) & !is.na(salary_num) & !is.na(PIE)) %>%
+  filter(USG_PCT <= 0.5, USG_PCT > 0.05, PIE > 0.05, PIE < 0.35, salary_num > 500000, W_PCT < 1) %>%
+  mutate(start_year = as.numeric(substr(SEASON, 1, 4)),
+         decade = case_when(
+           start_year < 2000 ~ "Before 2000",
+           start_year >= 2000 ~ "2000 and After"
+         ))
+
+# Preprocess player_data BEFORE wrapping it in SharedData
+player_data_filtered <- player_data %>%
+  mutate(
+    tooltip_usage = paste0("Player: ", PLAYER_NAME,
+                           "<br>Season: ", SEASON,
+                           "<br>Usage: ", round(USG_PCT * 100, 1), "%",
+                           "<br>Salary: $", formatC(salary_num, format = "d", big.mark = ",")),
+    tooltip_pie = paste0("Player: ", PLAYER_NAME,
+                         "<br>Season: ", SEASON,
+                         "<br>PIE: ", round(PIE, 3),
+                         "<br>Salary: $", formatC(salary_num, format = "d", big.mark = ","))
+  )
+
+# Then create SharedData object
+shared_data <- SharedData$new(player_data_filtered, key = ~PLAYER_NAME, group = "players")
+```
+```{r filter-selectors, echo=FALSE}
+filter_select("season_filter", label = "Select Season", sharedData = shared_data, ~SEASON)
+filter_select("team_filter", label = "Select Team", sharedData = shared_data, ~TEAM_ABBREVIATION)
+```
+## Results
+
+### 1. Salary vs. Usage Rate (Interactive)
+
+**Method** We examine the correlation between NBA player salaries and their Player Impact Estimate (PIE), a comprehensive metric that reflects a player’s overall contribution to their team’s success. The data is visualized in a scatter plot with a linear regression line.
+
+```{r salary-usage, warning=FALSE, message=FALSE}
+
+p1 <- ggplot(shared_data, aes(x = USG_PCT, y = salary_num, text = tooltip_usage)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", color = "black") +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(title = "Player Usage vs. Salary",
+       subtitle = "Higher usage players often earn more",
+       x = "Usage Rate (%)",
+       y = "Salary (USD)") +
+  theme_minimal()
+
+ggplotly(p1, tooltip = "text")
+```
+
+**Interpretation** This plot shows that the relationship between salary and PIE is not perfectly linear, as expected. While higher PIE tends to correspond with higher salaries, there are outliers, such as players with high salaries but lower PIE, likely reflecting other factors like team dynamics and marketability.
+
+### 2. Salary vs. Player Impact Estimate (PIE) – Interactive
+
+**Method** Next, we investigate the relationship between player salary and Usage Rate, which indicates how often a player is involved in a team’s offensive possessions. This plot helps us understand if high Usage Rate leads to higher salaries or if salaries are driven by other factors.
+
+```{r salary-pie, warning=FALSE, message=FALSE}
+p2 <- ggplot(shared_data, aes(x = PIE, y = salary_num, text = tooltip_pie)) +
+  geom_point(alpha = 0.5, color = "#1c5e91") +
+  geom_smooth(method = "lm", color = "black") +
+  scale_y_continuous(labels = dollar_format()) +
+  labs(title = "Salary vs. Player Impact Estimate (PIE)",
+       x = "Player Impact Estimate",
+       y = "Salary (USD)") +
+  theme_minimal()
+
+ggplotly(p2, tooltip = "text")
+```
+
+**Interpretation** The scatter plot shows a moderate positive correlation between salary and Usage Rate, suggesting that players with a higher involvement in team plays tend to earn more. However, there are exceptions, such as players with high usage rates earning lower salaries, possibly due to other factors such as team strategy or market conditions.
+
+### 3. Usage and Salary vs. Team Win %
+
+**Method** Finally, we analyze how player salary correlates with their team’s playoff success, measured by Team Playoff Win Percentage. This analysis helps determine if teams with higher-paying players tend to have better postseason success.
+
+```{r salary-team-success, warning=FALSE, message=FALSE, fig.width=10, fig.height=6}
+library(plotly)
+
+# Filter to reduce clutter and emphasize high-usage, high-salary players
+interactive_data <- player_data %>%
+  filter(salary_num > 10000000 & USG_PCT > 0.20)
+
+# Create tooltip text
+interactive_data <- interactive_data %>%
+  mutate(tooltip = paste0("Player: ", PLAYER_NAME,
+                          "\nSeason: ", SEASON,
+                          "\nUsage: ", round(USG_PCT * 100, 1), "%",
+                          "\nSalary: $", formatC(salary_num, format = "d", big.mark = ","),
+                          "\nTeam Win %: ", round(W_PCT, 2)))
+
+# Create plot
+p3 <- ggplot(interactive_data, aes(x = USG_PCT, y = W_PCT, color = salary_num, text = tooltip)) +
+  geom_point(size = 2, alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  scale_color_viridis_c(labels = dollar_format()) +
+  labs(title = "Usage and Salary vs. Team Playoff Win %",
+       subtitle = "Interactive view: Hover for player details",
+       x = "Usage Rate (%)",
+       y = "Team Win Percentage",
+       color = "Salary") +
+  theme_minimal()
+
+# Convert to interactive
+p3_interactive <- ggplotly(p3, tooltip = "text")
+p3_interactive
+```
+
+\*\* Interpretation\*\* The plot suggests a weak correlation between player salary and team success in the playoffs, indicating that salary does not necessarily equate to playoff success. Other factors, such as team composition and player roles, likely influence a team’s performance during the postseason.
+
+## Discussion
+
+Our results confirm that player usage rate is positively correlated with salary during the playoffs, reflecting organizational prioritization of high-volume players. However, the relationship between salary and impact (PIE) is less consistent — many high-paid players contribute only average impact metrics in the playoffs.
+
+Usage rates have increased in the modern era, with players in the 2000s and later assuming significantly greater offensive responsibilities compared to pre-2000s playoff contributors.
+
+When relating player salary and usage to team playoff win percentage, no strong direct correlation emerges. This suggests that while stars are paid and used heavily, their impact on team success is conditional — likely moderated by team depth, matchup dynamics, and variance in short playoff series.
+
+## Limitations
+
+-   Salary reflects regular season, not playoff bonuses or incentives.
+-   Not all players in dataset had complete salary data.
+-   Win % in playoffs is impacted by seeding, matchup, and team depth — not just one player.
+-   Salaries are not yet inflation-adjusted; comparing raw dollar values across decades may introduce distortion.
+
+## Future Work
+
+-   Adjust salaries using historical inflation/CPI to show purchasing power and true salary value.
+-   Add injury or rest metrics to understand cost-efficiency per availability.
+-   Use advanced team stats (e.g., net rating, pace) to deepen contextual analysis.
+-   Separate high-usage bench players vs. starters using minutes per game thresholds.

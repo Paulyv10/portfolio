@@ -1,0 +1,148 @@
+---
+title: Spotify Global Trends
+subtitle: Exploring Global and Regional Music Patterns
+author: GivingHedgehog <br>Justin Zhai <br> Keertana Nambiar <br>Tianyu Zhai  <br>Catherine Liu
+format:
+  revealjs:
+    theme: default
+    slide-number: true
+    transition: slide
+  
+execute:
+  fig-width: 7
+  fig-asp: 0.618
+  fig-retina: 2
+  font-size: 0.6
+  dpi: 150
+  fig-align: center
+  out-width: 80%
+---
+
+## Project Goals
+
+- Identify top global and regional artists and tracks
+- Explore how audio features (e.g., valence, danceability) vary over time
+- Understand how closely countries' charts align with global rankings
+- Build an interactive, user-friendly exploration tool
+
+---
+
+## Data Sources
+
+Dataset: **Top Spotify Songs in 73 Countries (Daily Updated)**  
+Source: `Kaggle`
+
+- ~1.9 million rows
+- 73 countries, daily snapshots
+- Key fields:
+  - track name, artists, country, snapshot_date
+  - Audio features: valence, danceability, energy, etc.
+  - Popularity scores and stream counts
+
+---
+
+## Key Features of the App
+
+<div class="columns">
+
+<div class="column" style="font-size: 0.75em;width: 40%">
+
+**Three-tab layout:**
+
+- **Global Overview**  
+  View global top artists/tracks and chart alignment maps.
+- **Regional Deep Dive**  
+  Country-specific trends and global overlap over time.
+- **Audio Feature Explorer**  
+  Feature trends and regional “sound profiles”.
+
+</div>
+
+<div class="column" style="width: 60%">
+
+![Dashboard Overview](dashboard_full.png)
+
+</div>
+
+</div>
+---
+
+## Design Choices
+
+- Artists ranked by **appearance count**; tracks by **Spotify popularity score**
+- Choropleth map to visualize **global-local alignment**
+- Time series plots for trend discovery
+- Radar charts to represent regional "sound shapes"
+- Custom date filters for deeper, user-defined exploration
+
+---
+
+## Key Outcomes - Music
+
+<div class="columns">
+
+<div class="column" style="font-size: 0.75em;width: 40%">
+
+- **Bad Bunny** and **Kendrick Lamar** consistently dominate global charts.
+- **India** and **Nigeria** avor local artists over global hits.
+- **US**,**Canada** and **Australia* closely match global trends.
+
+</div>
+
+<div class="column" style="width: 60%">
+
+![Dashboard Overview](global_music_plots.png)
+
+</div>
+
+</div>
+
+---
+
+## Key Outcomes - Audio Feature 
+
+<div class="columns">
+
+<div class="column" style="font-size: 0.75em;width: 40%">
+
+- **Valence** spikes in December, likely from upbeat holiday music.
+- **Danceability** and **energy** stay steady but vary slightly across countries.
+- Radar charts reveal regional “sound profiles” at a glance.
+- Audio features help explain not just who’s popular, but what sounds resonate.
+
+</div>
+
+<div class="column" style="width: 60%">
+
+![Dashboard Overview](audio_feature_plots.png)
+
+</div>
+
+</div>
+---
+
+## Learning & Conclusion
+
+- Learned advanced **Shiny reactivity** and **Plotly integration**
+- Built dynamic filters, synced inputs, and modular layout
+- Discovered meaningful musical trends through interactive design
+
+**Next Steps:**
+
+- Add Spotify API for real-time data
+- Enable playlist uploads
+- Add side-by-side region comparison view
+
+---
+
+## Demo
+
+[View Live Demo](https://lowdrag.shinyapps.io/proj-02-giving-hedgehog/)
+
+---
+
+## Thank You!
+
+Questions?
+
+---

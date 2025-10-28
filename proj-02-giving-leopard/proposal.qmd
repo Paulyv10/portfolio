@@ -1,0 +1,83 @@
+---
+title: "Proposal"
+format: typst
+---
+
+# High-level goal
+To create an interactive website using quarto website that enables visual analysis of NBA player and team data to uncover key factors affecting performance and career longevity.
+
+# Description of your goals
+This project aims to explore under-analyzed trends in NBA player performance, emphasizing hustle stats, defensive impact, injury risk, and the evolving role of big men. The motivation behind this analysis is to uncover hidden patterns that traditional stats might overlook, using interactive and insightful visualizations.
+
+Dataset: https://github.com/Brescou/NBA-dataset-stats-player-team/tree/mainThis repository contains a rich and diverse dataset spanning from 1996 to 2023, drawn from NBA game statistics. It's ideal for data analysts, basketball fans, researchers, and anyone interested in the detailed numbers behind the sport.
+
+We'll use these data to answer questions like:
+
+- Do hustle stats correlate with long-term playing time or salary?
+- Are strong defenders more likely to remain in the league across different eras?
+- How has the evolution of the 3-point shot affected big men over time?
+- how player usage and performance metrics relate to salary and team success in the NBA Playoffs.
+
+```{r}
+#| label: load-packages and import dataset
+#| message: false
+library(tidyverse)
+player_advanced = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_advanced_rs.csv") 
+player_defense = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_defense_rs.csv") 
+player_scoring = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_scoring_rs.csv") 
+player_usage = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_usage_rs.csv") 
+glimpse(player_advanced)
+```
+
+```{r}
+glimpse(player_defense)
+```
+
+```{r}
+glimpse(player_scoring)
+```
+
+```{r}
+glimpse(player_usage)
+```
+
+# Weekly plan of attack
+- Week 1: Setup and Explore
+  - Clone & explore the dataset repo(Oliver)
+  - Identify relevant CSVs for each topic (Paul)
+  - Clean and merge data as needed(Yuzu)
+  - Create repo folders and Quarto site structure(Oliver)
+- Week 2: Visualization Drafts
+  - Create draft visualizations for each topic(All members)
+  - Refine research questions & start writing analysis (Paul)
+  - Finalize page structure for Quarto website(Yuzu)
+- Week 3: Refinement and Website building
+  - Polish visualizations with interactivity, color, labels (Paul)
+  - Write website content for each page((All members)
+  - Link everything into working website(All members)
+- Week 4: Final Writeup
+  - Add hover effects, filters, tooltips (if possible)
+  - Revise visual + written content for clarity (Paul)
+  - Complete report(All members)
+  - Practice walkthrough/prepare any slides (Paul)
+
+
+# Final repository organization
+- Data
+  - Raw: Downloaded from GitHub dataset 
+  - Cleaned: Cleaned/merged datasets used in analysis  
+  - README.md: Dataset sources & notes
+- Visualizations
+  - R Code Scripts: Code to generate visualizations
+  - README.md
+- Scripts
+  - Code for data cleaning and processing
+  - README.md
+- Websites
+  - Index.qmd: Home page
+  - topic1.qmd – topic4.qmd: Pages for each research question
+  - README.md
+- Presentation
+  - Presentation.qmd: presentation slides
+  - README.md
+

@@ -1,0 +1,479 @@
+---
+title: "HW 03 - Viz + wrangling"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Paul Vermette"
+date: today
+format: typst
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(scales)
+library(ggridges)
+
+# add any other packages you use here
+
+```
+
+# Exercises
+
+## Exercise 1
+
+```{r}
+#| label: ex1
+#| fig-width: 10
+#| fig-height: 10
+
+congress_data <- read_csv("data/HSall_members.csv")
+
+# Filter 79th congress and beyond 
+congress_since_1945 <- congress_data |>
+  filter(congress >= 79) |>
+  filter(chamber %in% c("House", "Senate"))
+
+# Step 4: Create year labels for each Congress
+congress_labeled <- congress_since_1945 |>
+  mutate(
+    start_year = 1789 + (congress - 1) * 2,
+    end_year = start_year + 2,
+    congress_label = paste0(start_year, "-", end_year)
+  )
+
+# faceting 
+partisan_plot <- ggplot(congress_labeled, 
+                       aes(x = nominate_dim1, y = fct_reorder(congress_label, start_year))) +
+  geom_density_ridges() + 
+  scale_y_discrete(breaks = function(x) {
+    c(x[1], x[length(x)])
+  }) +
+  
+  facet_wrap(~ chamber, ncol = 2) +
+  labs(
+    title = "Partisan Polarization in the U.S. Congress (1945-Present)",
+    x = "NOMINATE Score (Negative = Liberal, Positive = Conservative)",
+    y = "Congress Years (1945-Present)"
+  ) +
+  theme_ridges() +
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt"),
+    axis.text.y = element_text(size = 9)
+  )
+
+print(partisan_plot)
+```
+
+## Exercise 2
+
+```{r}
+#| label: ex2
+
+# Load necessary packages
+library(tidyverse)
+
+# Load both datasets
+congress_data <- read_csv("data/HSall_members.csv")
+dime_data <- read_csv("data/dime.csv")
+
+# Filter NOMINATE data to include only Democrats and Republicans
+nominate_filtered <- congress_data |>
+  filter(party_code %in% c(100, 200))  # 100 = Democrats, 200 = Republicans
+
+# Extract the base ICPSR number from the DIME dataset
+dime_prepared <- dime_data |>
+  mutate(
+    icpsr_base = as.numeric(substr(icpsr, 1, nchar(icpsr) - 4))
+  )
+
+# Join the datasets by the modified ICPSR identifier
+combined_data <- inner_join(
+  nominate_filtered,
+  dime_prepared,
+  by = c("icpsr" = "icpsr_base")
+)
+
+# Filter to include only recent Congresses and create year labels
+recent_data <- combined_data |>
+  filter(congress >= 100) |>
+  mutate(
+    # Calculate the years for each Congress
+    start_year = 1789 + (congress - 1) * 2,
+    end_year = start_year + 2,
+    # Create a label with Congress number and years
+    congress_label = paste0(congress, "\n(", start_year, "-", end_year, ")"),
+    # Create party name
+    party_name = if_else(party_code == 100, "Democrat", "Republican")
+  )
+
+# Create scatter plot with faceting by congress with year labels
+ggplot(recent_data, aes(x = nominate_dim1, y = recipient.cfscore)) +
+  # Add points colored by party
+  geom_point(aes(color = party_name), alpha = 0.7, size = 1) +
+  # Use purple for Democrats and orange for Republicans
+  scale_color_manual(values = c("Democrat" = "purple", "Republican" = "orange")) +
+  # Facet by congress with year labels
+  facet_wrap(~ congress_label, ncol = 4) +
+  # Add correlation line
+  geom_smooth(method = "lm", se = FALSE, color = "black", linetype = "dashed", size = 0.5) +
+  # Add explanatory labels
+  labs(
+    title = "Comparison of Voting-Based (NOMINATE) and Donation-Based (CFScore) Ideology Measures",
+    subtitle = "Each point represents a member of Congress",
+    x = "NOMINATE Score (Voting-Based)",
+    y = "CFScore (Campaign Finance-Based)",
+    color = "Party"
+  ) +
+  # Improve the theme
+  theme_minimal() +
+  theme(
+    strip.background = element_rect(fill = "lightgray"),
+    strip.text = element_text(face = "bold", size = 9),
+    panel.spacing = unit(0.3, "cm"),
+    axis.text = element_text(size = 8)
+  )
+
+```
+
+## Exercise 3
+
+```{r}
+#| label: ex3
+
+library(tidyverse)
+
+# data frame of Lyme disease cases by state
+lyme_data <- tibble(
+  state = c(
+    "Pennsylvania", "New Jersey", "New York", "Connecticut", "Wisconsin",
+    "Maine", "Minnesota", "New Hampshire", "Maryland", "Virginia",
+    "Rhode Island", "West Virginia", "Vermont", "Delaware", "Ohio",
+    "Remaining States + DC"
+  ),
+  cases = c(
+    10208, 4000, 3638, 1859, 1883,
+    1405, 1541, 1428, 1382, 1139,
+    1111, 671, 576, 520, 293,
+    2026
+  ),
+  percentage = c(
+    30.3, 11.9, 10.8, 5.5, 5.6,
+    4.2, 4.6, 4.2, 4.1, 3.4,
+    3.3, 2.0, 1.7, 1.5, 0.9,
+    6.0
+  )
+)
+
+# states by percentage (descending)
+lyme_data <- lyme_data |>
+  mutate(state = factor(state, levels = state[order(-percentage)]))
+
+# pie chart
+pie_chart <- ggplot(lyme_data, aes(x = "", y = percentage, fill = state)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  labs(
+    title = "Lyme Disease Association Lyme Disease Analysis",
+    subtitle = "2018 US Reported Lyme Disease Cases Featuring Top 15 States",
+    caption = "U.S. TOTAL CASES 2018: 33,666\nSource data compiled from CDC publ. data (DVBID)"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank(),
+    panel.border = element_blank(),
+    panel.background = element_blank(),
+    legend.title = element_blank(),
+    legend.position = "right",
+    legend.key.size = unit(0.8, "lines"),
+    legend.text = element_text(size = 8),
+    legend.key = element_rect(color = "black", linewidth = 0.5)
+  )
+
+print(pie_chart)
+
+# Bar chart
+bar_chart <- ggplot(lyme_data, aes(x = state, y = percentage)) +
+  geom_bar(stat = "identity", aes(fill = state == "New York")) +
+  scale_fill_manual(values = c("gray", "darkred")) +
+  # Highlight the New York bar 
+  geom_text(aes(label = paste0(percentage, "%")), 
+            vjust = -0.5, size = 3) +
+  labs(
+    title = "Lyme Disease Association Lyme Disease Analysis",
+    subtitle = "2018 US Reported Lyme Disease Cases Featuring Top 15 States",
+    caption = "U.S. TOTAL CASES 2018: 33,666\nSource data compiled from CDC publ. data (DVBID)",
+    x = "State",
+    y = "Percentage of Total U.S. Cases"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none",
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    panel.background = element_blank()
+  )
+
+print(bar_chart)
+
+```
+
+## Exercise 4
+
+```{r}
+#| label: ex4
+# Load necessary packages
+library(tidyverse)
+library(scales)
+
+
+load("~/hw-03-prv25/data/fjc-judges.RData")
+
+# checking types
+table(service_fjs$court_type)
+
+# defining ivies
+ivy_league <- c(
+  # Brown
+  "Brown University", "Rhode Island College (now Brown University)",
+  # Columbia
+  "Columbia University", "Columbia Law School", "King's College (now Columbia University)",
+  # Cornell
+  "Cornell University", "Cornell Law School", "Cornell University Department of Law",
+  # Dartmouth
+  "Dartmouth College",
+  # Harvard
+  "Harvard Law School", "Harvard University", "Harvard University, Kennedy School of Government",
+  "Harvard College",
+  # UPenn
+  "University of Pennsylvania", "University of Pennsylvania, Wharton School",
+  "College of Philadelphia (now University of Pennsylvania)",
+  "University of Pennsylvania Law School (now Carey Law School)",
+  # Princeton
+  "Princeton University", "College of New Jersey (now Princeton University)",
+  "Princeton University, Woodrow Wilson School of Public and International Affairs (now Princeton School of Public and International Affairs)",
+  # Yale
+  "Yale University", "Yale College", "Yale Law School", "Yale School of Architecture",
+  "Yale School of Organization and Management"
+)
+
+# does a judge have an ivy?
+judges_ivy <- education |>
+  group_by(nid, judge_name) |>
+  summarize(
+    ivy_league = any(school %in% ivy_league),
+    .groups = "drop"
+  )
+
+# judicial appointments
+judges_combined <- judges_ivy |>
+  inner_join(service_fjs, by = c("nid", "judge_name"))
+
+unique(judges_combined$court_type)
+
+# Filter 
+judges_filtered <- judges_combined |>
+  filter(
+    court_type %in% c("U.S. District Court", "U.S. Court of Appeals"),
+    commission_date >= "1945-01-01",
+    party_of_appointing_president %in% c("Democratic", "Republican")
+  )
+
+if(nrow(judges_filtered) == 0) {
+  stop("No data after filtering. Check your filter conditions.")
+}
+
+table(judges_filtered$court_type)
+
+judges_summary <- judges_filtered |>
+  group_by(court_type, appointing_president, party_of_appointing_president) |>
+  summarize(
+    total_appointments = n(),
+    ivy_appointments = sum(ivy_league),
+    prop_ivy_league = ivy_appointments / total_appointments,
+    # average commission date for ordering presidents chronologically
+    commission_date = mean(as.numeric(commission_date)),
+    .groups = "drop"
+  ) |>
+  # Remove FDR 
+  filter(appointing_president != "Roosevelt, Franklin D.")
+
+# final visualization
+ggplot(judges_summary, aes(
+  y = reorder(appointing_president, commission_date),   
+  x = prop_ivy_league,
+  fill = party_of_appointing_president
+)) +
+geom_col() +
+facet_wrap(facets = vars(court_type), ncol = 1) +
+scale_fill_manual(
+  values = c("Democratic" = "blue3", "Republican" = "red3"),
+  name = "Party"
+) +
+scale_x_continuous(labels = scales::percent) +
+labs(
+  title = "Proportion of Federal Judges with Ivy League Degrees",
+  subtitle = "By appointing president and court type, 1945-present",
+  x = "Percentage of appointments",
+  y = "Appointing President"
+) +
+theme_minimal() +
+theme(
+  legend.position = "top",
+  axis.text.y = element_text(size = 6)  
+)
+```
+
+## Exercise 5
+
+```{r}
+#| label: ex5
+
+library(tidyverse)
+library(scales)
+
+
+load("~/hw-03-prv25/data/fjc-judges.RData")
+
+# Define Ivies
+ivy_league <- c(
+  # Brown
+  "Brown University", "Rhode Island College (now Brown University)",
+  # Columbia
+  "Columbia University", "Columbia Law School", "King's College (now Columbia University)",
+  # Cornell
+  "Cornell University", "Cornell Law School", "Cornell University Department of Law",
+  # Dartmouth
+  "Dartmouth College",
+  # Harvard
+  "Harvard Law School", "Harvard University", "Harvard University, Kennedy School of Government",
+  "Harvard College",
+  # UPenn
+  "University of Pennsylvania", "University of Pennsylvania, Wharton School",
+  "College of Philadelphia (now University of Pennsylvania)",
+  "University of Pennsylvania Law School (now Carey Law School)",
+  # Princeton
+  "Princeton University", "College of New Jersey (now Princeton University)",
+  "Princeton University, Woodrow Wilson School of Public and International Affairs (now Princeton School of Public and International Affairs)",
+  # Yale
+  "Yale University", "Yale College", "Yale Law School", "Yale School of Architecture",
+  "Yale School of Organization and Management"
+)
+
+# judge has an Ivy League degree
+judges_ivy <- education |>
+  group_by(nid, judge_name) |>
+  summarize(
+    ivy_league = any(school %in% ivy_league),
+    .groups = "drop"
+  )
+
+judges_combined <- judges_ivy |>
+  inner_join(service_fjs, by = c("nid", "judge_name"))
+
+judges_filtered <- judges_combined |>
+  filter(
+    court_type %in% c("U.S. District Court", "U.S. Court of Appeals"),
+    commission_date >= "1945-01-01"
+  )
+
+# circuit information from court_name 
+judges_regional <- judges_filtered |>
+  mutate(
+    circuit = case_when(
+      grepl("First Circuit", court_name) ~ "1st Circuit",
+      grepl("Second Circuit", court_name) ~ "2nd Circuit",
+      grepl("Third Circuit", court_name) ~ "3rd Circuit",
+      grepl("Fourth Circuit", court_name) ~ "4th Circuit",
+      grepl("Fifth Circuit", court_name) ~ "5th Circuit",
+      grepl("Sixth Circuit", court_name) ~ "6th Circuit",
+      grepl("Seventh Circuit", court_name) ~ "7th Circuit",
+      grepl("Eighth Circuit", court_name) ~ "8th Circuit",
+      grepl("Ninth Circuit", court_name) ~ "9th Circuit",
+      grepl("Tenth Circuit", court_name) ~ "10th Circuit", 
+      grepl("Eleventh Circuit", court_name) ~ "11th Circuit",
+      grepl("D.C. Circuit", court_name) ~ "D.C. Circuit",
+      grepl("Federal Circuit", court_name) ~ "Federal Circuit",
+      TRUE ~ "Other"
+    ),
+    # regional groupings
+    region = case_when(
+      circuit %in% c("1st Circuit", "2nd Circuit") ~ "Northeast",
+      circuit %in% c("3rd Circuit", "D.C. Circuit") ~ "Mid-Atlantic",
+      circuit %in% c("4th Circuit", "5th Circuit", "11th Circuit") ~ "South",
+      circuit %in% c("6th Circuit", "7th Circuit", "8th Circuit") ~ "Midwest",
+      circuit %in% c("9th Circuit", "10th Circuit") ~ "West",
+      circuit == "Federal Circuit" ~ "National",
+      TRUE ~ "Other"
+    )
+  )
+
+# Ivy League representation by region
+ivy_by_region <- judges_regional |>
+  group_by(region, court_type) |>
+  summarize(
+    total_judges = n(),
+    ivy_judges = sum(ivy_league),
+    prop_ivy = ivy_judges / total_judges,
+    .groups = "drop"
+  ) |>
+  filter(region != "Other") # Remove "Other" category for clarity
+
+# visualization
+ggplot(ivy_by_region, aes(x = reorder(region, -prop_ivy), y = prop_ivy, fill = court_type)) +
+  geom_col(position = "dodge") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_brewer(palette = "Set2", name = "Court Type") +
+  labs(
+    title = "Regional Disparities in Ivy League Representation on Federal Courts",
+    subtitle = "Proportion of judges with Ivy League degrees by region and court type (1945-present)",
+    x = "Region",
+    y = "Percentage with Ivy League Degree"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0),
+    legend.position = "top"
+  )
+
+ivy_region_time <- judges_regional |>
+  mutate(
+    year = as.numeric(format(commission_date, "%Y")),
+    period = paste0(floor(year/20) * 20, "-", floor(year/20) * 20 + 19)
+  ) |>
+  filter(year >= 1940, region != "Other") |>
+  group_by(region, period) |>
+  summarize(
+    total_judges = n(),
+    ivy_judges = sum(ivy_league),
+    prop_ivy = ivy_judges / total_judges,
+    .groups = "drop"
+  )
+
+# Time series plot
+ggplot(ivy_region_time, aes(x = period, y = prop_ivy, color = region, group = region)) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    title = "Changes in Regional Ivy League Representation Over Time",
+    subtitle = "Proportion of federal judges with Ivy League degrees by region (20-year intervals)",
+    x = "Time Period",
+    y = "Percentage with Ivy League Degree",
+    color = "Region"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+## GAI statement - I used CLAUDe to guide me for ideas on the last exercise, that's it.

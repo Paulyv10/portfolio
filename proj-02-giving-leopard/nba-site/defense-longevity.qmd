@@ -1,0 +1,184 @@
+---
+title: "Defense Metrics vs. Career Length"
+author: "Team Giving-Leopard"
+format: html 
+editor: visual
+---
+
+## Introduction
+
+Defensive statistics such as defensive rating and defensive win shares aim to quantify a player's impact on that side of the floor. This analysis investigates how defensive performance relates to the length of an NBA player’s career, as well as how trends in defensive metrics have evolved across different eras.
+
+## Data and Method
+
+This study draws on comprehensive NBA player datasets that capture defensive rating, defensive win shares, and season-by-season career information. Data were cleaned and joined based on standardized player names and seasons, then aggregated to compute each player's total career length (in seasons), best single-season defensive rating, and mean defensive win shares. Players were further categorized into defensive tiers, with the top 25% representing the league’s elite defenders (based on lowest/best defensive rating). Additional analysis grouped players by debut era—1990s, 2000s, and 2010s onward—to track trends in defensive rating over time. All visualizations were created in R using ggplot2 and plotly.
+
+```{r, include=FALSE}
+#| label: Load Packages
+
+library(tidyverse)
+library(plotly)
+library(stringr)
+library(crosstalk)
+```
+
+```{r, warning=FALSE, message=FALSE}
+#| label: Import Data and Join
+
+#player_advanced = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_advanced_rs.csv") 
+defense = read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_defense_rs.csv")
+#player_scoring = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_scoring_rs.csv") 
+usage = read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_usage_rs.csv") 
+salary <- read_csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/salary/player_salary.csv")
+
+# Standardize the Names
+# Convert salary$season from '1985-1986' to '1985-86'
+salary <- salary %>%
+  mutate(
+    season_clean = str_replace(season, 
+                              "^(\\d{4})-(\\d{4})$", 
+                              function(x) {
+                                parts <- str_split(x, "-", simplify = TRUE)
+                                paste0(parts[1], "-", str_sub(parts[2], 3, 4))
+                              }),
+    name_clean = str_trim(str_to_upper(name))
+  )
+usage <- usage %>%
+  mutate(
+    PLAYER_NAME_CLEAN = str_trim(str_to_upper(PLAYER_NAME)),
+    SEASON_CLEAN = str_replace_all(SEASON, "[–-]", "-")
+  )
+
+defense <- defense %>%
+  mutate(
+    PLAYER_NAME_CLEAN = str_trim(str_to_upper(PLAYER_NAME)),
+    SEASON_CLEAN = str_replace_all(SEASON, "[–-]", "-")
+  )
+
+# Clean salary
+salary <- salary %>%
+  mutate(salary_num = parse_number(salary))
+
+# Join usage and salary
+usage_salary <- usage %>%
+  left_join(
+    salary %>% select(name_clean, season_clean, salary, salary_num),
+    by = c("PLAYER_NAME_CLEAN" = "name_clean", "SEASON_CLEAN" = "season_clean")
+  )
+
+# Join defense to usage+salary
+all_data <- usage_salary %>%
+  left_join(
+    defense %>% select(PLAYER_NAME_CLEAN, SEASON_CLEAN, DEF_RATING, DEF_WS),
+    by = c("PLAYER_NAME_CLEAN", "SEASON_CLEAN")
+  )
+```
+
+```{r, warning=FALSE, message=FALSE}
+#| label: Aggregate Career Length
+
+career_length <- all_data %>%
+  group_by(PLAYER_NAME) %>%
+  summarize(
+    career_seasons = n_distinct(SEASON),
+    best_def_rating = ifelse(all(is.na(DEF_RATING)), NA_real_, min(DEF_RATING, na.rm = TRUE)),
+    mean_def_ws = ifelse(all(is.na(DEF_WS)), NA_real_, mean(DEF_WS, na.rm = TRUE))
+  ) %>%
+  filter(!is.na(best_def_rating))
+```
+```{r}
+#| label: interactive-filter
+
+# Keep only necessary data and remove NAs
+plot1_data <- all_data %>%
+  group_by(PLAYER_NAME, TEAM_ABBREVIATION) %>%
+  summarize(
+    career_seasons = n_distinct(SEASON_CLEAN),
+    best_def_rating = ifelse(all(is.na(DEF_RATING)), NA_real_, min(DEF_RATING, na.rm = TRUE)),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(best_def_rating), !is.na(career_seasons))
+
+shared_plot1 <- SharedData$new(plot1_data)
+```
+```{r}
+#| label: filter-ui
+filter_select("team_filter", "Select Team", shared_plot1, ~TEAM_ABBREVIATION)
+```
+
+## Results
+
+### Plot1: Defensive Rating vs. Career Length
+
+Defensive Rating: a team's or player's effectiveness at preventing opposing teams from scoring, expressed as points allowed per 100 possessions(Lower is better)
+
+The first scatterplot, Defensive Rating vs Career Length, plots each player’s best single-season defensive rating against their total number of NBA seasons played. This visualization reveals that while there is a large spread in defensive rating among players with short careers, those who have enjoyed the longest tenures—often more than a decade in the league—tend to have achieved strong defensive ratings at some point in their careers. However, not all long-career players were elite defenders; the plot also includes long careers among those with middling defensive ratings. The concentration of points between defensive ratings of 90 and 110, coupled with higher career season counts in this range, suggests that maintaining at least solid defensive performance is associated with greater career longevity.
+
+```{r}
+#| label: Viz1:Defensive Rating vs Career Length
+
+plot_ly(
+  data = shared_plot1,
+  x = ~best_def_rating,
+  y = ~career_seasons,
+  text = ~paste("Player:", PLAYER_NAME),
+  type = "scatter", mode = "markers",
+  marker = list(color = 'darkblue', opacity = 0.6)
+) %>%
+  layout(
+    title = "Defensive Rating vs Career Length",
+    xaxis = list(title = "Best Defensive Rating"),
+    yaxis = list(title = "Career Seasons")
+  )
+```
+
+### Plot2: Career Length by Defensive Tier
+
+Turning to the boxplot, Career Length by Defensive Rating Tier, the analysis focuses specifically on players who belong to the top 25% in terms of best defensive rating. The boxplot demonstrates that players in this elite defensive tier tend to have longer careers, with both the median and the upper range of career lengths notably higher compared to lower tiers (not shown here). The spread, however, shows variability: while some top defenders have short stints in the league, many enjoy careers spanning a decade or more. This pattern supports the idea that strong defensive ability can be a key factor in extending a player's time in the NBA.
+
+```{r}
+#| label: Viz2:Career Length by Defensive Tier
+# Top 25% defenders by DEF_RATING (lower is better)
+def_rating_cut <- quantile(career_length$best_def_rating, 1, na.rm = TRUE)
+career_length <- career_length %>%
+  mutate(def_tier = ifelse(best_def_rating <= def_rating_cut, "Top 25%", "Other"))
+
+p5 <- ggplot(career_length, aes(x = def_tier, y = career_seasons, fill = def_tier)) +
+  geom_boxplot() +
+  labs(x = "Defensive Tier", y = "Career Length (Seasons)",
+       title = "Career Length by Defensive Rating Tier") +
+  theme_minimal()
+ggplotly(p5)
+```
+
+### Plot3: Median Defensive Rating by Era
+
+The third visualization, Median Defensive Rating by Era, presents a longitudinal view of defensive rating trends over time, separated by player debut era (1990s, 2000s, 2010s+). The plot reveals that median defensive rating has generally increased (indicating less efficient defense league-wide), especially in recent seasons. Notably, the sharpest rise occurs after 2020, which may reflect broader offensive trends or rule changes that favor scoring. Despite differences between eras, the trajectories of each group are similar, highlighting the league-wide nature of these changes.
+
+```{r}
+#| label: Viz3:Median Defensive Rating by Era
+# Add debut year to each player (first season)
+player_era <- all_data %>%
+  group_by(PLAYER_NAME_CLEAN) %>%
+  summarize(debut_season = min(SEASON_CLEAN))
+
+# Merge back to all_data
+all_data_era <- all_data %>%
+  left_join(player_era, by = "PLAYER_NAME_CLEAN") %>%
+  mutate(era = case_when(
+    debut_season < "2000-01" ~ "1990s",
+    debut_season < "2010-11" ~ "2000s",
+    TRUE ~ "2010s+"
+  ))
+
+def_rating_trend <- all_data_era %>%
+  group_by(era, SEASON_CLEAN) %>%
+  summarize(median_def_rating = median(DEF_RATING, na.rm = TRUE))
+
+ggplot(def_rating_trend, aes(x = SEASON_CLEAN, y = median_def_rating, color = era, group = era)) +
+  geom_line(size = 1) +
+  labs(title = "Median Defensive Rating by Era",
+       x = "Season", y = "Median Defensive Rating") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```

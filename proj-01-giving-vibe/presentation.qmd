@@ -1,0 +1,101 @@
+---
+title: "<span style='font-size: 70px;'>Coffee Spending Across Demographics and Lifestyles</span>"
+subtitle: Christina Feng, Lily Huang, Ampi Averbuj, Wanxuan Li
+author: Team Giving Vibe
+format: 
+  revealjs:
+    title-slide-attributes:
+      data-background-image: "images/coffee_background.jpg"
+      data-background-size: cover
+execute:
+  fig-width: 7
+  fig-asp: 0.618
+  fig-retina: 2
+  dpi: 150
+  fig-align: center
+  out-width: 100%
+---
+
+## ☕ Introduction {.center style="font-size: 30px; margin-top: 0px;"}
+
+::: {style="margin-top: 40px;"} 
+**Data source:**
+:::
+
+::: {style="font-size:70%;"}
+-   Survey conducted by world champion barista James Hoffmann in 2023 on his YouTube channel.
+-   Contains data about coffee spending habits, coffee preferences, and demographic factors of American respondents.
+:::
+
+**Why analyze coffee spending and preference patterns?**
+
+::: {style="font-size:70%;"}
+-   Coffee is a daily ritual for millions worldwide, yet we don't know how others experience it.
+-   Curiosity drove us to explore how coffee-related habits vary across demographics and lifestyles.
+:::
+
+## ☕ Q1: How Does Coffee Spending Vary Based On Gender, Ethnicity, and Race? {.center style="font-size: 30px; margin-top: 0px;"}
+
+::: {style="margin-top: 40px;"}  
+**Why This Question Matters:**  
+:::
+
+::: {style="font-size:70%;"}
+-   There are common stereotypes about certain genders and ethnicities consuming more coffee than others. We wanted to explore whether this dataset supports or challenges these assumptions.
+:::
+
+**Key Dataset Variables:**
+
+::: {style="font-size:70%;"}
+-   `total_spend` (Monthly average coffee spending)
+-   `ethnicity_race`
+-   `gender`
+:::
+
+## ☕ Q1: Coffee Spending by Gender, Ethnicity, and Race {.center style="font-size: 25px; margin-top: 0px;"}
+
+```{r,  echo=FALSE, fig.align="center", out.width="70%", out.height="70%"}
+
+knitr::include_graphics("lineplot_1.png")
+```
+::: {style="font-size:70%;"}
+- Female respondents show more variation across racial/ethnic groups compared to males
+- Lack of non-binary respondents for certain ethnic/racial groups
+- The plot shows diverse spending patterns across demographics, but due to the uneven sample sizes the data is not robust enough to confirm or challenge existing stereotypes. 
+:::
+
+## ☕ Q2: How Does Work Arrangement Influence Coffee Taste Preferences and Spending Habits? {.center style="font-size: 30px; margin-top: 0px;"}
+
+::: {style="margin-top: 40px;"}  
+**Why This Question Matters:**  
+:::
+
+::: {style="font-size:70%;"}
+-   There are assumptions that remote workers spend more on coffee or prefer different styles than in-person workers. We wanted to explore how work settings impact coffee habits.
+:::
+
+**Key Dataset Variables:**
+
+::: {style="font-size:70%;"}
+-   `wfh` (Categorizes respondents as working from home, in-person, or a mix of both (hybrid)
+-   `style` (Coffee flavor style preference)
+-   `avg_total_spend` (Total monthly coffee spending per style)
+:::
+
+## ☕ Q2: Coffee Spending by Work Arrangement, Taste Preferences, and Spending Habits {.center style="font-size: 25px; margin-top: 0px;"}
+
+```{r,  echo=FALSE, fig.align="center", out.width="70%", out.height="70%"}
+
+knitr::include_graphics("problem_2.png")
+```
+::: {style="font-size:70%;"}
+- Hybrid workers spend the most on coffee on average, while in-person workers spend the least.
+- The priciest coffee style varies: Floral for in-person, Bright for remote, and Juicy for hybrid workers.
+- Hybrid workers show the widest spending range, while in-person workers have the most consistent spending.
+:::
+
+## ☕ Thank you! {.center style="font-size: 25px; margin-top: 0px;"}
+
+```{r, echo=FALSE, fig.align="center"}
+knitr::include_graphics("images/coffee_meme.png")
+```

@@ -1,0 +1,81 @@
+---
+title: "Proposal"
+format: typst
+---
+
+# High-level goal
+
+- A Shiny app that analyzes and visualizes global Spotify trends using an interactive dashboard powered by Plotly.
+
+# Description of your goals
+
+- The goal of this project is to build an interactive Shiny app that visualizes different aspects of top-charting Spotify songs across countries and over time. Through a clean user interface and dynamic Plotly-based charts, we aim to create an engaging and informative tool to uncover patterns in global music listening habits.
+
+- We are using the dataset [**Top Spotify Songs in 73 Countries (Daily Updated)**](https://www.kaggle.com/datasets/asaniczka/top-spotify-songs-in-73-countries-daily-updated/data) from Kaggle. This dataset includes the top songs across 73 countries, with detailed information such as track name, artist, position, streams, date, region, and a wide range of audio features including loudness, energy, and danceability. With over 20K+ rows, the dataset provides significant temporal and geographic coverage to analyze trends in popular music.
+
+```{r message=FALSE}
+# Read the dataset
+library(tidyverse)
+spotify_data <- read_csv("data/universal_top_spotify_songs.csv.gz", show_col_types = FALSE)
+
+# Display dimensions (rows x columns)
+cat("Dimensions of the dataset:\n")
+print(dim(spotify_data))
+
+# Display column names
+cat("\nColumn names:\n")
+print(colnames(spotify_data))
+```
+- Our project aims at exploring musical characteristics—such as the distribution of song loudness, track duration, and popularity across different regions and time periods. The motivation is that such analysis could offer cultural insights while also showcasing the power of interactive visualizations for storytelling with large-scale music data. 
+Region & Date Filter: Users can filter data by country and date range.
+
+Top Artists and Tracks Explorer: Interactive charts to explore which artists or tracks dominate in each country.
+
+Audio Features Visualizations: Explore trends in loudness, energy, and danceability using violin plots, time series, and radar charts.
+
+Popularity Map: Choropleth or bubble maps showing streaming intensity across regions.
+
+Time Series Trends: Stream volume and popularity trends across time for selected regions or songs.
+
+
+
+# Weekly plan of attack
+
+## Project Timeline
+
+| **Week**  | **Goals**                              | **Tasks**                                                                                         | **Team Member(s)** |
+|-----------|----------------------------------------|---------------------------------------------------------------------------------------------------|--------------------|
+| **Week 1** | **Setup, Data Wrangling & Exploration** | - Load and clean the Kaggle dataset.                                                              | Everyone           |
+|           |                                        | - Explore dataset structure and metadata.                                                         |                    |
+|           |                                        | - Generate initial summary plots (e.g., distribution of song duration, loudness, popularity).      |                    |
+| **Week 2** | **Prototyping Visuals**                | - Use Plotly to build interactive visualizations (e.g., loudness, popularity trends, duration                                                           by region).
+        Everyone           |
+|           |                                        | - Sketch out app layout (e.g., decide on tabs, filters, chart placement).                         |                    |
+| **Week 3** | **Build & Integrate Shiny App**        | - Implement Shiny UI and server logic.                                                            | Everyone           |
+|           |                                        | - Connect visualizations with user inputs (e.g., filters for year, region, etc.).  Finalize                                                                logic and functions  
+|           |                                        | - Test interactivity (e.g., dynamic updates when changing filters). Potentially get user                                                                   feedback. 
+| **Week 4** | **Polish & Finalize**                  | - Style the app and improve its visual appeal (decide on a theme).                            | Everyone           |
+|           |                                        | - Add README files and documentation for clarity and user guidance.                               |                    |
+|           |                                        | - Finalize repository structure and ensure all components are well-organized.                     |                    |
+|           |                                        | - Prepare any presentations or deliverables for the final submission.                             |                    |
+
+
+# Final repository organization
+```
+my-spotify-app/
+├── app.R                  # Main Shiny app entry point.
+├── www/                   # Static files (CSS, JS, images)
+│   ├── README.md
+│   ├── custom.css         # Optional styling
+│   └── logo.png
+├── data/
+│   ├── README.md
+│   └── universal_top_spotify_songs.csv # Main dataset.
+├── README.md              # Project description
+└── .gitignore
+└── other files
+```
+
+> Project Organization
+- Our project repository is organized to support both development and deployment of the Shiny app efficiently. The root directory contains the main app script (app.R), along with folders for our main dataset (in folder `data/`), static assets (in folder `www/`), and other files.
+

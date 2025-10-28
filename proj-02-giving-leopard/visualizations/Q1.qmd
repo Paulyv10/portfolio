@@ -1,0 +1,132 @@
+---
+title: "Hustle Stats vs. Salary/Minutes Per Game"
+author: "Team Giving-Leopard"
+format: html 
+editor: visual
+---
+
+## Introduction
+
+This analysis aims to explore how hustle stats relate to two key measures of player value and opportunity: salary and minutes played. Specifically, we examine whether players who excel in hustle stats are rewarded with higher salaries and more court time, and what patterns emerge when looking at these metrics together.
+
+## Data and Method
+
+To address these questions, we drew on multiple sources of NBA regular season data, including player defensive metrics (steal percentage, defensive rating, win shares), usage data (total minutes played and usage rate), and salary records for each player-season. Data processing steps included standardizing player names and season formats, parsing salaries into numeric values, and merging the datasets based on player and season. An additional variable divided players into quartiles based on their hustle stat (Pct Steals), providing a categorical perspective for some of our visualizations. All visualizations were created using R’s ggplot2 and plotly libraries, allowing both static and interactive exploration of the data.
+
+```{r}
+#| label: Load Packages
+
+library(tidyverse)
+library(plotly)
+library(stringr)
+```
+
+```{r}
+#| label: Import Data and Join
+
+#player_advanced = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_advanced_rs.csv") 
+defense = read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_defense_rs.csv")
+#player_scoring = read.csv("data/NBA-dataset-stats-player-team-main/player/player_stats_scoring_rs.csv") 
+usage = read.csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/player/player_stats_usage_rs.csv") 
+salary <- read_csv("~/proj-02-giving-leopard/data/NBA-dataset-stats-player-team-main/salary/player_salary.csv")
+
+# Standardize the Names
+# Convert salary$season from '1985-1986' to '1985-86'
+salary <- salary %>%
+  mutate(
+    season_clean = str_replace(season, 
+                              "^(\\d{4})-(\\d{4})$", 
+                              function(x) {
+                                parts <- str_split(x, "-", simplify = TRUE)
+                                paste0(parts[1], "-", str_sub(parts[2], 3, 4))
+                              }),
+    name_clean = str_trim(str_to_upper(name))
+  )
+usage <- usage %>%
+  mutate(PLAYER_NAME = str_to_upper(PLAYER_NAME))
+
+# Clean salary
+salary <- salary %>%
+  mutate(salary_num = parse_number(salary))
+
+# Join usage and salary
+usage_salary <- usage %>%
+  mutate(PLAYER_NAME_CLEAN = str_trim(str_to_upper(PLAYER_NAME))) %>%
+  left_join(
+    salary %>% select(name_clean, season_clean, salary),
+    by = c("PLAYER_NAME_CLEAN" = "name_clean", "SEASON" = "season_clean")
+  ) %>%
+  mutate(salary_num = readr::parse_number(salary))
+
+# Join defense to usage+salary
+all_data <- usage_salary %>%
+  left_join(defense %>% select(PLAYER_NAME, SEASON, DEF_RATING, DEF_WS), 
+            by = c("PLAYER_NAME", "SEASON"))
+```
+
+## Results
+
+### Plot1: Hustle Stat(Steal Percentage) vs. Salary
+
+PCT_STL: the percentage of opponent possessions that end with a steal by a player while they are on the court.
+
+The first scatterplot, “Hustle Stat (Pct Steals) vs Salary,” reveals the relationship between steal percentage and player salary, with point color denoting total minutes played. The plot demonstrates that players with both low and moderate hustle stats can earn high salaries, and only a handful of high-salary players also post high steal percentages. Most high earners fall within the moderate hustle range, while many players with exceptional hustle stats receive only modest salaries. This lack of a strong positive correlation indicates that, while hustle stats may be valued, NBA salaries are determined by a broader range of factors, including offensive output, positional role, and market context. Players with high salaries and high minutes tend to cluster within moderate hustle stat ranges rather than at the extremes.
+
+```{r}
+#| label: Viz1:Hustle Stat vs. Salary
+
+p1 <- ggplot(all_data, aes(x = PCT_STL, y = salary_num, 
+                           color = MIN, text = paste("Player:", PLAYER_NAME, "<br>Season:", SEASON))) +
+  geom_point(alpha = 0.7) +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  labs(x = "Pct Steals (Hustle)", y = "Salary (USD)", color = "Minutes Played",
+       title = "Hustle Stat (Pct Steals) vs Salary") +
+  theme_minimal()
+ggplotly(p1, tooltip = "text")
+```
+
+### Plot2: Hustle Stat(Steal Percentage) vs. Minutes Played
+
+The second scatterplot, “Hustle Stat vs Minutes Played,” shifts the focus to how hustle stats relate to playing time, with point color now reflecting salary. Here, we see that players with higher hustle stats are found across the entire range of minutes played, and a visible cluster of higher-salary players occupies the middle range of hustle stats. The absence of a strong upward trend suggests that, while hustle is important, it is not the sole factor in determining playing time. In fact, some players with very high hustle stats do not necessarily play more minutes, reinforcing the notion that offensive skills, positional needs, and team strategies all play significant roles in shaping playing time.
+
+```{r}
+#| label: Viz2:Hustle Stat vs. Minutes Played
+
+p2 <- ggplot(all_data, aes(x = PCT_STL, y = MIN, 
+                           color = salary_num, text = paste("Player:", PLAYER_NAME))) +
+  geom_point(alpha = 0.7) +
+  scale_color_viridis_c(labels = scales::dollar_format()) +
+  labs(x = "Pct Steals (Hustle)", y = "Minutes Played", color = "Salary",
+       title = "Hustle Stat vs Minutes Played") +
+  theme_minimal()
+ggplotly(p2, tooltip = "text")
+```
+
+### Plot3: Minutes by Hustle Quartile
+
+The third visualization, a boxplot of “Minutes Played by Hustle Quartile,” divides all players into four groups based on their steal percentage. This view shows that the median minutes played does rise slightly with each successive hustle quartile, indicating a mild positive association between hustle and playing time. However, the substantial overlap in the distribution of minutes played across quartiles and the wide interquartile ranges highlight that hustle alone does not dictate court time. Players in the lowest hustle quartile can still play significant minutes, further emphasizing the multifaceted decision-making that coaches employ when allocating playing time.
+
+```{r}
+#| label: Viz3:Minutes by Hustle Quartile
+
+all_data <- all_data %>%
+  mutate(hustle_quartile = ntile(PCT_STL, 4))
+
+p3 <- ggplot(all_data, aes(x = factor(hustle_quartile), y = MIN)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(x = "Hustle Quartile (Pct Steals)", y = "Minutes Played",
+       title = "Minutes Played by Hustle Quartile")
+ggplotly(p3)
+```
+
+## Discussion
+
+Taken together, these findings suggest that hustle metrics like steal percentage are only one piece of the puzzle when it comes to salary and minutes in the NBA. While there appears to be a mild association between higher hustle stats and increased playing time, the link is not strong, and there is little evidence to suggest that hustle alone drives salary decisions. Instead, salaries and minutes appear to be influenced by a complex interplay of skills, experience, team needs, and market dynamics. Hustle may earn a player more opportunities, but it is not sufficient in isolation.
+
+## Limitations
+
+It is important to note several limitations in this analysis. The data is restricted to regular season performance and does not capture playoff contributions or intangible qualities that may be valued by coaching staff but are not recorded in standard statistics. The focus on steal percentage as the primary hustle metric is also a limitation, as other hustle-related stats such as deflections, loose ball recoveries, or charges drawn could provide a more holistic assessment. Additionally, NBA salary is affected by many factors outside of on-court performance, including years of experience, team salary cap situations, and free agency market conditions, which this analysis does not control for.
+
+## Future Work
+
+Future research could expand this study by incorporating a wider array of hustle metrics to capture defensive and effort-based contributions more comprehensively. Using multivariate regression could help control for confounding variables such as position, age, and offensive output, providing a clearer picture of the true impact of hustle on salary and minutes played. Exploring trends over time could reveal whether hustle metrics are becoming more valued in the era of advanced analytics. Finally, including postseason data and qualitative assessments from coaches or front offices could help further contextualize the value placed on hustle in team decision-making. This multifaceted approach would offer a deeper understanding of how effort, skill, and opportunity intersect in shaping NBA careers.

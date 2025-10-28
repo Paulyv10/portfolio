@@ -1,0 +1,345 @@
+---
+title: "HW 02 - Grammar of graphics + layers"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Paul Vermette (prv25)"
+date: today
+format: typst
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(lubridate)
+library(scales)
+theme_set(theme_minimal())
+```
+
+# Exercises
+
+## Exercise 1
+# Grammar of Graphics
+
+# # # Data: In the period between June to July of 2020, the dataset incorporated maximum cases for every state in the country, along with testing rates and number of positive cases during that time. The raw values transform into percentage figures, seemingly giving a better perspective of the data.
+
+# # # Variables: We have a combination of multiple variables which include time, which spans from June to July 2020, state names, or categorical variables, and two quantitative variables which are the testing rates and case rates valued as percentage changes from baseline.
+
+# # # Algebra: Important transformations have been applied to the data. We take the raw daily figures and turn them into percentage figures to create a percentage change from the baseline level. This approach captures daily reporting fluctuations and reveal major trends in the data. The numbers are smoothed by the rolling average approach where simple averages of 7 consecutive data points are taken.
+
+# # # Scales: Different visualization scales measure different things and this was used in the graph. For example, time was plotted on the x axis as a linear scale while percentage changes occupied the y axis as a continuous scale. It is interesting to note that each state uses their own axis scale to display their graph in every state’s chart, so that all patterns can be seen clearly no matter how far apart the figures are in value.
+
+# # # Statistics: Moving averages for weekly periods are calculated which is the main alteration made to the statistics since they help eliminate unnecessary noise. Calculating percentage change also serve as alterations to the raw counts.
+
+# # # Geometry: The main geometrical figures are the lines that are the simplest in form. They follow the trends over a certain timespan. These lines map the movements of both testing and positivity rates for the country.
+
+# # # Coordinates: Comparison across states is made easy as the little multiples sustain the same coordinate structure. The visualization uses a Cartesian coordinate system, which is distinctly displayed.
+
+# # # Aesthetics: The percentage of change for each state is encoded by the position and includes the x (time) and y (final percentage values) axis. Text Annotations show percentage values alongside the ease of color mapping such as tan/beige for case and green for testing rates.
+
+# # # Facets: Two levels of faceting are employed by the visulization which is first starts with the separation of states further divided into two groups relative to the amount of change in testing versus cases.
+
+
+
+## Exercise 2
+
+```{r}
+#| label: ex2-chunk-label
+
+library(tidyverse)
+library(lubridate)
+
+crashes <- read_csv("data/nyc-crashes.csv")
+
+crashes_processed <- crashes %>%
+  mutate(
+    datetime = mdy_hms(paste(crash_date, crash_time)),
+    time_of_day = hms(crash_time),
+    weekday = wday(datetime),
+    is_weekend = weekday %in% c(1, 7),
+    day_type = if_else(is_weekend, "Weekend", "Weekday")
+  )
+
+#color scheme and legend
+severity_colors <- c(
+  "Deadly" = "#B19CD9",         # Brighter purple
+  "Injured" = "#86E3EB",        # Brighter blue-green/teal
+  "No injuries" = "#FFE5A0"     # Brighter yellow
+)
+
+#Visualization 
+ggplot(crashes_processed, mapping = aes(x = time_of_day)) +
+  geom_density(
+    data = subset(crashes_processed, severity == "Deadly"),
+    aes(fill = "Deadly"),
+    alpha = 0.5,
+    position = "identity"
+  ) +
+  geom_density(
+    data = subset(crashes_processed, severity == "Injured"),
+    aes(fill = "Injured"),
+    alpha = 0.5,
+    position = "identity"
+  ) +
+  geom_density(
+    data = subset(crashes_processed, severity == "No injuries"),
+    aes(fill = "No injuries"),
+    alpha = 0.5,
+    position = "identity"
+  ) +
+  facet_wrap(~day_type, ncol = 1) +
+  scale_fill_manual(values = severity_colors) +
+  scale_x_time(
+    breaks = hms::as_hms(c("00:00:00", "10:00:00", "20:00:00")),
+    labels = function(x) format(x, "%H:%M:%S")
+  ) +
+  labs(
+    title = "Number of accidents throughout the day in New York City",
+    subtitle = "By day of week and severity",
+    x = "Time of day",
+    y = "Density",
+    fill = "Severity",
+    caption = "Source: NYC OpenData"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid.minor = element_line(color = "gray95"),
+    panel.grid.major = element_line(color = "gray90"),
+    strip.text = element_text(size = 12, face = "plain"),
+    plot.title = element_text(size = 14, face = "plain"),
+    legend.position = "right"
+  )
+```
+
+## Exercise 3
+#                    ###  critique 
+
+# The visualization contains multiple effective design elements that, as mentioned above, increase its communicative effectiveness. The faceted layout distinguishes weekday and weekend patterns, making it easy for readers to analyze the variance in accident patterns’ frequencies during these times. Additionally, the color choices are masterfully made - employing a subdued palette that ascertains distinction between severity levels while avoiding colors that harshly contrast and tire the eyes. Furthermore, the plots overlapping with density graphs are semi-transparent, allowing for better illustration of various distributions at once, demonstrating how different types of accidents are prevalent during different times of the day. This strategy is superior to a simple stacked area chart, as it is more advanced in that it depicts the true shape of each distribution while still showing the relative proportions they represent.
+
+# But, the visualization feels a little too complicated and dense at times. Therefore, there are some aspects of the design that could use improvement. Many readers will struggle with the scientific notation on the y-axis (1.5e-05) because, as mentioned earlier, density values are quite abstract and requite a lot of conceptual understanding. Perhaps a measure showing relative “proportions” or some direct counts would be easier to grasp for readers. In addition, while the overlapping sections’ transparency portrays the distribution patterns effectively, it may also sometimes make it difficult to determine the exact values or comparisons between different times of the day. It is helpful to have the grid lines for reading the values, but these can probably be set to a tad less bold so that they are less distracting visually while remaining functional.
+
+# The visualization has "nailed” the prioritization of information and elements as well as their layout. The Audience is decidedly drawn in by the title as it quite literally sets the boundaries. The subtitle has served its purpose by giving the crucial context that lets the audience’s understanding from “getting it” to “ah, now I truly understand.” And the legend—oh, the legend—does precisely what the title claims and identifies what the different severity levels are without further ado. And so does the axis labeling. The overall structure, then, is certainly one of the pieces' strong points.
+
+## Exercise 4
+
+```{r}
+#| label: ex4-chunk-label
+
+library(tidyverse)
+
+perfume_data <- read_csv("data/perfume.csv")
+
+# Base theme 
+base_theme <- theme_minimal() +
+  theme(
+    panel.grid = element_line(color = "gray95"),  # Lighter grid lines
+    axis.title = element_text(size = 11),         
+    axis.text = element_text(size = 10),
+    plot.title = element_text(size = 12, hjust = 0.5),
+    legend.position = "right",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
+  )
+
+
+plot_A <- ggplot(perfume_data, aes(x = release_year, y = rating_value)) +
+  geom_point(size = 0.5) +
+  base_theme +
+  labs(title = "Plot A") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_B <- ggplot(perfume_data, aes(x = release_year, y = rating_value)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "blue", se = FALSE) +
+  base_theme +
+  labs(title = "Plot B") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_C <- ggplot(perfume_data, aes(x = release_year, y = rating_value)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "orange", 
+             method = "loess",
+             span = 0.2,  
+             fill = "orange", 
+             alpha = 0.2) +
+  base_theme +
+  labs(title = "Plot C") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_D <- ggplot(perfume_data, aes(x = release_year, y = rating_value)) +
+  geom_point(size = 0.5) +
+  geom_smooth(color = "blue", 
+             method = "loess",
+             span = 0.2,  
+             se = FALSE) +
+  base_theme +
+  labs(title = "Plot D") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_E <- ggplot(perfume_data, aes(x = release_year, y = rating_value, color = is_fruity)) +
+  geom_point(size = 0.5) +
+  geom_smooth(data = subset(perfume_data, is_fruity == "Fruity"),
+              aes(x = release_year, y = rating_value),
+              method = "loess", span = 0.2, se = FALSE,
+              color = "red", linetype = "solid") +
+  geom_smooth(data = subset(perfume_data, is_fruity == "Not Fruity"),
+              aes(x = release_year, y = rating_value),
+              method = "loess", span = 0.2, se = FALSE,
+              color = "darkturquoise", linetype = "dashed") +
+  scale_color_manual(values = c("Fruity" = "red", "Not Fruity" = "darkturquoise")) +
+  base_theme +
+  labs(title = "Plot E") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_F <- ggplot(perfume_data, aes(x = release_year, y = rating_value, color = is_fruity)) +
+  geom_point(size = 0.5) +
+  geom_smooth(se = FALSE) +
+  scale_color_manual(values = c("Fruity" = "red", "Not Fruity" = "darkturquoise")) +
+  base_theme +
+  labs(title = "Plot F") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_G <- ggplot(perfume_data, aes(x = release_year, y = rating_value)) +
+  geom_point(aes(color = is_fruity), size = 0.5) +
+  geom_smooth(method = "loess", span = 0.2, se = FALSE, color = "darkblue") +
+  scale_color_manual(values = c("Fruity" = "red", "Not Fruity" = "darkturquoise")) +
+  base_theme +
+  labs(title = "Plot G") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+
+plot_H <- ggplot(perfume_data, aes(x = release_year, y = rating_value, color = is_fruity)) +
+  geom_point(size = 0.5) +
+  scale_color_manual(values = c("Fruity" = "red", "Not Fruity" = "darkturquoise")) +
+  base_theme +
+  labs(title = "Plot H") +
+  coord_cartesian(xlim = c(1700, 2020), ylim = c(0, 10))
+
+# Arrange and display plots
+plots <- list(plot_A, plot_B, plot_C, plot_D, plot_E, plot_F, plot_G, plot_H)
+walk(plots, print)
+
+# I had major issues with the different lines. couldn't figure it out :( 
+```
+
+## Exercise 5
+
+```{r}
+#| label: ex5-chunk-label
+
+library(tidyverse)
+library(gridExtra)
+library(grid)
+
+# Create the data frames as before
+# Add direct connections from temperatures to their corresponding cities
+temperatures <- tibble::tribble(
+  ~long, ~temp, ~date, ~retreat_lat,
+  37.6, 0, "Oct 18", 55.8,    # Moscow
+  36.0, 0, "Oct 24", 55.5,    # Mojaisk
+  33.2, -9, "Nov 09", 54.9,   # Dorogobouge
+  32.0, -21, "Nov 14", 54.8,  # Smolensk
+  29.2, -11, "Nov 24", 54.4,  # Bobr
+  28.5, -20, "Nov 28", 54.3,  # Studienska
+  27.2, -24, "Dec 01", 54.5,  # Near Minsk
+  26.7, -30, "Dec 06", 54.3,  # Moiodexno
+  25.3, -26, "Dec 07", 54.7   # Wilna
+)
+
+# Main plot
+p1 <- ggplot() +
+
+  geom_path(data = troops,
+           aes(x = long, y = lat,
+               size = survivors,
+               color = direction,
+               group = group),
+           lineend = "round",
+           linejoin = "round") +
+  
+  # city labels
+  geom_text(data = cities,
+            aes(x = long, 
+                y = ifelse(position == "advance", lat + 0.2, lat - 0.2),
+                label = city),
+            size = 2.8,
+            hjust = 0.5) +
+  
+  
+  geom_segment(data = temperatures,
+              aes(x = long, xend = long,
+                  y = retreat_lat, yend = 53.0),  # Extend all the way down
+              color = "gray80",
+              size = 0.2) +
+  
+  scale_size_continuous(
+    range = c(0.5, 20),
+    guide = "none"
+  ) +
+  
+  scale_color_manual(
+    values = c("A" = "#DBC391",
+               "R" = "#000000"),
+    guide = "none"
+  ) +
+  
+  coord_fixed(ratio = 1) +
+  theme_void() +
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 0, l = 20)  # Remove bottom margin
+  ) +
+  labs(title = "Carte Figurative des pertes successives en hommes de l'Armée Française dans la campagne de Russie 1812-1813")
+
+# Temperature plot
+p2 <- ggplot(temperatures) +
+  geom_segment(aes(x = long, xend = long,
+                   y = -35, yend = temp),
+               color = "gray80",
+               size = 0.2) +
+  
+  geom_line(aes(x = long, y = temp),
+            size = 0.5) +
+  geom_point(aes(x = long, y = temp),
+             size = 1) +
+  
+  geom_text(aes(x = long, y = temp,
+                label = sprintf("%d° %s", temp, date)),
+            vjust = -0.8,
+            size = 2.5) +
+  
+  scale_x_continuous(limits = c(24, 38)) +
+  scale_y_continuous(limits = c(-35, 5)) +
+  
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_blank(),
+    axis.text = element_blank(),
+    plot.margin = margin(t = 0, r = 20, b = 20, l = 20)  # Remove top margin
+  ) +
+  labs(title = "TABLEAU GRAPHIQUE de la température en degrés du thermomètre de Réaumur au dessous de zéro.")
+
+# Combine plots with no gap
+g <- arrangeGrob(p1, p2,
+                heights = c(0.7, 0.3),
+                ncol = 1,
+                padding = unit(-1, "line"))  # Negative padding to remove gap
+
+
+grid.newpage()
+grid.draw(g)
+
+ggsave("minard_map.pdf", g, width = 12, height = 5)
+
+## I could not figure out how to connect the temperature to the rest. 
+```
+# GAI Self relection - I used CLAUDE to try to help explain some of the issues I could not find answers in our text. I still struggled terribly on exercises 4 & 5

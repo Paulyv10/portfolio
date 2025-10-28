@@ -1,0 +1,52 @@
+---
+title: "HW 05 - Effective visual design + making data maps"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Your name"
+date: today
+format: typst
+knitr:
+  opts_chunk:
+    dev: ragg_png
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(tigris)
+library(sf)
+library(scales)
+library(tidycensus)
+library(colorspace)
+library(ggthemes)
+```
+
+# Exercises
+
+## Exercise 1
+
+```{r}
+#| label: ex1
+
+
+```
+
+## Exercise 2
+
+```{r}
+#| label: ex2
+
+
+```
+
+## Exercise 3
+
+```{r}
+#| label: ex3
+
+
+```

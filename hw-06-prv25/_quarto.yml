@@ -1,0 +1,6 @@
+project:
+  title: "Homework 06"
+  output-dir: docs
+  render:
+    - "*.qmd"
+    - "!hw-06-interaction.qmd"

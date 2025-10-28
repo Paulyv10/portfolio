@@ -1,0 +1,152 @@
+---
+title: "Report"
+format: html
+---
+# Visualizing Global Spotify Trends through an Interactive Dashboard
+
+# Introduction
+
+## Objectives
+
+Music is intrinsic to life and culture across the world. It is used not only for entertainment, but also for a diverse range of applications from neuroscience, healthcare, marketing, and business intelligence. As an illustrative example, the audio attribute **valence** that measures how positive or unpleasant a tune makes someone feel is widely applied to study emotional reaction—and is being used for therapeutic purposes as a method for treating chronic pain or stress disorders.
+
+Additional musical qualities like **danceability**, **energy**, **loudness**, and **liveliness** also come into play when creating listener experience. A danceable, high energy song could be ideal for a workout playlist, but a low energy track could be chosen for relaxation or introspection purposes. Like listeners, producers, curators, and even app developers want to pair the music with a corresponding atmosphere, mood, or audience, and knowledge of these characteristics is important for them to accomplish that.
+
+Our research aims to investigate how the musical characteristics differ throughout countries and across time by building an interactive **Shiny dashboard**. With the help of this tool, the users are able to visualize:
+
+- Who are the most dominant global and regional artists or tracks?
+- How do musical characteristics shift over time and location?
+- How much alignment exists between a region’s top charts and global popularity?
+
+We seek to narrate stories of music consumption, affective tone, and cultural difference by analyzing Spotify’s Top 50 dataset using audio analytics and interactive visualization.
+
+
+## Data
+
+We worked with the **Top Spotify Songs in 73 Countries (Daily Updated)** dataset from Kaggle. This dataset has a large collection of  **over 1.9 million records** comprehensive details on Spotify rankings globally, audio features, metadata, as well as listener activity.
+
+Key variables include:
+
+- **`name`** – Track title  
+- **`artists`** – Name of the artist(s)  
+- **`country`** – Country of chart entry  
+- **`snapshot_date`** – Date of ranking  
+- **`streams`** – Number of daily streams  
+- **`danceability`, `energy`, `loudness`, `speechiness`** – Audio features (0–1 scale)  
+- **`popularity`** – Score based on Spotify's internal ranking system
+
+The geographical, musical, and temporal dimensions combined create a dataset perfectly suited to be used for data storytelling and discovery.
+
+# Justification of Approach
+
+## Dashboard Structure
+
+To support exploration, we designed the app with three interactive modules:
+
+1. **Global Overview**  
+   - View top artists or tracks by appearance or popularity  
+   - Interactive date filter  
+   - Choropleth map showing either global artist overlap or average popularity  
+
+2. **Regional Deep Dive**  
+   - Select country and time range  
+   - View top artists/tracks and a time series showing artist overlap or average popularity  
+   - Regional focus allows comparison to global patterns  
+
+3. **Audio Feature Explorer**  
+   - Filter by country, date, and up to four audio features  
+   - Explore time series trends and average values via radar charts  
+
+Each tab is fully reactive and uses **Plotly** for smooth interactivity and detailed hover insights.
+
+## Tool Selection and Learning
+
+Although we were introduced to basic Shiny concepts in class, many advanced components of our app were **self-learned**, including:
+
+- Implementing **custom date range filters**
+- **Synchronizing multiple user inputs** (e.g., country + feature + date + view) to drive reactive plots
+- Creating **combined dashboards** with sidebar filters and layouts with multiple charts
+- Developing **interactive choropleth maps** and **radar charts** with Plotly
+
+We studied external documentation, forums, and tutorials to master these advanced techniques.
+
+## Design Rationale
+
+### Choosing Metrics for Artists and Tracks
+
+One of the most important choices we made in defining our dashboard was making a distinction between how we ranked top artists and top tracks. We decided to use appearance count when ranking artists because that ensures measurement of an artist's breadth and consistency of popularity over time. Multiple artists have multiple songs or collaborate with other artists, and counting appearances more accurately tracks those artists' long term influence. 
+
+When we first used appearance count to rate tracks, we discovered that top tracks tended to have appearance frequencies that were very close together. The resulting chart yielded little contrast or information. On those grounds, we decided to use Spotify’s internal popularity score in ranking individual tracks. The score is between 0 and 100 and signifies a song's current engagement based on streaming, saving, and activity in playlists, making it more applicable for comparing separate tracks.
+
+### Visualization Choices
+
+Every one of our visualizations was chosen to enable a particular type of user question or interaction. 
+
+Top artists and top tracks are easily compared using bar charts, which enable users to see instantly who are the dominating names. With the choropleth map, we wanted to see how various countries' charts compared to global Top 50. 
+
+The map provides an answer for the question: "Which countries' top artists/tracks are in sync with global trends?" The visual fits in beautifully within our larger investigation of globalization and cultural difference within music. By displaying overlap among artist appearance or track popularity between national charts and global leaderboard, the map provides an indication of regional versus global mindedness of each country.
+
+Time-series plots enhance this exploratory process even more by enabling users to visualize trends developing over time—increasing and decreasing popularity, or changes in alignment between global and local music. 
+
+Radar charts in the Audio Feature Explorer also summarize several dimensions of music in a single overview. With this, users are able to easily take in a "shape" of an area's music over a time period and compare emotional or stylistic profiles between places.
+
+### Tab-Based Structure
+
+We structured the application into three tabs—Global Overview, Regional Deep Dive, and Audio Feature Explorer—to support distinct modes of discovery. 
+
+- **Global Overview**: enables high level pattern detection, enabling users to estimate global dominance and cross country alignment. 
+- **Regional Deep Dive**: enables users to zoom in on a single country and examine local patterns in finer detail. 
+- **Audio Feature Explorer**: changes the perspective to what music sounds like, demonstrating how features of music such as energy, speechiness, or danceability change over place and time. 
+
+The use of three tabs avoids mental overload while enabling users to easily transition among theme areas.
+
+### Flexible Date Selection
+
+As a final step, we decided to enable users to set date ranges of choice rather than being restricted to fixed Windows such as "previous 30 days" or "previous 90 days." Fixed time frames may make for easier UI design, but they are inflexible. Much of what we want to do with our analyses—notably comparing trends in music during holidays, regions, or release cycles—calls for more flexible time frames. 
+
+By making it possible for users to choose dates themselves, we are able to let users set the context for what they are interested in—an entire season, a single month, or a year long pattern. The choice indicates our design intention for crafting an exploratory tool, rather than one that is simply descriptive.
+
+# Key Insights and Outcomes
+
+Our dashboard reveals a variety of insights, including:
+
+- **Dominant Global Artists**: Bad Bunny, Kendrick Lamar, and Bruno Mars top the global charts based on appearance count.
+- **Cultural Overlap**: The artist overlap map shows that countries like the U.S. and Canada share more artists with global trends, while Brazil and Japan show stronger local preferences.
+- **Time-Shifted Audio Trends**: In the UAE, global alignment fluctuates over time—visible in the regional time series view.
+- **Feature Patterns**: Across countries, features like danceability and valence exhibit stable average values but spike periodically (e.g., in December holidays).
+
+These insights help surface how music trends reflect cultural, regional, and seasonal differences.
+
+# Limitations
+
+We recognize the following limitations:
+
+- **Dataset scope**: Includes only top charted songs; niche genres are excluded.
+- **Timeframe constraint**: Our analysis used a static snapshot, not the live updating version.
+- **Popularity ambiguity**: Spotify’s popularity metric is a black box based on saves, streams, and playlists.
+- **User learning curve**: Advanced audio terms may not be intuitive without definitions.
+
+We mitigated these by:
+
+- Using clear plot labels and tooltips
+- Offering global vs. regional comparison views
+- Selecting accessible chart types like bar and line plots
+
+# Conclusion
+
+This project combined data storytelling, interface design, and technical implementation using R, Shiny, and Plotly to deliver a comprehensive, user friendly music analytics dashboard. While we began with a foundational understanding of Shiny, many of the app’s core features—such as multi-input reactivity, choropleth mapping, radar visualization, and advanced UI layout which required independent learning and experimentation. Mastering these elements allowed us to transform raw streaming data into a compelling, explorable interface that uncovers meaningful trends in global music consumption.
+
+Throughout the project, we refined not only our technical skills but also our ability to think critically about visualization design. We learned how to structure a Shiny app around user questions, implement responsive charts with rich interactivity, and convey abstract audio features in ways that feel intuitive and engaging. The process deepened our understanding of how cultural patterns emerge through data, and how visual tools can bring those patterns to life.
+
+Our dashboard now enables users to explore questions about global dominance, local taste, and musical evolution over time. It offers flexibility in filtering and exploration while maintaining clarity through thoughtful layout and design. Ultimately, this project affirmed our belief that data visualization is not just a technical output. It’s a storytelling medium, one that invites discovery and reflection.
+
+
+## Future Work
+
+Looking ahead, there are several exciting directions in which this project could grow. A key opportunity lies in integrating real time data through the Spotify API, which would allow the dashboard to reflect the latest trends and artist movements. This would not only improve relevance but also enable users to track ongoing events such as album drops or seasonal chart shifts.
+
+We are also interested in adding a feature that allows users to upload their own playlists or compare genres, which could support more personalized or genre based exploration. Additionally, tooltips or onboarding explanations for technical audio features like "speechiness" or "valence" would make the app more accessible to general audiences.
+
+Finally, building visualizations that enable side-by-side regional comparisons. For example, showing feature trends in two countries simultaneously could enrich our analysis of globalization versus localism in music. These enhancements would turn the app from a music trend explorer into a more personalized, culturally aware storytelling engine.
+
+In its current form, the dashboard tells a compelling story about what people are listening to, where, and how it sounds. But its design leaves the door open for deeper questions and richer both technically and culturally exploration.

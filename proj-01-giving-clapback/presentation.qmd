@@ -1,0 +1,347 @@
+---
+title: Olympic Divide
+subtitle: How Geography and Physique Shape Olympic Competition
+date: 3/6/2025
+author: GivingClapback <br> Israel Davidson <br>Emma Chase <br> Paul Vermette <br>Catherine Liu
+format: revealjs
+execute:
+  fig-width: 7
+  fig-asp: 0.618
+  fig-retina: 2
+  dpi: 150
+  fig-align: center
+  out-width: 80%
+css: styles.css
+---
+
+```{r}
+#| echo: false
+#| label: load-packages-data
+
+library(tidyverse)
+library(scales)
+library(ggthemes)
+library(patchwork)
+
+olympics <- read_csv("data/olympics.csv")
+wwbi_country <- read_csv("data/wwbi_country.csv")
+```
+
+## How does Global South participation in the Olympics compare to the Global North and how does participation change during the Summer versus Winter games?
+
+------------------------------------------------------------------------
+
+```{r}
+#| label: Data Wrangling
+#| echo: false
+#Data wrangling ####
+
+#How does Global South Olympic participation compare to the Global North, and how does it vary between Summer and Winter Games?
+
+#Hard-coding names of some of the countries to their contemporary counterparts. The actual country name does not matter, only that they are accounted for and are in the right designation (global south vs global north)
+olympics$noc <- ifelse(startsWith(olympics$noc, "URS"), "RUS", olympics$noc) 
+
+olympics$noc <- ifelse(startsWith(olympics$noc, "TCH"), "CZE", olympics$noc)
+
+olympics$noc <- ifelse(startsWith(olympics$noc, "YUG"), "SRB", olympics$noc)#I know this one is controversial
+
+olympics$noc <- ifelse(startsWith(olympics$noc, "FRG"), "GER", olympics$noc)
+
+olympics$noc <- ifelse(startsWith(olympics$noc, "GDR"), "RUS", olympics$noc) #so i am listing East Germany as under "RUS", as it was a satellite state of the Soviet Union and does not have a contemporary equivalent unlike West Germany, which is currently a Western Capitalist Democracy. Had the Soviets won the Cold War, I would have changed the name of West Germany to the United States to properly reflect the geopolitical allegiances of the era.
+
+#merge dataframes
+merged_df <- merge(olympics, wwbi_country[,c("country_code", "region")], by.x = "noc", by.y = "country_code", all.x = TRUE) 
+
+# Remove rows with NA in the 'region' column
+merged_df <- merged_df %>%
+  filter(!is.na(region))
+  
+excluded_countries <- c("JPN", "KOR", "ISR", "AUS", "NZL")
+
+included_countries <- c("AZE", "KAZ", "TJK", "UZB", "TKM", "TUR", "KGZ", "RUS", "UKR", "SRB", "CZE", "ARM", "BLR", "HRV", "CYP", "GEO", "HKG", "MNE", "SGP", "SVK", "UZB","MNG")
+
+
+#create a column to classify each country as global south or global north
+merged_df <- merged_df %>%
+  mutate(
+    global_south = ifelse(
+      noc %in% included_countries, 1,
+      ifelse(region %in% c("Latin America & Caribbean", "South Asia", "Sub-Saharan Africa", "Middle East & North Africa", "East Asia & Pacific") &
+          !(noc %in% excluded_countries),1,0)
+    )
+  )
+```
+
+```{r}
+#| label: Q1 analysis - line plot
+#| echo: false
+#| fig-width: 10
+#| fig-height: 10
+
+
+# merged_df <- merged_df |>
+#   group_by(region) |>
+#   mutate(global_south = ifelse(team %in% !("Japan"),1,0))
+
+merged_df <- merged_df %>%
+    group_by(year, team) %>%
+  mutate(athlete_count = n())
+
+# Group data to count athletes per year, developing status
+athlete_counts <- merged_df %>%
+  group_by(year, global_south,season) %>%
+  summarise(athlete_count = n(), .groups = "drop") %>% 
+  mutate(global_south = factor(global_south, levels = c(0, 1), labels = c("Global North Countries", "Global South Countries")))
+  
+
+# Create the plot
+ggplot(athlete_counts, aes(x = year, y = athlete_count, 
+                           color = fct_reorder2(interaction(season, global_south), year, athlete_count), # Reorder based on year and athlete_count
+                           group = interaction(season, global_south))) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(title = "Participation of Global South vs. Global North countries in the Olympics Over Time",
+       x = "Year", y = "Number of Athletes", color = "Country Status") +
+  scale_color_manual(values = c(
+    "Summer.Global North Countries" = "#636b3d",
+    "Summer.Global South Countries" = "#f5d28c",
+    "Winter.Global North Countries" = "#4a6583",
+    "Winter.Global South Countries" = "#99b3bf"),
+  labels = c(
+    "Summer.Global North Countries" = "Global North Athletes",
+    "Summer.Global South Countries" = "Global South Athletes",
+    "Winter.Global North Countries" = "Global North Athletes",
+    "Winter.Global South Countries" = "Global South Athletes")) +
+  theme_solarized() +
+  theme(
+    plot.title = element_text(size = 10, hjust = 0.5, color = "#5a6363"),
+    legend.position = "top",
+    legend.title = element_blank(), 
+    legend.text = element_text(color = "#5a6363")
+  ) +
+  scale_x_continuous(limits = c(1890, 2020), breaks = seq(1890, 2020, by = 12)) +
+  facet_wrap(vars(season))
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| label: Q2 Analysis - Proportional Analysis
+#| echo: false
+#| fig-width: 10
+#| fig-height: 10
+
+# Compute total athletes per year
+total_athletes_per_year <- athlete_counts %>%
+  group_by(year) %>%
+  summarise(total_athletes = sum(athlete_count))
+
+# Merge to calculate proportion
+athlete_counts_two <- athlete_counts %>%
+  left_join(total_athletes_per_year, by = "year") %>%
+  mutate(proportion = athlete_count / total_athletes,
+         year=fct_rev(factor(year)))
+
+
+summer_filt <- athlete_counts_two |>
+  filter(season== "Summer")
+
+winter_filt <- athlete_counts_two |>
+  filter(season== "Winter")
+
+summer_plot <- summer_filt |>
+ggplot(aes(x = athlete_count, y = year, fill = as.factor(global_south))) +
+  geom_bar(stat = "identity", position = "fill") +  # Normalize bars to 100%
+  labs(
+      x = "", y = "", fill = "") +
+  scale_x_continuous(labels = scales::percent) +  
+  theme_solarized() +
+  theme(
+    plot.title = element_text(hjust=0.2), 
+    axis.text.x = element_text(hjust = 1),
+    legend.position = "top",
+    legend.text = element_text(color = "#5a6363")
+    ) +
+  scale_fill_manual(values = c("#636b3d", "#f5d28c"), labels = c("Global North Countries", "Global South Countries")) +
+  facet_wrap(vars(season)) +
+    guides(
+    fill = guide_legend(reverse = TRUE)
+  )
+
+
+winter_plot <- winter_filt |>
+ggplot(aes(x = athlete_count, y = year, fill = as.factor(global_south))) +
+  geom_bar(stat = "identity", position = "fill") +  # Normalize bars to 100%
+  labs(
+       x = "Proportion of Countries", y = "", fill = "") +
+  scale_x_continuous(labels = scales::percent) +  
+  theme_solarized() +
+  theme(
+    plot.title = element_text(hjust=0.2), 
+    axis.text.x = element_text(hjust = 1, color = "#5a6363"), 
+    axis.title.x = element_text(hjust = -0.4, color = "#5a6363"),
+    legend.position = "top",
+    legend.justification = c(0.5, 0), 
+    legend.text = element_text(color = "#5a6363")
+    ) +
+  scale_fill_manual(values = c("#4a6583","#ddf4ff"), labels = c("Global North Countries", "Global South Countries")) +
+  facet_wrap(vars(season)) +
+  guides(
+    fill = guide_legend(reverse = TRUE)
+  )
+
+(summer_plot*winter_plot)+plot_annotation(
+  title = "Proportion of Athletes in the Global South versus Global North",
+  caption = "Data Source:120 years of Olympic history: athletes and results by rgriffin, Worldwide Bureaucracy Index",
+  theme = theme(plot.title =element_text(face = "bold",hjust = 0.5,
+  size = 12,color="#373d3d",margin = margin(t=17,b=0,r=0,l=0)),
+                plot.background = element_rect(fill="#fdf6e3"))
+)
+
+```
+
+## What is the weight distribution in Olympic medal winners in contact sports, and do these factors differ between male and female athletes?
+
+```{r}
+#| label: oylmpic-data-cleaning
+#| echo: false
+contact_sports<-c("Basketball","Water Polo","Hockey","Football","Rugby Sevens",
+                    "Ice Hockey","Speed Skating")
+order_sports<-c("Basketball","Football","Rugby Sevens",
+                "Water Polo","Field Hockey","Ice Hockey","Speed Skating")
+
+filtered_df<-olympics|>
+  drop_na(age)|>
+  filter(medal %in% c("Gold","Silver","Bronze"),sport %in% contact_sports)|>
+  mutate(
+    height_ft= round(height/30.48,2),
+    weight_lb=round(weight*2.20462,2),
+    sport= if_else(sport=="Hockey","Field Hockey",sport),
+    sport=factor(sport,levels =order_sports )
+  )|>
+  select(sex,weight,weight_lb,height,height_ft,sport,medal)
+
+male_filt<-filtered_df|>
+  filter(sex=="M")
+
+fe_filt<-filtered_df|>
+  filter(sex=="F")
+
+```
+
+------------------------------------------------------------------------
+
+```{r}
+#| label: density-plot-weight
+#| fig-width: 12
+#| fig-height: 8
+#| echo: false
+men_den<-male_filt|>
+  ggplot(aes(x=weight_lb,fill=sport))+geom_density(alpha=0.5,show.legend = FALSE)+
+  scale_fill_viridis_d()+
+  scale_y_continuous(labels = label_percent())+
+  scale_x_continuous(limits = c(100,300),breaks = seq(100,300,25))+
+  facet_wrap(vars(sport))+
+  theme_solarized()+
+  labs(
+    y="Proportion",
+    x="Weight(lbs)",
+    title = "",
+    subtitle = "Looking at Men in Contact Sports"
+  )+
+  theme(
+    plot.subtitle=element_text(face = "italic",hjust = 0.5,size = 11),
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7),
+    axis.title.x = element_text(hjust = 1)
+  )
+
+women_den<-fe_filt|>
+  ggplot(aes(x=weight_lb,fill=sport))+geom_density(alpha=0.5,show.legend = FALSE)+
+  scale_fill_viridis_d()+
+  scale_y_continuous(labels = label_percent())+
+  scale_x_continuous(limits = c(100,300),breaks = seq(100,300,25))+
+  facet_wrap(vars(sport))+
+  theme_solarized()+
+  labs(
+    y="",
+    x="",
+    title = "",
+    subtitle = "Looking at Women in Contact Sports"
+  )+
+  theme(
+    plot.subtitle=element_text(face = "italic",hjust = 0.5,size = 11),
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7),
+    axis.title.x = element_text(hjust = 1)
+  )
+
+(men_den*women_den)+plot_annotation(
+  title = "Distribution of Olympic Medalists' Weight Proportions",
+  caption = "Data Source:120 years of Olympic history: athletes and results by rgriffin",
+  theme = theme(plot.title =element_text(face = "bold",hjust = 0.5,
+  size = 12,color="#93a1a1",margin = margin(t=17,b=0,r=0,l=0)),
+                plot.background = element_rect(fill="#fdf6e3"))
+)
+```
+
+## What is the concentration of an Athletes Height and Weight for a Given Sport
+
+------------------------------------------------------------------------
+
+```{r}
+#| label: hex-plot
+#| fig-width: 12
+#| fig-height: 8
+#| echo: false
+
+males<-ggplot(male_filt, aes(x = weight_lb, y = height_ft)) +
+  geom_hex(show.legend = FALSE) + 
+  scale_fill_viridis_c() +
+  scale_y_continuous(limits = c(4,8),n.breaks = 10)+
+  scale_x_continuous(limits = c(100,250),breaks = seq(100,250,25))+
+  labs(fill = "Count") +
+  facet_wrap(vars(sport))+
+  theme_solarized()+
+   labs(
+    y="Height (ft)",
+    x="Weight(lbs)",
+    title = "",
+    subtitle = "Looking at Men in Contact Sports"
+  )+
+  theme(
+    plot.subtitle=element_text(face = "italic",hjust = 0.5,size = 11),
+    axis.text.x = element_text(size = 7),
+    axis.text.y = element_text(size = 7),
+    axis.title.x = element_text(hjust = 1)
+  )
+
+
+females<-ggplot(fe_filt, aes(x = weight_lb, y = height_ft)) +
+  geom_hex(show.legend = FALSE) + 
+  scale_fill_viridis_c() +
+  scale_y_continuous(limits = c(4,8),n.breaks = 10)+
+  scale_x_continuous(limits = c(100,250),breaks = seq(100,250,25))+
+  labs(fill = "Count") +
+  facet_wrap(vars(sport))+
+  theme_solarized()+
+   labs(
+    y="",
+    x="",
+    title ="",
+    subtitle = "Looking at Women in Contact Sports"
+  )+
+  theme(
+    plot.subtitle=element_text(face = "italic",hjust = 0.5,size = 11),
+     axis.text.x = element_text(size = 7),
+     axis.text.y = element_text(size = 7)
+  )
+  
+(males*females)+plot_annotation(
+  title = "Hexagonal heatmap looking at Olympic Medal Winners Weight and Height",
+  caption = "Data Source:120 years of Olympic history: athletes and results by rgriffin",
+  theme = theme(plot.title =element_text(face = "bold",hjust = 0.5,
+  size = 12,color="#93a1a1",margin = margin(t=17,b=0,r=0,l=0)),
+                plot.background = element_rect(fill="#fdf6e3"))
+)
+```

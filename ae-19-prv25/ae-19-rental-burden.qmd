@@ -1,0 +1,184 @@
+---
+title: "AE 19: Increase in cost-burdened households in the United States"
+categories: 
+  - Application exercise
+execute: 
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: packages
+
+library(tidyverse)
+library(plotly)
+library(scales)
+library(colorspace)
+library(ggrepel)
+
+theme_set(theme_minimal())
+```
+
+We have already seen this semester that the cost of housing in the United States has been rising for several decades. A household is considered **cost-burdened** if they spend more than 30% of their income on housing costs.
+
+In this application exercise we will explore trends in the percentage of cost-burdened rental households in the 10 largest metropolitan statistical areas (MSAs).^[Based on population as of 2023.] The relevant data can be found in `data/msa-renters-burden.csv`.
+
+```{r}
+#| label: import-data
+
+renter_burden <- read_csv(file = "data/msa-renters-burden.csv")
+renter_burden
+```
+
+`pct_burdened` reports the percentage of renter-occupied housing units that spend 30%+ of their household income on gross rent.^[Specifically [Table B25070 from the American Community Survey](https://data.census.gov/table/ACSDT1Y2023.B25070?q=B25070:+Gross+Rent+as+a+Percentage+of+Household+Income+in+the+Past+12+Months).]
+
+# Communicating trends with a static visualization
+
+**Your turn:** While Americans face rising housing costs, the percentage of cost-burdened households has not increased uniformly across the country. Design and implement a static visualization to communicate the trends for these 10 MSAs. Ensure it can reasonably be used to identify trends specific to each MSA.
+
+```{r}
+#| label: color-code
+
+renter_burden |>
+  group_by(name) |>
+  mutate(latest_value = ifelse(year == max(year), pct_burdened, NA)) |>
+  ungroup() |>
+  mutate(name = fct_reorder(name, latest_value, .fun = max, na.rm = TRUE)) |>
+  # plot
+  ggplot(aes(x = year, y = pct_burdened, color = name)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  scale_color_discrete_qualitative(palette = "Dark 3") +
+  scale_y_continuous(labels = label_percent(), 
+                    limits = c(0.35, 0.65),
+                    breaks = seq(0.35, 0.65, 0.05)) +
+  scale_x_continuous(breaks = seq(2013, 2023, 2)) +
+  labs(title = "Percentage of Cost-Burdened Rental Households in 10 Largest US Metro Areas",
+       subtitle = "2013-2023",
+       x = "Year",
+       y = "Percentage of Rental Households Spending 30%+ of Income on Rent",
+       color = "Metropolitan Area") +
+  geom_text_repel(
+    data = renter_burden |> filter(year == max(year)),
+    aes(label = name),
+    nudge_x = 0.5,
+    direction = "y",
+    hjust = 0,
+    segment.size = 0.2,
+    segment.color = "grey50",
+    size = 3
+  ) +
+  guides(color = "none") +
+  theme(
+    plot.title = element_text(face = "bold", size = 12),
+    plot.subtitle = element_text(size = 10),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_blank(),
+    plot.margin = margin(t = 10, r = 20, b = 10, l = 10)
+  )
+
+```
+
+# Communicating trends with an interactive visualization
+
+**Your turn:** Design and implement an interactive visualization to communicate the trends for these 10 MSAs. Ensure it can reasonably be used to identify trends specific to each MSA. Leverage interactive components to reduce clutter in the visualization and effectively utilize interactivity.
+
+::: callout-tip
+
+## Suggestions include
+
+- Customizing the tooltip to provide better-formatted information
+- `highlight()` trend lines to draw attention to selected MSA
+- Implement the plot purely using `plot_ly()`
+
+:::
+
+```{r}
+#| label: interactive-graph
+
+plot_data <- renter_burden |>
+  mutate(
+    hover_text = paste0(
+      "<b>", name, "</b><br>",
+      "Year: ", year, "<br>",
+      "Cost-burdened households: ", scales::percent(pct_burdened, accuracy = 0.1)
+    )
+  )
+
+msa_colors <- colorspace::qualitative_hcl(10, palette = "Dark 3")
+
+plot_data |>
+  plot_ly(
+    x = ~year,
+    y = ~pct_burdened,
+    color = ~name,
+    colors = msa_colors,
+    text = ~hover_text,
+    hoverinfo = "text",
+    type = "scatter",
+    mode = "lines+markers",
+    line = list(width = 1.5),
+    marker = list(size = 6)
+  ) |>
+  layout(
+    title = list(
+      text = "Percentage of Cost-Burdened Rental Households (2013-2023)",
+      font = list(size = 16)
+    ),
+    xaxis = list(
+      title = "Year",
+      tickvals = seq(2013, 2023, 2),
+      zeroline = FALSE
+    ),
+    yaxis = list(
+      title = "Percentage of Rental Households",
+      tickformat = ".0%",
+      range = c(0.35, 0.65),
+      tickvals = seq(0.35, 0.65, 0.05),
+      zeroline = FALSE
+    ),
+    hovermode = "closest",
+    hoverlabel = list(
+      bgcolor = "white",
+      bordercolor = "darkgray",
+      font = list(size = 12)
+    ),
+    legend = list(
+      title = list(text = "Metropolitan Area"),
+      itemsizing = "constant"
+    )
+  ) |>
+  highlight(
+    on = "plotly_hover",
+    off = "plotly_doubleclick",
+    selected = list(
+      line = list(width = 4),
+      marker = list(size = 8)
+    ),
+    defaultValues = "",
+    persistent = FALSE
+  ) |>
+  layout(
+    annotations = list(
+      list(
+        x = 1,
+        y = 0,
+        xref = "paper",
+        yref = "paper",
+        text = "Hover over lines to highlight; Double-click to reset",
+        showarrow = FALSE,
+        font = list(size = 10),
+        xanchor = "right",
+        yanchor = "auto"
+      )
+    )
+  ) |>
+  config(
+    displayModeBar = TRUE,
+    modeBarButtonsToRemove = list(
+      "zoomIn2d", "zoomOut2d", "autoScale2d",
+      "toggleSpikelines", "hoverCompareCartesian"
+    ),
+    displaylogo = FALSE
+  )
+```

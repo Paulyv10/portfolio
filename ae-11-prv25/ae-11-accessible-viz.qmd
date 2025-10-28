@@ -1,0 +1,146 @@
+---
+title: "AE 11: Accessible data visualizations"
+author: Paul Vermette
+format: html
+---
+
+```{r}
+#| label: packages
+#| message: false
+#| cache: false
+
+library(tidyverse)
+library(readxl)
+library(scales)
+
+theme_set(theme_minimal())
+```
+
+# Import nursing data
+
+```{r}
+#| label: import-data
+
+nurses <- read_csv("data/nurses.csv") |> janitor::clean_names()
+
+# subset to three states
+nurses_subset <- nurses |>
+  filter(state %in% c("California", "New York", "North Carolina"))
+
+# unemployment data
+unemp_state <- read_excel(
+  path = "data/emp-unemployment.xls",
+  sheet = "States",
+  skip = 5
+) |>
+  pivot_longer(
+    cols = -c(Fips, Area),
+    names_to = "Year",
+    values_to = "unemp"
+  ) |>
+  rename(state = Area, year = Year) |>
+  mutate(year = parse_number(year)) |>
+  filter(state != "United States") |>
+  # calculate mean unemp rate per state and year
+  group_by(state, year) |>
+  summarize(unemp_rate = mean(unemp, na.rm = TRUE))
+```
+
+# Developing alternative text
+
+## Bar chart
+
+**Demonstration:** The following code chunk demonstrates how to add alternative text to a bar chart. The alternative text is added to the chunk header using the `fig-alt` chunk option. The text is written in Markdown and can be as long as needed. Note that `fig-cap` is not the same as `fig-alt`.
+
+```{r}
+#| label: nurses-bar
+#| echo: fenced
+#| fig-cap: "Total employed Registered Nurses"
+#| fig-alt: "The figure is a bar chart titled 'Total employed Registered
+#| Nurses' that displays the numbers of registered nurses in three states
+#| (California, New York, and North Carolina) over a 20 year period, with data
+#| recorded in three time points (2000, 2010, and 2020). In each state, the
+#| numbers of registered nurses increase over time. The following numbers are
+#| all approximate. California started off with 200K registered nurses in 2000,
+#| 240K in 2010, and 300K in 2020. New York had 150K in 2000, 160K in 2010, and
+#| 170K in 2020. Finally North Carolina had 60K in 2000, 90K in 2010, and 100K
+#| in 2020."
+
+nurses_subset |>
+  filter(year %in% c(2000, 2010, 2020)) |>
+  ggplot(aes(x = state, y = total_employed_rn, fill = factor(year))) +
+  geom_col(position = "dodge") +
+  scale_fill_viridis_d(option = "E", guide = guide_legend(position = "inside")) +
+  scale_y_continuous(labels = label_number(scale = 1 / 1000, suffix = "K")) +
+  labs(
+    x = "State", y = "Number of Registered Nurses", fill = "Year",
+    title = "Total employed Registered Nurses"
+  ) +
+  theme(
+    legend.background = element_rect(fill = "white", color = "white"),
+    legend.position.inside = c(0.85, 0.75)
+  )
+```
+
+## Line chart
+
+**Your turn:** Add alternative text to the following line chart.
+
+::: callout-tip
+Remember the major components of alt text:
+
+- `CHART TYPE`: It's helpful for people with partial sight to know what chart type it is and gives context for understanding the rest of the visual.
+- `TYPE OF DATA`: What data is included in the chart? The x and y axis labels may help you figure this out.
+- `REASON FOR INCLUDING CHART`: Think about why you're including this visual. What does it show that’s meaningful. There should be a point to every visual and you should tell people what to look for.
+- `Link to data source`: Don't include this in your alt text, but it should be included somewhere in the surrounding text.
+:::
+
+```{r}
+#| label: nurses-line
+#| fig-alt: "The figure is a line chart titled 'Annual median salary of Registered Nurses' that shows the trends in annual median salaries for registered nurses in three states (California, New York, and North Carolina) from 1998 to 2020. The y-axis shows annual median salary in thousands of dollars, and the x-axis shows years. California consistently has the highest median salary, starting around $50K in 1998 and rising steadily to approximately $120K by 2020. New York follows as the second highest, beginning at about $45K in 1998 and increasing to roughly $90K by 2020. North Carolina has the lowest median salary of the three states, starting at approximately $40K in 1998 and growing to around $70K by 2020. All three states show an upward trend over the entire period, with California demonstrating the steepest increase, particularly after 2010. The gap between California and the other two states widens noticeably over time."
+
+nurses_subset |>
+  ggplot(aes(x = year, y = annual_salary_median, color = state)) +
+  geom_line(show.legend = FALSE) +
+  geom_text(
+    data = nurses_subset |> filter(year == max(year)),
+    aes(label = state), hjust = 0, nudge_x = 1,
+    show.legend = FALSE
+  ) +
+  scale_color_viridis_d(option = "C", end = 0.5) +
+  scale_y_continuous(labels = label_currency(scale = 1/1000, suffix = "K")) +
+  labs(
+    x = "Year", y = "Annual median salary", color = "State",
+    title = "Annual median salary of Registered Nurses"
+  ) +
+  coord_cartesian(clip = "off") +
+  theme(
+    plot.margin = margin(0.1, 0.9, 0.1, 0.1, "in")
+    )
+```
+
+## Scatterplot
+
+**Your turn:** Add alternative text to the following scatterplot.
+
+```{r}
+#| label: nurses-scatter
+#| fig-alt: "The figure is a scatterplot titled 'Median hourly wage of Registered Nurses (1998-2018)' with the subtitle 'By state.' It shows the relationship between unemployment rate (x-axis, shown as percentages) and median hourly wage (y-axis, shown in dollars) across different states. Each point represents a state in a particular year. The points are scattered across unemployment rates ranging approximately from 2% to 14% and hourly wages from about $20 to $60. There appears to be no strong correlation between unemployment rate and median hourly wage for registered nurses, suggesting that nurse wages may be relatively independent of general economic conditions as measured by unemployment. The points form a roughly horizontal cloud, indicating that regardless of unemployment rates, the median hourly wages of registered nurses stay within a certain range, with most falling between $25 and $45 per hour."
+
+nurses |>
+  left_join(unemp_state) |>
+  drop_na(unemp_rate) |>
+  ggplot(aes(x = unemp_rate, y = hourly_wage_median)) +
+  geom_point(size = 2, alpha = .5) +
+  scale_x_continuous(labels = label_percent(scale = 1)) +
+  scale_y_continuous(labels = label_currency()) +
+  labs(
+    x = "Unemployment rate", y = "Median hourly wage",
+    title = "Median hourly wage of Registered Nurses (1998-2018)",
+    subtitle = "By state"
+  )
+```
+
+# Acknowledgments
+
+- Exercise drawn from [STA 313: Advanced Data Visualization](https://vizdata.org/slides/14/14-accessibility)

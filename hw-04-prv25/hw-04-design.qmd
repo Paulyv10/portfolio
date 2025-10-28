@@ -1,0 +1,513 @@
+---
+title: "HW 04 - Design + details"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Paul Vermette"
+date: today
+format: typst
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+library(scales)
+library(palmerpenguins)
+library(rvest)
+library(colorspace)
+library(ggtext)
+```
+
+# Exercises
+
+## Exercise 1
+
+```{r}
+#| label: ex1
+
+p <- ggplot(
+  data = penguins,
+  mapping = aes(
+    x = flipper_length_mm,
+    y = body_mass_g,
+    color = species
+  )
+) +
+  geom_point(
+    mapping = aes(
+      shape = species
+    ),
+    size = 3,
+    alpha = 0.8
+  ) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(labels = label_number(scale_cut = cut_si(unit = "mm"))) +
+  scale_y_continuous(labels = label_number(scale_cut = cut_si(unit = "g"))) +
+  labs(
+    title = "Penguin size, Palmer Station LTER",
+    subtitle = "Flipper length and body mass for Adelie, Chinstrap, and Gentoo Penguins",
+    x = "Flipper length",
+    y = "Body mass",
+    color = "Penguin species",
+    shape = "Penguin species"
+  )
+
+p + theme(
+  panel.background = element_rect(fill = "pink"),
+  plot.background = element_rect(fill = "yellow"),
+  panel.grid.major = element_line(color = "red", size = 2),
+  panel.grid.minor = element_line(color = "blue", size = 1),
+  axis.title.x = element_text(size = 20, family = "Comic Sans MS", color = "green"),
+  axis.title.y = element_text(size = 20, family = "Papyrus", color = "purple"),
+  plot.title = element_text(size = 30, family = "Impact", color = "orange"),
+  plot.subtitle = element_text(size = 25, family = "Courier", color = "brown")
+)
+```
+
+## Exercise 2
+
+```{r}
+#| label: ex2
+#| echo: fenced
+
+# Theme
+elegant_theme <- theme_minimal() +
+  theme(
+
+    text = element_text(family = "Roboto", color = "#2b2b2b"),
+    plot.title = element_text(size = 16, face = "bold", margin = margin(b = 10)),
+    plot.subtitle = element_text(size = 12, color = "#4f4f4f", margin = margin(b = 20)),
+    
+
+    axis.title = element_text(size = 11, face = "bold"),
+    axis.text = element_text(size = 10),
+    axis.ticks = element_line(color = "#757575", size = 0.3),
+    axis.line = element_line(color = "#757575", size = 0.3),
+    
+   
+    panel.grid.major = element_line(color = "#e0e0e0", size = 0.2),
+    panel.grid.minor = element_blank(),
+    
+
+    legend.title = element_text(face = "bold", size = 10),
+    legend.text = element_text(size = 9),
+    legend.background = element_rect(fill = "white", color = NA),
+    legend.key = element_rect(fill = "white", color = NA),
+    legend.position = "right",
+    
+    # background
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA),
+    
+    plot.margin = margin(15, 15, 15, 15)
+  )
+
+# Color scheme
+species_colors <- c("Adelie" = "#1b9e77", "Chinstrap" = "#d95f02", "Gentoo" = "#7570b3")
+
+# penguin plot! 
+beautiful_penguin_plot <- ggplot(
+  data = penguins,
+  mapping = aes(
+    x = flipper_length_mm,
+    y = body_mass_g,
+    color = species
+  )
+) +
+
+  geom_point(
+    mapping = aes(
+      shape = species
+    ),
+    size = 2.5,
+    alpha = 0.85
+  ) +
+  # Trend lines
+  geom_smooth(method = "lm", se = TRUE, alpha = 0.2, linewidth = 0.8) +
+  scale_x_continuous(
+    labels = label_number(scale_cut = cut_si(unit = "mm")),
+    breaks = seq(170, 230, by = 10),
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+  scale_y_continuous(
+    labels = label_number(scale_cut = cut_si(unit = "g")),
+    breaks = seq(3000, 6000, by = 500),
+    expand = expansion(mult = c(0.01, 0.01))
+  ) +
+  scale_color_manual(values = species_colors) +
+
+  labs(
+    title = "Relationship Between Flipper Length and Body Mass in Penguins",
+    subtitle = "Data from three penguin species at Palmer Station LTER, Antarctica",
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)",
+    color = "Penguin Species",
+    shape = "Penguin Species",
+    caption = "Source: Palmer Station Long Term Ecological Research Network"
+  ) +
+ 
+  elegant_theme +
+
+  annotate(
+    "text", 
+    x = 220, 
+    y = 3200, 
+    label = "Gentoo penguins tend to be\nlarger with longer flippers", 
+    size = 3, 
+    fontface = "italic",
+    color = species_colors["Gentoo"]
+  ) +
+  annotate(
+    "text", 
+    x = 185, 
+    y = 5500, 
+    label = "Positive correlation between\nflipper length and body mass\nacross all species", 
+    size = 3, 
+    fontface = "italic",
+    color = "#2b2b2b"
+  )
+
+# alt text 
+
+alt_text <- "This scatterplot shows the relationship between flipper length (in millimeters, on x-axis) and body mass (in grams, on y-axis) for three penguin species from Palmer Station, Antarctica. Each species is represented by a different color and shape: Adelie (teal circles), Chinstrap (orange triangles), and Gentoo (purple squares). The plot reveals a clear positive correlation between flipper length and body mass across all three species. Gentoo penguins generally have both longer flippers (210-230mm) and higher body mass (5000-6000g) compared to Adelie and Chinstrap penguins, which have similar ranges (flipper length 170-210mm, body mass 3000-4500g). Trend lines for each species show consistent positive slopes, indicating that within each species, penguins with longer flippers tend to have higher body mass. The data points for each species form distinct clusters with minimal overlap, showing clear morphological differences between the species."
+
+
+print(beautiful_penguin_plot)
+```
+
+## Exercise 3
+
+```{r}
+#| label: ex3
+
+
+# source: https://github.com/MokoSan/FSharpAdvent/blob/master/Data/WordsByCharacter.csv
+LOTRWordsByCharacter <- read_csv(file = "data/LOTRWordsByCharacter.csv")
+
+
+lotr_words_summarized <- summarize(
+  group_by(LOTRWordsByCharacter, Character, Race),
+  n_words = sum(Words)
+)
+
+# Fellowship filter
+fellowship <- filter(lotr_words_summarized, 
+                    Character %in% c("Frodo", "Sam", "Merry", "Pippin", "Gandalf", "Aragorn", "Legolas", "Gimli", 
+                                    "Boromir"))
+
+
+clean_theme <- theme_minimal() +
+  theme(
+    panel.background = element_rect(fill = "white", color = NA),
+    axis.line = element_line(color = "gray50"),
+    axis.line.x = element_line(color = "gray50"),
+    axis.line.y = element_line(color = "gray50"),
+    panel.grid.major = element_line(color = "gray90"),
+    panel.grid.minor = element_blank()
+  )
+
+# base plot w/ better styling
+base_plot <- ggplot(fellowship, aes(x = Character, y = n_words, fill = Race)) +
+  geom_col() +
+  clean_theme +
+  labs(
+    x = "Character (race)",
+    y = "Number of words spoken",
+    title = "Number of words spoken by members of the Fellowship of the Ring",
+    subtitle = "Data from the Lord of the Rings trilogy of books"
+  )
+
+# Sol 1: Rotate the labels
+solution1 <- base_plot +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(caption = "Solution 1: Rotated text for better readability")
+
+solution1_description <- "Solution 1: Rotated Text
+Advantages:
+- Maintains the original chart structure and organization
+- Simple to implement with minimal code changes
+- Preserves all original data relationships and comparisons
+- Keeps all data points in a single view for easy comparison
+
+Disadvantages:
+- Text at an angle can be more difficult to read than horizontal text
+- May still cause issues if character names are very long
+- Doesn't solve the fundamental spacing problem
+- Rotated text can make the visualization look less polished" 
+
+# Sol 2: 
+fellowship_abbrev <- fellowship |>
+  mutate(CharacterAbbrev = case_when(
+    Character == "Gandalf" ~ "Gan",
+    Character == "Aragorn" ~ "Ara",
+    Character == "Boromir" ~ "Bor",
+    Character == "Legolas" ~ "Leg",
+    Character == "Gimli" ~ "Gim",
+    Character == "Frodo" ~ "Fro",
+    Character == "Sam" ~ "Sam",
+    Character == "Merry" ~ "Mer",
+    Character == "Pippin" ~ "Pip",
+    TRUE ~ Character  # Default case for safety
+  ))
+
+solution2 <- ggplot(fellowship_abbrev, aes(x = CharacterAbbrev, y = n_words, fill = Race)) +
+  geom_col() +
+  clean_theme +
+  labs(
+    x = "Character (abbreviation)",
+    y = "Number of words spoken",
+    title = "Number of words spoken by members of the Fellowship of the Ring",
+    subtitle = "Data from the Lord of the Rings trilogy of books",
+    caption = "Solution 2: Abbreviated names (Gan=Gandalf, Ara=Aragorn, etc.)"
+  )
+
+solution2_description <- "Solution 2: Abbreviated Names
+Advantages:
+- Maintains horizontal text which is easier to read
+- Preserves the original chart structure and layout
+- Reduces space requirements without changing the visualization type
+- Keeps all data in a single consolidated view
+
+Disadvantages:
+- Requires readers to learn abbreviations, adding cognitive load
+- May be confusing for readers unfamiliar with the characters
+- Less immediate recognition of character names
+- Could be problematic for characters with similar abbreviated names"
+
+# Sol 3: Flip coords
+solution3 <- base_plot +
+  coord_flip() +
+  labs(
+    x = "Character",
+    y = "Number of words spoken",
+    caption = "Solution 3: Flipped coordinates for better label visibility"
+  )
+
+solution3_description <- "Solution 3: Flipped Coordinates
+Advantages:
+- Provides ample space for character names without abbreviation
+- Text remains horizontal and perfectly readable
+- Naturally emphasizes the differences in word counts (the primary comparison)
+- No information loss compared to the original visualization
+
+
+Disadvantages:
+- Changes the conventional orientation of bar charts
+- May affect perception of data (horizontal bars can be perceived differently)
+- Takes up more vertical space in the document
+- Might make precise value comparison slightly more difficult"
+
+# Sol 4: Facet by race
+solution4 <- ggplot(fellowship, aes(x = Character, y = n_words)) +
+  geom_col(aes(fill = Race)) +
+  facet_grid(. ~ Race, scales = "free_x") +
+  clean_theme +
+  theme(strip.text = element_text(face = "bold")) +
+  labs(
+    x = "Character",
+    y = "Number of words spoken",
+    title = "Number of words spoken by members of the Fellowship of the Ring",
+    subtitle = "Data from the Lord of the Rings trilogy of books",
+    caption = "Solution 4: Faceting by race allows more space for labels"
+  )
+
+solution4_description <- "Solution 4: Faceting by Race
+Advantages:
+- Adds an additional dimension of organization by race
+- Reduces the number of labels per facet, eliminating overlap
+- Facilitates within-race comparisons
+- Creates a more structured visual hierarchy
+
+Disadvantages:
+- Makes direct comparison between all characters slightly harder
+- Uses more total space in the document
+- Reduces the width available for each individual bar
+- May overemphasize race as a grouping variable if that's not the primary focus"
+
+print(solution1) 
+print(solution2)
+print(solution3) 
+print(solution4)
+```
+
+## Exercise 4
+
+```{r}
+#| label: ex4
+
+library(tidyverse)
+library(colorspace)  
+library(ggtext)      
+
+
+egot_winners <- tibble(
+  name = c("Richard Rodgers", "Helen Hayes", "Rita Moreno", "John Gielgud", 
+           "Audrey Hepburn", "Marvin Hamlisch", "Jonathan Tunick", "Mel Brooks", 
+           "Mike Nichols", "Whoopi Goldberg", "Scott Rudin", "Robert Lopez", 
+           "Andrew Lloyd Webber", "Tim Rice", "John Legend", "Alan Menken", 
+           "Jennifer Hudson", "Viola Davis", "Elton John", "Benj Pasek", 
+           "Justin Paul"),
+  
+  emmy_year = c(1962, 1953, 1977, 1991, 1993, 1995, 1982, 1967, 2001, 2002, 
+                2012, 2008, 2018, 2018, 2018, 2020, 2021, 2023, 2024, 2018, 
+                2018),
+  
+  grammy_year = c(1960, 1976, 1972, NA, NA, 1974, NA, 1998, NA, 1985, NA, 
+                  2012, 1986, 1980, 2006, 1996, 2009, NA, 1987, 2018, 2018),
+  
+  oscar_year = c(1945, 1932, 1961, 1981, 1953, 1973, NA, 1968, NA, 1990, 
+                 2008, 2014, NA, 1994, 2015, 1989, 2007, 2017, 1995, 2017, 
+                 2017),
+  
+  tony_year = c(1950, 1947, 1975, 1948, NA, NA, 1977, 2001, 2005, NA, 
+                1994, 2004, 1980, 1980, 2017, NA, NA, 2010, 2000, 2017, 2017)
+)
+
+# metrics WITHOUT filtering
+egot_winners <- egot_winners |>
+  rowwise() |>
+  mutate(
+    first_year = min(c(emmy_year, grammy_year, oscar_year, tony_year), na.rm = TRUE),
+    last_year = max(c(emmy_year, grammy_year, oscar_year, tony_year), na.rm = TRUE),
+    years_to_egot = last_year - first_year,
+    has_emmy = !is.na(emmy_year),
+    has_grammy = !is.na(grammy_year),
+    has_oscar = !is.na(oscar_year),
+    has_tony = !is.na(tony_year),
+    is_egot = has_emmy & has_grammy & has_oscar & has_tony
+  ) |>
+  ungroup()
+
+
+ordered_names <- c("Richard Rodgers", "Helen Hayes", "Rita Moreno", "John Gielgud", 
+                   "Audrey Hepburn", "Marvin Hamlisch", "Jonathan Tunick", "Mel Brooks", 
+                   "Mike Nichols", "Whoopi Goldberg", "Scott Rudin", "Robert Lopez", 
+                   "Andrew Lloyd Webber", "Tim Rice", "John Legend", "Alan Menken", 
+                   "Jennifer Hudson", "Viola Davis", "Elton John", "Benj Pasek", 
+                   "Justin Paul")
+
+# Convert name
+egot_winners$name <- factor(egot_winners$name, levels = rev(ordered_names))
+
+# Convert to long format
+egot_long <- egot_winners |>
+  pivot_longer(
+    cols = ends_with("_year"),
+    names_to = "award",
+    values_to = "year"
+  ) |>
+  filter(!is.na(year)) |>
+  mutate(
+    award = str_remove(award, "_year"),
+    award = str_to_title(award)
+  )
+
+
+award_offset <- function(award, year) {
+  offset <- case_when(
+    award == "Emmy" ~ 0 + 9/12,
+    award == "Grammy" ~ 0 + 1/12,
+    award == "Oscar" ~ 0 + 2/12,
+    award == "Tony" ~ 0 + 6/12,
+    TRUE ~ 0
+  )
+  return(year + offset)
+}
+
+
+egot_long <- egot_long |>
+  mutate(year_offset = award_offset(award, year))
+
+last_awards <- egot_winners |>
+  rowwise() |>
+  mutate(
+  
+    last_award = case_when(
+      last_year == emmy_year ~ "Emmy",
+      last_year == grammy_year ~ "Grammy",
+      last_year == oscar_year ~ "Oscar",
+      last_year == tony_year ~ "Tony",
+      TRUE ~ NA_character_
+    )
+  ) |>
+  select(name, last_year, last_award) |>
+  ungroup()
+
+# Left join
+egot_long <- egot_long |>
+  left_join(last_awards, by = c("name")) |>
+  mutate(
+    # Flag if this award is the person's most recent
+    is_last_award = (award == last_award) & (year == last_year)
+  )
+
+e
+dark2_colors <- qualitative_hcl(4, palette = "Dark 2")
+
+# color vector
+award_colors <- setNames(dark2_colors, c("Emmy", "Grammy", "Oscar", "Tony"))
+
+
+subtitle_text <- paste0(
+  "Only 21 people have earned an ",
+  "<span style='color:", award_colors["Emmy"], ";'>Emmy</span>, ",
+  "<span style='color:", award_colors["Grammy"], ";'>Grammy</span>, ",
+  "<span style='color:", award_colors["Oscar"], ";'>Oscar</span>, and ",
+  "<span style='color:", award_colors["Tony"], ";'>Tony</span> award"
+)
+
+
+p <- ggplot() +
+  geom_segment(
+    data = egot_winners,
+    aes(x = first_year, xend = last_year, y = name, yend = name),
+    color = "gray80", linewidth = 0.5
+  ) +
+ 
+  geom_point(
+    data = egot_long |> filter(!is_last_award),
+    aes(x = year_offset, y = name, color = award),
+    size = 4, alpha = 0.85
+  ) +
+  # Add special points
+  geom_point(
+    data = egot_long |> filter(is_last_award),
+    aes(x = year_offset, y = name, fill = award),
+    size = 4, shape = 21, color = "black", stroke = 1
+  ) +
+  scale_x_continuous(
+    limits = c(1930, 2025),
+    breaks = c(1950, 1975, 2000, 2025),
+    expand = c(0.01, 0.01)
+  ) +
+  scale_color_manual(values = award_colors) +
+  scale_fill_manual(values = award_colors) +
+  labs(
+    title = "Towards the EGOT",
+    subtitle = subtitle_text,
+    x = NULL,
+    y = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(family = "Roboto Condensed"),
+    legend.position = "none",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.x = element_line(color = "gray95"),
+    panel.grid.major.y = element_line(color = "gray95"),
+    plot.title = element_text(face = "bold", size = 16),
+    plot.subtitle = element_markdown(),
+    plot.margin = margin(20, 20, 20, 20),
+    aspect.ratio = 0.7
+  )
+
+
+p
+
+
+# Gen AI self reflection 
+# I used Claude to explain aspects of my code for me when I didn't remember use cases. 
+```

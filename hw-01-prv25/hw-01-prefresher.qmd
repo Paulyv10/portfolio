@@ -1,0 +1,228 @@
+---
+title: "HW 01 - Prefresher"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Paul Vermette (prv25)"
+date: today
+format: typst
+execute:
+  warning: false
+  cache: true
+---
+
+# Setup
+
+Load packages:
+
+```{r}
+#| label: load-packages
+renv::restore()
+library(tidyverse)
+library(googlesheets4)
+library(janitor)
+library(scales)
+
+```
+
+# Exercise 1
+
+```{r}
+#| label: Import from Google Sheets 
+#| 
+# Authenticate Google Sheets
+gs4_auth()
+
+# Import the data
+sheet_url <- "https://docs.google.com/spreadsheets/d/1Rxz5IFE16bA9pPAY5_B5LhitvPDIlYrlMwp7fmszwOA/edit?gid=0#gid=0"
+data_raw <- read_sheet(sheet_url, col_types = "c")
+colnames(data)
+
+data_clean <- data_raw %>%
+  clean_names()
+
+colnames(data_clean)
+
+data_clean <- data_clean %>% 
+  select(year, 
+         title,
+         author,
+         publisher,
+         date,
+         description,
+         style, 
+         "man_partially_unclothed",
+         "woman_partially_unclothed",
+         "has_poc") %>% 
+  mutate( date = as.character(date),                    
+    date = str_trim(date),                         
+    date = str_remove_all(date, "[^0-9/-]"),      
+    date = if_else( str_detect( date, "/"),
+      suppressWarnings( as.character( mdy( date))),   
+      suppressWarnings( as.character( ymd( date)))    
+    ),
+    
+    date = if_else(
+      is.na( date ),
+      suppressWarnings( as.character( dmy( date))),   
+      date                                        
+    )
+  )
+
+glimpse(data_clean)
+```
+
+# Exercise 2
+
+```{r}
+#| label: ex-2
+
+library(dplyr)
+library(tidyr)
+
+annual_percentages <- data_clean %>%
+  group_by(year) %>%
+  summarise(
+    Raunchiness = mean((man_partially_unclothed == TRUE | woman_partially_unclothed == TRUE), na.rm = TRUE) * 100,
+    Illustrated = mean(style == "Illustrated", na.rm = TRUE) * 100,
+    Racial_Diversity = mean(has_poc == TRUE, na.rm = TRUE) * 100
+  ) %>% 
+  pivot_longer(cols = c(Raunchiness, Illustrated, Racial_Diversity),
+               names_to = "category",
+               values_to = "percentage")
+
+ggplot(annual_percentages, aes(x = as.numeric(year), y = percentage, fill = category)) +
+  geom_col() +
+  facet_wrap(~ category) +
+  labs(
+    title = "Percentage of Romance novel covers featuring...",
+    x = "Year",
+    y = element_blank()
+  ) +
+  scale_x_continuous(
+    breaks = seq(2010, max(as.numeric(annual_percentages$year)), by = 5), # Show every 5 years
+    limits = c(2010, max(as.numeric(annual_percentages$year))) # Ensure 2010 is included
+  )  +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal() 
+```
+
+# Exercise 3
+
+```{r}
+#| label: ex-3
+data_eating_animals <- read.csv("data/eating-animals.csv")
+
+
+data_eating_animals2 <- data_eating_animals %>% 
+    rename("Not sure" = Not.sure) %>% 
+   mutate(
+    Acceptable_num = as.numeric(sub("%", "", Acceptable)),
+    Animal = fct_reorder(Animal, Acceptable_num)) %>%
+
+  pivot_longer(cols = c(Acceptable, Unacceptable, `Not sure`), 
+              names_to = "response", 
+              values_to = "percentage") %>% 
+  
+# Reversing the order
+  mutate(
+    percentage = as.numeric(sub("%", "", percentage)),
+    response = fct_rev(factor(response, levels = c("Acceptable", "Not sure", "Unacceptable"), ordered = TRUE)
+  )
+)
+ggplot(data_eating_animals2, 
+       aes(x = percentage, 
+           y = Animal,   
+           fill = response)) +
+
+  geom_col() +
+  labs(
+    title = "Which animals do Americans think are morally acceptable\nto eat under normal circumstances?",
+    x = "",
+    y = ""
+  ) +
+  scale_fill_manual(
+    name = NULL,
+    values = c(
+      "Acceptable" = "#90EE90",
+      "Not sure" = "#87CEEB",
+      "Unacceptable" = "#9370DB" 
+            
+  
+    )
+  ) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 10, face = "bold"),
+    axis.text.y = element_text(size = 10),
+    legend.position = "top",
+    plot.caption = element_text(hjust = 1, size = 9)
+  )
+
+```
+
+# Exercise 4
+
+```{r}
+#| label: ex-4
+commissary_data <- read.csv("data/commissary-prices.csv")
+
+commissary_data <- commissary_data %>%
+  mutate(price = as.numeric(str_remove(price, "\\$"))) # used double slash because $ is used in R already.
+
+ramen_prices <- commissary_data %>%
+  filter(str_detect(tolower(product_type), "ramen")) %>%
+  group_by(state) %>%
+  summarize(avg_price = mean(price, na.rm = TRUE)) %>%
+  arrange(desc(avg_price)) %>%
+  slice_head(n = 10)
+
+ramen_analysis <- commissary_data %>%
+  filter(str_detect(tolower(product_type), "ramen")) %>%
+  mutate(price_clean = as.numeric(str_remove(price, "\\$"))) %>%
+  group_by(state) %>%
+  summarize(
+    average_price = mean(price_clean, na.rm = TRUE)
+  ) %>%
+
+  arrange(desc(average_price)) %>%
+  slice_head(n = 10)
+
+print(ramen_analysis)
+
+
+```
+
+# Exercise 5
+
+```{r}
+#| label: ex-5
+deodorant_analysis <- commissary_data %>%
+  filter(str_detect(tolower(product_type), "deodorant")) %>%
+  mutate(price_clean = as.numeric(str_remove(price, "\\$"))) %>%
+  group_by(state) %>%
+  summarize(
+    min_price = min(price_clean, na.rm = TRUE)
+  ) %>%
+  arrange(min_price) %>%
+  slice_head(n = 10)
+
+print(deodorant_analysis)
+
+```
+
+# Exercise 6
+
+```{r}
+#| label: ex-6
+lady_speedstick_count <- commissary_data %>%
+  filter(str_detect(tolower(description), "lady speed stick")) %>%
+  distinct(state) %>%
+  nrow()
+
+cat("Number of states selling Lady Speed Stick products:", lady_speedstick_count, "\n")
+
+```
+
+# GAI self-reflection
+
+# I used GAI on Claude, with its 'exploratory' section to tell me how to think about my code. I am a new data student, so a lot is unknown to me. The greatest challenge I recognized after consistent failure with visual display was that I did not consider how to properly put the sections in the proper order. I couldn't figure out the legend for the death of me. The last 3 sections were relatively easy compared to 2 & 3. I absolutely need to practice more on visualizations in R. 

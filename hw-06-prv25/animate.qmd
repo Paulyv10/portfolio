@@ -1,0 +1,6 @@
+---
+title: HW 06 - Animate a chart
+author: Your name
+date: today
+format: html
+---

@@ -1,0 +1,61 @@
+```         
+```
+
+---
+title: "Loudness"
+format: html
+editor: visual
+---
+
+```{r}
+library(shiny)
+library(shinydashboard)
+library(plotly)
+library(tidyverse)
+
+spotify_data <- read_csv("data/universal_top_spotify_songs.csv.gz", show_col_types = FALSE)
+
+
+ui <- dashboardPage(
+  dashboardHeader(title = "Spotify Loudness Trends"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Loudness & Duration", tabName = "loudness", icon = icon("sliders-h"))
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "loudness",
+              h2("Loudness vs. Duration"),
+              p("Explore how song duration relates to loudness."),
+              plotlyOutput("loudnessPlot")
+      )
+    )
+  )
+)
+
+
+server <- function(input, output) {
+  output$loudnessPlot <- renderPlotly({
+    plot_data <- spotify_data %>%
+      filter(!is.na(loudness), !is.na(duration_ms)) %>%
+      sample_n(1000)
+
+    plot_ly(plot_data,
+            x = ~duration_ms, y = ~loudness,
+            type = "scatter", mode = "markers",
+            text = ~paste("Track:", name, "<br>Artist:", artists),
+            marker = list(size = 6, color = 'rgba(0, 150, 200, 0.6)')) %>%
+      layout(title = "Track Loudness vs Duration",
+             xaxis = list(title = "Duration (ms)"),
+             yaxis = list(title = "Loudness (dB)"))
+  })
+}
+
+
+shinyApp(ui, server)
+
+
+```
+
+## 

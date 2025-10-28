@@ -1,0 +1,262 @@
+---
+title: "AE 04: Adjusting scales for World Bank indicators"
+author: Paul Vermette
+format: html
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: packages
+
+library(tidyverse)
+library(viridis)
+library(scales)
+
+options(scipen = 999)   # avoid printing in scientific notation
+theme_set(theme_minimal()) # different default theme
+```
+
+# Data: World economic measures
+
+The [World Bank](https://data.worldbank.org/) publishes a rich and detailed set of socioeconomic indicators spanning several decades and dozens of topics. Here we focus on a few key indicators for the year 2021.
+
+- `gdp_per_cap` - [GDP per capita (current USD)](https://data.worldbank.org/indicator/NY.GDP.PCAP.CD)
+- `pop` - [Total population](https://data.worldbank.org/indicator/SP.POP.TOTL)
+- `life_exp` - [Life expectancy at birth, total (years)](https://data.worldbank.org/indicator/SP.DYN.LE00.IN)
+- `female_labor_pct` - [Labor force, female (% of total labor force)](https://data.worldbank.org/indicator/SL.TLF.TOTL.FE.ZS)
+- `income_level` - [Classification of economies based on national income levels](https://datahelpdesk.worldbank.org/knowledgebase/articles/906519-world-bank-country-and-lending-groups)
+
+The data is stored in `wb-indicators.rds`. To import the data, use the `read_rds()` function.
+
+```{r}
+#| label: import-data
+#| message: false
+
+world_bank <- read_rds("data/wb-indicators.rds")
+```
+
+# Part 1: Transforming axes
+
+Is there a relationship between a country's per capita GDP and life expectancy? Let's explore this relationship using a scatterplot.
+
+```{r}
+#| label: gdp-life-scatter
+
+ggplot(data = world_bank, mapping = aes(x = gdp_per_cap, y = life_exp)) +
+  geom_point() +
+  labs(
+    title = "Countries with higher GDP tend to have higher life expectancy",
+    x = "GDP per capita (current USD)",
+    y = "Life expectancy at birth (years)"
+  )
+```
+
+Seems like there is an association, but the relationship is not linear. Let's try a log transformation on the $x$-axis to see if that helps.
+
+**Your turn:** Log-transform the $x$-axis by mutating the original column prior to graphing.
+
+::: callout-note
+
+By default, `log()` computes **natural logarithms** (base-$e$). To compute base-10 logarithms, use `log10()`.
+
+:::
+
+```{r}
+#| label: log-transform-raw
+
+world_bank_logged <- world_bank %>% 
+  mutate(log_gdp = log(gdp_per_cap))
+
+ggplot(data = world_bank_logged, mapping = aes(x = log_gdp, y = life_exp)) +
+  geom_point() +
+  labs(
+    title = "Countries with higher GDP tend to have higher life expectancy",
+    x = "GDP per capita (current USD)",
+    y = "Life expectancy at birth (years)"
+  )
+```
+
+**Your turn:** Now log-transform the $x$-axis by using the original per capita GDP measure and an appropriate `scale_x_*()` function.
+
+```{r}
+#| label: log-transform-scale
+
+ggplot(data = world_bank, mapping = aes(x = gdp_per_cap, y = life_exp)) +
+  geom_point() +
+  scale_x_log10() +
+  labs(
+    title = "Countries with higher GDP tend to have higher life expectancy",
+    x = "GDP per capita (current USD, log scale)",
+    y = "Life expectancy at birth (years)"
+  )
+```
+
+**Your turn:** Which is more interpretable, and why?
+
+*Add response here*
+
+# Part 2: Customize scales
+
+Let's consider the relationship between female labor participation and per capita GDP. We'll use the `income_level` variable to color the points and provide context on the overall wealth of the countries.^[Note that the income level is based on the GNI per capita, which is strongly correlated with GDP per capita, but not exactly the same.]
+
+## Step 1: Base plot
+
+First, let's generate a color-coded scatterplot with a single smoothing line.
+
+```{r}
+#| label: base-plot
+ggplot(data = world_bank, mapping = aes(x = female_labor_pct, y = gdp_per_cap)) +
+  geom_point(mapping = aes(color = income_level)) +
+  geom_smooth(se = FALSE)
+```
+
+## Step 2: Your turn
+
+Now, let's modify the scales to make the chart more readable. Log-transform the $y$-axis and format the labels so they are explicitly identified as percentages and currency.
+
+```{r}
+#| label: format-scales
+
+library(tidyverse)
+library(scales)
+
+ggplot(data = world_bank, 
+       mapping = aes(x = female_labor_pct, y = gdp_per_cap)) +
+  geom_point(mapping = aes(color = income_level)) +
+  geom_smooth(se = FALSE) +
+  scale_y_log10(labels = label_dollar(scale = 1/1000, suffix = "K")) +
+  scale_x_continuous(labels = percent_format(scale = 1)) +
+  scale_color_viridis_d(end = 0.8) +
+  labs(
+    title = "Relationship between female labor participation and GDP",
+    x = "Female labor force participation",
+    y = "GDP per capita (USD, log scale)",
+    color = "Level of Income",
+    shape = "Level of Income"
+  )
+
+```
+
+## Step 3: Your turn
+
+Add human-readable labels for the title, axes, and legend.
+
+```{r}
+#| label: add-labels
+
+library(tidyverse)
+library(scales)
+
+ggplot(data = world_bank, 
+       mapping = aes(x = female_labor_pct, y = gdp_per_cap)) +
+  geom_point(mapping = aes(color = income_level)) +
+  geom_smooth(se = FALSE) +
+  scale_y_log10(labels = label_dollar(scale = 1/1000, suffix = "K")) +
+  scale_x_continuous(labels = percent_format(scale = 1)) +
+  scale_color_viridis_d(end = 0.8) +
+  labs(
+    title = "Countries with higher female labor participation tend to be wealthier",
+    subtitle = "Data from World Bank Development Indicators, 2019",
+    x = "Percentage of women participating in the labor force",
+    y = "GDP per capita (thousands of USD)",
+    color = "Country Income Category",
+    caption = "Source: World Bank"
+  )
+```
+
+## Step 4: Your turn
+
+Use the {viridis} color palette for `income_level`.
+
+::: callout-tip
+
+The bright yellow at the end of the palette is hard on the eyes. You can condense the hue at which the color map ends using the `end` argument to the appropriate `scale_color_*()` function.
+
+:::
+
+```{r}
+#| label: viridis
+
+library(tidyverse)
+library(scales)
+
+ggplot(data = world_bank, 
+       mapping = aes(x = female_labor_pct, y = gdp_per_cap)) +
+  geom_point(mapping = aes(color = income_level)) +
+  geom_smooth(se = FALSE) +
+  scale_y_log10(labels = label_dollar(scale = 1/1000, suffix = "K")) +
+  scale_x_continuous(labels = percent_format(scale = 1)) +
+  scale_color_viridis_d(end = 0.8) +
+  labs(
+    title = "Countries with higher female labor participation tend to be wealthier",
+    subtitle = "Data from World Bank Development Indicators, 2019",
+    x = "Percentage of women participating in the labor force",
+    y = "GDP per capita (thousands of USD)",
+    color = "Country Income Category",
+    caption = "Source: World Bank"
+  )
+```
+
+## Step 5: Your turn
+
+Double-encode the `income_level` variable by using both color and shape to represent the same variable. Condense the guides so you use a single legend.
+
+```{r}
+#| label: double-encode
+
+library(tidyverse)
+library(scales)
+
+ggplot(data = world_bank, 
+       mapping = aes(x = female_labor_pct, y = gdp_per_cap, 
+                    color = income_level, shape = income_level)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  scale_y_log10(labels = label_dollar(scale = 1/1000, suffix = "K")) +
+  scale_x_continuous(labels = percent_format(scale = 1)) +
+  scale_color_viridis_d(end = 0.8) +
+  guides(color = guide_legend(title = "Country Income Category"),
+         shape = guide_legend(title = "Country Income Category")) +
+  labs(
+    title = "Countries with higher female labor participation tend to be wealthier",
+    subtitle = "Data from World Bank Development Indicators, 2019",
+    x = "Percentage of women participating in the labor force",
+    y = "GDP per capita (thousands of USD)",
+    caption = "Source: World Bank"
+  )
+```
+
+## Step 6: Your turn
+
+It's annoying that the order of the values in the legend are opposite from how the income levels are ordered in the chart. Reverse the order of the values in the legend so they correspond to the ordering on the $y$-axis.
+
+```{r}
+#| label: reverse-legend
+
+library(tidyverse)
+library(scales)
+
+# First, let's identify the desired order of income levels, from highest to lowest
+income_order <- c("High income", "Upper middle income", "Lower middle income", "Low income")
+
+ggplot(data = world_bank, 
+       mapping = aes(x = female_labor_pct, y = gdp_per_cap, 
+                    color = income_level, shape = income_level)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  scale_y_log10(labels = label_dollar(scale = 1/1000, suffix = "K")) +
+  scale_x_continuous(labels = percent_format(scale = 1)) +
+  scale_color_viridis_d(end = 0.8, limits = income_order) +
+  scale_shape_discrete(limits = income_order) +
+  labs(
+    title = "Countries with higher female labor participation tend to be wealthier",
+    subtitle = "Data from World Bank Development Indicators, 2019",
+    x = "Percentage of women participating in the labor force",
+    y = "GDP per capita (thousands of USD)",
+    color = "Country Income Category",
+    shape = "Country Income Category",
+    caption = "Source: World Bank"
+  )
+```

@@ -1,0 +1,107 @@
+---
+title: Project proposal
+author: "giving-vibe"
+format: html
+---
+
+```{r}
+#| label: load-packages
+#| message: false
+library(tidyverse)
+```
+
+## Dataset
+
+Our dataset is called “[**The Great American Coffee Taste Test**](https://github.com/rfordatascience/tidytuesday/tree/main/data/2024/2024-05-14#the-great-american-coffee-taste-test).” “World champion barista” James Hoffmann and the coffee company, Cometeer, had hosted the “Great American Coffee Taste Test” on Youtube in October 2023. Viewers answered survey questions about 4 coffees they ordered from Cometeer for the tasting. Lastly, Data blogger Robert McKeon Aloe analyzed the data in November 2023.
+
+The dataset has **57 variables and 4,042 entries**. 
+
+-   There are **demographic** variables including age, gender, ethnicity, education level, employment status, number of children and political affiliation. 
+
+-   The dataset also explores **coffee consumption habits** like number of cups of coffee consumed daily, typical locations, brewing methods, places to purchase coffee, favorite coffee drink, typical additions to coffee, type of dairy, and type of sweetener.
+
+-   It also briefly explores **coffee preferences** like preferred style, strength, roast level, and caffeine level.
+
+-   Furthermore, participants were asked to evaluate their **coffee expertise and tasting evaluation levels** on numeric scales. They self-rated their expertise and then rated the bitterness, acidity, personal preference, and notes of each of the 4 coffees. They were also asked which was their favorite coffee out of the 4 options.
+
+-   Participants were also asked about their **work and lifestyle** like whether they work from home, their reasons for drinking coffee, whether they like the taste of coffee, and know about the coffee's origin.
+
+-   Lastly, the survey asked about their **coffee spending and values** like monthly spending on coffee, highest price paid as well as maximum price willing to pay for a cup of coffee, perceived value of coffee purchased at a cafe, money spent perceived value on purchased coffee equipment.
+
+The reason for choosing this dataset is because it is a comprehensive source of information about coffee consumption habits, preferences, and demographic factors. Having such a wide variety of questions allows us to align with the project’s intention to answer two distinct questions without overlapping variables. Furthermore, it includes both numerical and categorical variables, which aligns with our intention to work with both types of variables. To add on, the dataset provides a mix of subjective ratings and objective characteristics, making it ideal for exploring different patterns in consumer behavior. Lastly, each member of the group has a personal connection to coffee, making the dataset appealing to explore and learn from.
+
+```{r}
+coffee_survey <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-05-14/coffee_survey.csv')
+```
+
+## Questions
+
+The first question we want to answer is **How does coffee spending vary based on demographic and lifestyle factors?** We are interested in learning about how spending patterns change across different groups, influenced by factors like work habits, and personal values. The variables involved are:
+
+Categorical (Demographics & Coffee Preferences):
+
+-   gender (self-identified gender)
+
+-   ethnicity_race (self-identified ethnicity)
+
+-   education_level (highest level of education completed)
+
+-   employment_status (current work status)
+
+-   wfh (whether the participant works from home or in person)
+
+-   style (general coffee preference before the tasting)
+
+Numerical (Age and Spending):
+
+-   age
+
+-   most_paid (highest price ever paid for coffee)
+
+-   most_willing (maximum price willing to pay)
+
+-   total_spend (monthly coffee spending)
+
+The second question to answer is **How do coffee preferences relate to where people typically drink coffee (home, work, or elsewhere)?** We want to understand how people's coffee preferences differ depending on where they drink their coffee. The variables involved are:
+
+Categorical (Coffee Preferences & Location):
+
+-   where_drink (Where do you typically drink coffee? Home, work, elsewhere)
+
+-   style (Before today's tasting, which of the following best describes what kind of coffee you like?)
+
+-   dairy (What kind of dairy do you add?)
+
+-   sweetener (What kind of sugar or sweetener do you add?)
+
+-   wfh (Do you work from home or in person?)
+
+Numerical (Preferences):
+
+-   strength (How strong do you like your coffee?)
+
+-   roast_level (What roast level of coffee do you prefer?)
+
+-   expertise (How would you rate your own coffee expertise?)
+
+-   total_spend (How much do you typically spend on coffee each month?)
+
+We will not be connecting the first question to the second question. Specifically, we will not be discussing how multiple demographic factors interact with coffee preferences and drinking location. Instead, we will be strictly focusing on spending and demographic factors for the first question and coffee preferences and drinking location for the second question.
+
+## Analysis plan
+
+For the first question, the plan is to group participants by demographic categories and compare their coffee spending habits. We will analyze whether factors like education level, employment status, and working from home influence spending. We can also explore if coffee preferences, such as preferred style, are associated with higher or lower spending. Some specific methods are:
+
+-   Descriptive Statistics: We will calculate means and medians for total_spend across demographic groups to identify trends and differences between groups. For example, one group may consistently spend more than another, suggesting a possible connection between lifestyle factors and coffee expenses.
+
+-   Comparative Analysis: We are considering boxplots and violin plots be used to visualize spending distributions across different categories (e.g., employment_status, wfh, education_level). This might reveal differences in spending behavior, such as one group having a wider range of coffee expenditures or distinct spending patterns.
+
+For the second question, we will group participants by where they typically drink their coffee (home, work, elsewhere) and compare their preferences for coffee strength, roast level. We can also analyze how different locations influence the addition of dairy and sweeteners. Additionally, we will examine if wfh (whether people work from home or in person) influences their coffee preferences or spending habits, as well as whether coffee expertise or monthly coffee spending correlates with where people prefer to drink their coffee. Specifically:
+
+-   Descriptive Statistics: We will compute summary statistics like the mean and median for strength, roast_level, and expertise by where_drink categories. This will help identify patterns, like whether people who drink coffee at home prefer a lighter roast compared to those who drink at work.
+
+-   Comparative Analysis: We will use bar charts to compare categorical preferences. For example, we could compare preferences for dairy and sweetener across different drinking locations.
+
+We do acknowledge that the dataset contains many variables. We will be filtering the dataset into two for the first and second questions. Within these, some entries may have missing or inconsistent data. We will be handling these by dropping the entries that do not have every variable we require for the first or second question. Since our dataset is relatively large with 4,042 entries, we expect that removing rows with missing values will not significantly impact our results.
+
+We also understand that correlation does not mean causation. As a result, our analysis will focus on finding patterns rather than proving one thing causes another. For example, if people who work from home spend more on coffee, it doesn’t necessarily mean that working from home is the reason—they might have different incomes or habits that affect their spending. To keep our findings accurate, we will use statistics to look at relationships between factors while being careful not to assume one thing directly causes another.

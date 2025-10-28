@@ -1,0 +1,19 @@
+---
+title: "Extra credit"
+subtitle: "INFO 3312/5312 - Spring 2025"
+author: "Your name (netID)"
+date: today
+format: typst
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+
+library(tidyverse)
+```
+
+# Extra credit

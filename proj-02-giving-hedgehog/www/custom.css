@@ -1,0 +1,141 @@
+/* --- General --- */
+/* --- General --- */
+body {
+  /* Keep Avenir font if desired, with fallbacks */
+  font-family: 'Avenir', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.95rem;
+  /* background-color: #fff; /* Base background is usually white/light */
+}
+
+/* --- Navbar --- */
+.navbar {
+  border-bottom: 1px solid #dee2e6; /* Lighter border for light theme */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Softer shadow */
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #1DB954 !important; /* Spotify green still works */
+}
+
+/* Style for the navbar icon */
+.navbar-icon {
+  height: 30px; /* Keep the desired height */
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+/* --- Sidebar --- */
+.well { /* Styling the sidebarPanel */
+  background-color: #f8f9fa; /* Use a very light grey for slight contrast */
+  border: 1px solid #dee2e6; /* Standard light border color */
+  border-radius: 6px;
+  padding: 15px;
+  box-shadow: none; /* Remove any lingering shadow effects if needed */
+}
+
+.sidebarPanel h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #dee2e6; /* Lighter separator line */
+  padding-bottom: 8px;
+  color: #2780E3; /* Use Cosmo's primary blue color for heading */
+  /* color: #1DB954; */ /* Or keep Spotify green if preferred */
+}
+
+/* Reduce margin below form groups for compactness */
+.form-group {
+  margin-bottom: 10px;
+}
+
+/* Style muted text in sidebars */
+.text-muted {
+  font-size: 0.85em;
+  margin-top: 15px;
+  color: #6c757d; /* Standard muted text color for light themes */
+}
+
+/* --- Main Panel --- */
+.mainPanel h3 {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  color: #343a40; /* Darker text color for headings */
+}
+
+/* --- Plot Placeholders --- */
+.plot-placeholder {
+  border: 1px dashed #ced4da; /* Lighter dashed border */
+  background-color: #f8f9fa; /* Light background, similar to sidebar */
+  padding: 40px 20px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #6c757d; /* Standard muted text color */
+  border-radius: 6px;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-style: italic;
+}
+
+/* --- Input Controls --- */
+/* Style select inputs */
+.selectize-input {
+  background-color: #eee !important;
+  border-color: #555 !important;
+  color: #eee !important;
+  border-radius: 4px;
+}
+.selectize-dropdown-content .option {
+  color: #eee;
+}
+.selectize-dropdown-content .active {
+  background-color: #1DB954 !important; /* Spotify green for selection hover */
+  color: #fff !important;
+}
+
+/* Style date range inputs */
+.form-control[readonly] { /* Often used for date inputs */
+  background-color: #333 !important;
+  border-color: #555 !important;
+  color: #eee !important;
+}
+
+/* Common */
+.tab-pane {
+  position: relative;
+}
+
+/* Forward (Rightward tab switch) */
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-100%); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Backward (Leftward tab switch) */
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(100%); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-100%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Bind animations to classes */
+.slide-out-left {
+  animation: slideOutLeft 0.8s forwards;
+}
+.slide-in-right {
+  animation: slideInRight 0.8s forwards;
+}
+.slide-out-right {
+  animation: slideOutRight 0.8s forwards;
+}
+.slide-in-left {
+  animation: slideInLeft 0.8s forwards;
+}

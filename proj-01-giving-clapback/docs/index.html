@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="GivingClapback   Israel Davidson  Emma Chase   Paul Vermette  Catherine Liu">
+
+<title>Project title – Project 01 (INFO 3312/5312)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Project 01 (INFO 3312/5312)</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page"> 
+<span class="menu-text">Write-up</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./proposal.html"> 
+<span class="menu-text">Proposal</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./presentation.html"> 
+<span class="menu-text">Presentation</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#how-does-global-south-participation-in-the-olympics-compare-to-the-global-north-and-how-does-participation-change-during-the-summer-versus-winter-games" id="toc-how-does-global-south-participation-in-the-olympics-compare-to-the-global-north-and-how-does-participation-change-during-the-summer-versus-winter-games" class="nav-link" data-scroll-target="#how-does-global-south-participation-in-the-olympics-compare-to-the-global-north-and-how-does-participation-change-during-the-summer-versus-winter-games">How does Global South participation in the Olympics compare to the Global North and how does participation change during the Summer versus Winter games?</a>
+  <ul class="collapse">
+  <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1">Introduction</a></li>
+  <li><a href="#approach" id="toc-approach" class="nav-link" data-scroll-target="#approach">Approach</a></li>
+  <li><a href="#analysis" id="toc-analysis" class="nav-link" data-scroll-target="#analysis">Analysis</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a></li>
+  </ul></li>
+  <li><a href="#how-do-height-and-weight-influence-the-likelihood-of-winning-an-olympic-medal-in-contact-sports-and-do-these-factors-differ-between-male-and-female-athletes" id="toc-how-do-height-and-weight-influence-the-likelihood-of-winning-an-olympic-medal-in-contact-sports-and-do-these-factors-differ-between-male-and-female-athletes" class="nav-link" data-scroll-target="#how-do-height-and-weight-influence-the-likelihood-of-winning-an-olympic-medal-in-contact-sports-and-do-these-factors-differ-between-male-and-female-athletes">How do height and weight influence the likelihood of winning an Olympic medal in contact sports, and do these factors differ between male and female athletes?</a>
+  <ul class="collapse">
+  <li><a href="#introduction-2" id="toc-introduction-2" class="nav-link" data-scroll-target="#introduction-2">Introduction</a></li>
+  <li><a href="#approach-1" id="toc-approach-1" class="nav-link" data-scroll-target="#approach-1">Approach</a></li>
+  <li><a href="#analysis-1" id="toc-analysis-1" class="nav-link" data-scroll-target="#analysis-1">Analysis</a></li>
+  <li><a href="#discussion-1" id="toc-discussion-1" class="nav-link" data-scroll-target="#discussion-1">Discussion</a></li>
+  </ul></li>
+  <li><a href="#presentation" id="toc-presentation" class="nav-link" data-scroll-target="#presentation">Presentation</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Project title</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>GivingClapback <br> Israel Davidson <br>Emma Chase <br> Paul Vermette <br>Catherine Liu </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+Attaching package: 'scales'
+
+
+The following object is masked from 'package:purrr':
+
+    discard
+
+
+The following object is masked from 'package:readr':
+
+    col_factor</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load data here</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>olympics <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/olympics.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 271116 Columns: 15
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (10): name, sex, team, noc, games, season, city, sport, event, medal
+dbl  (5): id, age, height, weight, year
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>wwbi_country <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/wwbi_country.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 202 Columns: 29
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (21): country_code, short_name, table_name, long_name, x2_alpha_code, cu...
+dbl  (7): national_accounts_base_year, national_accounts_reference_year, sys...
+lgl  (1): vital_registration_complete
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+</div>
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+</section>
+<section id="how-does-global-south-participation-in-the-olympics-compare-to-the-global-north-and-how-does-participation-change-during-the-summer-versus-winter-games" class="level2">
+<h2 class="anchored" data-anchor-id="how-does-global-south-participation-in-the-olympics-compare-to-the-global-north-and-how-does-participation-change-during-the-summer-versus-winter-games">How does Global South participation in the Olympics compare to the Global North and how does participation change during the Summer versus Winter games?</h2>
+<section id="introduction-1" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-1">Introduction</h3>
+<p>In this analysis, we aim to understand the prevalence of Global North countries in the Olympic games versus the Global South countries in the Olympic games. The Global North are countries which typically, but not exclusively, sit above the equator. Such countries include the United States, Canada, the countries of Europe, Japan, South Korea, Taiwan, Australia, New Zealand, and Israel. The Global South includes countries of Latin America, Africa, the Middle East (excluding Israel), and Asia and Oceania, excluding the aforementioned countries (Britannica.com). We have also used NORRAG’s data on the definition of Global North and Global South countries to double check where we have placed these countries.</p>
+<p>To answer this question, we used an additional data set which contains location information of all countries. We recognize that country status, names, and existence has changed drastically over the past nearly 130 year lifetime of the Olympics, but have chosen to use the contemporary data set available to us. To help remedy at least some of these problems, we have hand-picked some notable countries that are no longer in existence, such as the Soviet Union, Czechoslovakia, Yugoslavia, and East and West Germany.<br>
+<br>
+We also need several columns from both data sets. The columns from the Olympics data set are noc (country code) and season, while the columns we need from the Worldwide Bureaucracy Index are the country code and the region. We merged these two data sets based on the country code, taking care to rename major extinct countries to their contemporary counterpart. We were able to designate a country as “Global North” versus “Global South” almost exclusively through the “region” column from WWBI. However, we also took care to comb through each country using NORRAG’s data as a guide, taking care to include Global South countries listed as being from the region “Europe and Central Asia” in the correct designation.</p>
+<p>We needed to utilize the season column, as the difference between Global South or Global North participants playing in the Summer Games versus the Winter Games is significant and should be separated.</p>
+</section>
+<section id="approach" class="level3">
+<h3 class="anchored" data-anchor-id="approach">Approach</h3>
+<p>The two plots we are utilizing to explore this question is a line chart and a proportional bar chart. These visualizations will help us compare the number of athletes from the two categories and the proportion of athletes competing in the Olympic games. Both plots share the same colors: green and yellow for summer and light blue and dark blue for winter. We took care to check on color-blindness.com to make sure our charts were still legible with this color choice, as green and yellow can be a challenging color contrast for some colorblind readers. Since our color choice has a large difference in value (light versus dark), our charts are still legible for everyone.<br>
+<br>
+<strong>Line Chart:</strong> Our line chart, split between the Summer and Winter games helps us understand how the raw number of athletes from the Global South and Global North have changed over time. Since the Olympic games occur every four years for each season, we wanted to see the date points for each game. We added a geom_point() function to reflect the dates listed.</p>
+<p><strong>Proportional Bar Chart:</strong> In order to visualize the proportional relationship between athletes in the Global South versus Global North, we use a bar chart which compares the relative presence of Global South versus Global North players in each Olympic game. This chart also helps us compare the Winter versus Summer Games, as the raw number of athletes competing in the Winter Games are far fewer than the Summer Games. We also experimented with comparing the relative number of countries competing in the Games, but realized later on that this comparison is more subject to the change in the political organization of countries. For example, the breakup of the Soviet Union and the Baltic nations in the early 1990’s created more countries, despite there being a similar number of eligible athletes.</p>
+</section>
+<section id="analysis" class="level3">
+<h3 class="anchored" data-anchor-id="analysis">Analysis</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Data wrangling ####</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Hard-coding names of some of the countries to their contemporary counterparts. The actual country name does not matter, only that they are accounted for and are in the right designation (global south vs global north)</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>olympics<span class="sc">$</span>noc <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">startsWith</span>(olympics<span class="sc">$</span>noc, <span class="st">"URS"</span>), <span class="st">"RUS"</span>, olympics<span class="sc">$</span>noc) </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>olympics<span class="sc">$</span>noc <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">startsWith</span>(olympics<span class="sc">$</span>noc, <span class="st">"TCH"</span>), <span class="st">"CZE"</span>, olympics<span class="sc">$</span>noc)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>olympics<span class="sc">$</span>noc <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">startsWith</span>(olympics<span class="sc">$</span>noc, <span class="st">"YUG"</span>), <span class="st">"SRB"</span>, olympics<span class="sc">$</span>noc)<span class="co">#I know this one is controversial</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>olympics<span class="sc">$</span>noc <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">startsWith</span>(olympics<span class="sc">$</span>noc, <span class="st">"FRG"</span>), <span class="st">"GER"</span>, olympics<span class="sc">$</span>noc)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>olympics<span class="sc">$</span>noc <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(<span class="fu">startsWith</span>(olympics<span class="sc">$</span>noc, <span class="st">"GDR"</span>), <span class="st">"RUS"</span>, olympics<span class="sc">$</span>noc) <span class="co">#so i am listing East Germany as under "RUS", as it was a satellite state of the Soviet Union and does not have a contemporary equivalent unlike West Germany, which is currently a Western Capitalist Democracy. Had the Soviets won the Cold War, I would have changed the name of West Germany to the United States to properly reflect the geopolitical allegiances of the era.</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co">#merge dataframes</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> <span class="fu">merge</span>(olympics, wwbi_country[,<span class="fu">c</span>(<span class="st">"country_code"</span>, <span class="st">"region"</span>)], <span class="at">by.x =</span> <span class="st">"noc"</span>, <span class="at">by.y =</span> <span class="st">"country_code"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove rows with NA in the 'region' column</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(region))</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>excluded_countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"JPN"</span>, <span class="st">"KOR"</span>, <span class="st">"ISR"</span>, <span class="st">"AUS"</span>, <span class="st">"NZL"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>included_countries <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"AZE"</span>, <span class="st">"KAZ"</span>, <span class="st">"TJK"</span>, <span class="st">"UZB"</span>, <span class="st">"TKM"</span>, <span class="st">"TUR"</span>, <span class="st">"KGZ"</span>, <span class="st">"RUS"</span>, <span class="st">"UKR"</span>, <span class="st">"SRB"</span>, <span class="st">"CZE"</span>, <span class="st">"ARM"</span>, <span class="st">"BLR"</span>, <span class="st">"HRV"</span>, <span class="st">"CYP"</span>, <span class="st">"GEO"</span>, <span class="st">"HKG"</span>, <span class="st">"MNE"</span>, <span class="st">"SGP"</span>, <span class="st">"SVK"</span>, <span class="st">"UZB"</span>,<span class="st">"MNG"</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#create a column to classify each country as global south or global north</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">global_south =</span> <span class="fu">ifelse</span>(</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>      noc <span class="sc">%in%</span> included_countries, <span class="dv">1</span>,</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ifelse</span>(region <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Latin America &amp; Caribbean"</span>, <span class="st">"South Asia"</span>, <span class="st">"Sub-Saharan Africa"</span>, <span class="st">"Middle East &amp; North Africa"</span>, <span class="st">"East Asia &amp; Pacific"</span>) <span class="sc">&amp;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>          <span class="sc">!</span>(noc <span class="sc">%in%</span> excluded_countries),<span class="dv">1</span>,<span class="dv">0</span>)</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-fid.height="10">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merged_df &lt;- merged_df |&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   group_by(region) |&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#   mutate(global_south = ifelse(team %in% !("Japan"),1,0))</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">&lt;-</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(year, team) <span class="sc">%&gt;%</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">athlete_count =</span> <span class="fu">n</span>())</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Group data to count athletes per year, developing status</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>athlete_counts <span class="ot">&lt;-</span> merged_df <span class="sc">%&gt;%</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year, global_south,season) <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">athlete_count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">global_south =</span> <span class="fu">factor</span>(global_south, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Global North Countries"</span>, <span class="st">"Global South Countries"</span>)))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Create the plot</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(athlete_counts, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> athlete_count, </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">color =</span> <span class="fu">fct_reorder2</span>(<span class="fu">interaction</span>(season, global_south), year, athlete_count), <span class="co"># Reorder based on year and athlete_count</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                           <span class="at">group =</span> <span class="fu">interaction</span>(season, global_south))) <span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Participation of Global South vs. Global North countries in the Olympics Over Time"</span>,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>, <span class="at">y =</span> <span class="st">"Number of Athletes"</span>, <span class="at">color =</span> <span class="st">"Country Status"</span>) <span class="sc">+</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Summer.Global North Countries"</span> <span class="ot">=</span> <span class="st">"#636b3d"</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Summer.Global South Countries"</span> <span class="ot">=</span> <span class="st">"#f5d28c"</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Winter.Global North Countries"</span> <span class="ot">=</span> <span class="st">"#4a6583"</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Winter.Global South Countries"</span> <span class="ot">=</span> <span class="st">"#99b3bf"</span>),</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Summer.Global North Countries"</span> <span class="ot">=</span> <span class="st">"Global North Athletes"</span>,</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Summer.Global South Countries"</span> <span class="ot">=</span> <span class="st">"Global South Athletes"</span>,</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Winter.Global North Countries"</span> <span class="ot">=</span> <span class="st">"Global North Athletes"</span>,</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Winter.Global South Countries"</span> <span class="ot">=</span> <span class="st">"Global South Athletes"</span>)) <span class="sc">+</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>() <span class="sc">+</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_blank</span>(), </span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#5a6363"</span>)</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">1890</span>, <span class="dv">2020</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1890</span>, <span class="dv">2020</span>, <span class="at">by =</span> <span class="dv">12</span>)) <span class="sc">+</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(season))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/Q1 analysis - line plot-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute total athletes per year</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>total_athletes_per_year <span class="ot">&lt;-</span> athlete_counts <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(year) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_athletes =</span> <span class="fu">sum</span>(athlete_count))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge to calculate proportion</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>athlete_counts_two <span class="ot">&lt;-</span> athlete_counts <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(total_athletes_per_year, <span class="at">by =</span> <span class="st">"year"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">proportion =</span> athlete_count <span class="sc">/</span> total_athletes,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">year=</span><span class="fu">fct_rev</span>(<span class="fu">factor</span>(year)))</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>summer_filt <span class="ot">&lt;-</span> athlete_counts_two <span class="sc">|&gt;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season<span class="sc">==</span> <span class="st">"Summer"</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>winter_filt <span class="ot">&lt;-</span> athlete_counts_two <span class="sc">|&gt;</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(season<span class="sc">==</span> <span class="st">"Winter"</span>)</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>summer_plot <span class="ot">&lt;-</span> summer_filt <span class="sc">|&gt;</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> athlete_count, <span class="at">y =</span> year, <span class="at">fill =</span> <span class="fu">as.factor</span>(global_south))) <span class="sc">+</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span>  <span class="co"># Normalize bars to 100%</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> <span class="st">""</span>, <span class="at">fill =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span>  </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>() <span class="sc">+</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.2</span>), </span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#5a6363"</span>)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#636b3d"</span>, <span class="st">"#f5d28c"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Global North Countries"</span>, <span class="st">"Global South Countries"</span>)) <span class="sc">+</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(season)) <span class="sc">+</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">guides</span>(</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">reverse =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>winter_plot <span class="ot">&lt;-</span> winter_filt <span class="sc">|&gt;</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> athlete_count, <span class="at">y =</span> year, <span class="at">fill =</span> <span class="fu">as.factor</span>(global_south))) <span class="sc">+</span></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"fill"</span>) <span class="sc">+</span>  <span class="co"># Normalize bars to 100%</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Proportion of Countries"</span>, <span class="at">y =</span> <span class="st">""</span>, <span class="at">fill =</span> <span class="st">""</span>) <span class="sc">+</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span>  </span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>() <span class="sc">+</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.2</span>), </span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"#5a6363"</span>), </span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.4</span>, <span class="at">color =</span> <span class="st">"#5a6363"</span>),</span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="dv">0</span>), </span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#5a6363"</span>)</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#4a6583"</span>,<span class="st">"#ddf4ff"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Global North Countries"</span>, <span class="st">"Global South Countries"</span>)) <span class="sc">+</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(season)) <span class="sc">+</span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="fu">guide_legend</span>(<span class="at">reverse =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>(summer_plot<span class="sc">*</span>winter_plot)<span class="sc">+</span><span class="fu">plot_annotation</span>(</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Proportion of Athletes in the Global South versus Global North"</span>,</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Data Source:120 years of Olympic history: athletes and results by rgriffin, Worldwide Bureaucracy Index"</span>,</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">12</span>,<span class="at">color=</span><span class="st">"#373d3d"</span>,<span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t=</span><span class="dv">17</span>,<span class="at">b=</span><span class="dv">0</span>,<span class="at">r=</span><span class="dv">0</span>,<span class="at">l=</span><span class="dv">0</span>)),</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>                <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"#fdf6e3"</span>))</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/Q1 Analysis - Proportional Analysis-1.png" class="img-fluid figure-img" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="discussion" class="level3">
+<h3 class="anchored" data-anchor-id="discussion">Discussion</h3>
+<p>The line chart revealed some rather interesting data regarding the prevalence of Global South nations in the Olympics. After including the Soviet Union into our data set, the prevalence of Olympic participation from the Global South jumped dramatically. It is interesting to see that the Global South participation in the Olympic Games is far less than the Global North despite the dramatically larger population of 6 billion people as of March 2025, compared to the Global North’s approximate 1.6 billion people (worldeconomics.com). We were also able to see the how political events shaped the number of athletes participating. For example, the boycott of the 1980 Moscow Olympic Games (as a consequence of the USSR invasion of Afghanistan) show how dramatically the Global North’s participation fell compared to the participation of the Global South, which actually increased that year. Similarly, in 1992, the year after the official dissolution of the Soviet Union, there is a dramatic drop in participation from the Global South as the participation of the Global North rises dramatically. The Winter Games as depicted on the line chart has far fewer members and appears to have less of a reaction to political events as the volatile and more popular Summer Games. Most notably, the decrease in participation from the Global South after 1991 appears to be far less than the Summer Games. However, more information about these changes would be better analyzed with a proportional bar chart.<br>
+<br>
+Our proportional bar chart is better able to show us the difference between the Winter and Summer games in their proportional participation and how that participation actually changes betweent he years. Here we can more clearly see the dramatic drop in participation of the Global South in 1992 after the fall of the Soviet Union in the Summer Games and its less dramatic drop in the Winter Games of the same year. It was also surprising to see how flat the proportional increase of Winter Games participation is, though this makes some sense considering that the majority of the population in the Global South does not live near winter weather. The Summer games is increasing at a faster rate, but still appears to be far less than I would have thought, especially considering the growth of economies like China, Vietnam, India, and Brazil in the past two decades.<br>
+<br>
+It would also be interesting to not that while not shown in the graph, the majority of events in the Olympic Games originate from Europe and the United States. The former chair of the IOC was Thomas Bach, a US citizen, who added three Olympic swimming events during his tenure between 2013 and 2021– a sport which is dominated by the US. Also added in 2013 was Olympic High Diving, also partially dominated by the US. If there were more events which featured non-Western sports, such as Kushti or Sepak Takraw, would there be greater participation from our southern neighbors?</p>
+</section>
+</section>
+<section id="how-do-height-and-weight-influence-the-likelihood-of-winning-an-olympic-medal-in-contact-sports-and-do-these-factors-differ-between-male-and-female-athletes" class="level2">
+<h2 class="anchored" data-anchor-id="how-do-height-and-weight-influence-the-likelihood-of-winning-an-olympic-medal-in-contact-sports-and-do-these-factors-differ-between-male-and-female-athletes">How do height and weight influence the likelihood of winning an Olympic medal in contact sports, and do these factors differ between male and female athletes?</h2>
+<section id="introduction-2" class="level3">
+<h3 class="anchored" data-anchor-id="introduction-2">Introduction</h3>
+<p>In this analysis, we aim to examine the role of weight an height in the Olympic medal winners across multiple games, focusing on whether these factors differ between male and female athletes. We are particularly interested in this question because it allows us to explore potential patterns in physical attributes among top-performing athletes and how sex-based discrepancies exist in contact sports.</p>
+<p>To answer this question, we need several key columns from the dataset. The sport column is essential for filtering only contact sports without weight classes, as weight categories could distort our findings. We selected Basketball, Water Polo, Field Hockey, Football, Rugby Sevens, Ice Hockey, and Speed Skating because they all have male and female divisions. The medal column is necessary to isolate athletes who have won a medal, removing any NA values. Finally, weight and height are key factors in our analysis, but since they are recorded in metric unites, we converted them to pounds and feet to align with our American audience’s familiarity with the imperial system of measurement.</p>
+</section>
+<section id="approach-1" class="level3">
+<h3 class="anchored" data-anchor-id="approach-1">Approach</h3>
+<p>To analyze the relationship between height, weight, and Olympic medal-winning athletes across different sports and between sexes, we will use two types of plots: a density plot and a hexagonal bin plot (hex plot). These visualizations will help us examine the distribution of physical attributes and their potential impact on performance while effectively handling overlapping data points.</p>
+<p><strong>Density Plot:</strong> This plot will display the distribution of weights among Olympic medalists, separated by sex. By using density curves, we can observe where most athletes’ weights are concentrated within each sport. Initially, we considered plotting all sports together, but even with transparency adjustments, the overlap made it difficult to read. To address this, we faceted the graphs by sport, allowing for clearer comparisons within each category. Additionally, we will create separate density plots for male and female athletes and then combine them using the patchwork library, ensuring a side-by-side comparison of weight distributions between sexes.</p>
+<p><strong>Hexagonal Bin Plot (Hex Plot):</strong> This plot will visualize the relationship between height and weight for Olympic medalists, helping us understand how these two factors interact across different sports. Instead of a scatterplot, which can become cluttered with large datasets, the hex plot groups data points into hexagonal bins and uses color intensity to indicate density. Similar to the density plot, we facet the graphs by sport and separate them by sex. To enhance comparability, we will generate separate hex plots for male and female athletes and then combine the plots using the patchwork library, allowing for direct visual comparison of trends between the two groups.</p>
+</section>
+<section id="analysis-1" class="level3">
+<h3 class="anchored" data-anchor-id="analysis-1">Analysis</h3>
+<p>(2-3 code blocks, 2 figures, text/code comments as needed) In this section, provide the code that generates your plots. Use scale functions to provide nice axis labels and guides. You are welcome to use theme functions to customize the appearance of your plot, but you are not required to do so. All plots must be made with ggplot2. Do not use base R or lattice plotting functions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>contact_sports<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Basketball"</span>,<span class="st">"Water Polo"</span>,<span class="st">"Hockey"</span>,<span class="st">"Football"</span>,<span class="st">"Rugby Sevens"</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Ice Hockey"</span>,<span class="st">"Speed Skating"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>order_sports<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Basketball"</span>,<span class="st">"Football"</span>,<span class="st">"Rugby Sevens"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                <span class="st">"Water Polo"</span>,<span class="st">"Field Hockey"</span>,<span class="st">"Ice Hockey"</span>,<span class="st">"Speed Skating"</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>filtered_df<span class="ot">&lt;-</span>olympics<span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(age)<span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(medal <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Gold"</span>,<span class="st">"Silver"</span>,<span class="st">"Bronze"</span>),sport <span class="sc">%in%</span> contact_sports)<span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">height_ft=</span> <span class="fu">round</span>(height<span class="sc">/</span><span class="fl">30.48</span>,<span class="dv">2</span>),</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">weight_lb=</span><span class="fu">round</span>(weight<span class="sc">*</span><span class="fl">2.20462</span>,<span class="dv">2</span>),</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">sport=</span> <span class="fu">if_else</span>(sport<span class="sc">==</span><span class="st">"Hockey"</span>,<span class="st">"Field Hockey"</span>,sport),</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">sport=</span><span class="fu">factor</span>(sport,<span class="at">levels =</span>order_sports )</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">|&gt;</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(sex,weight,weight_lb,height,height_ft,sport,medal)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>male_filt<span class="ot">&lt;-</span>filtered_df<span class="sc">|&gt;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sex<span class="sc">==</span><span class="st">"M"</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>fe_filt<span class="ot">&lt;-</span>filtered_df<span class="sc">|&gt;</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sex<span class="sc">==</span><span class="st">"F"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>men_den<span class="ot">&lt;-</span>male_filt<span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>weight_lb,<span class="at">fill=</span>sport))<span class="sc">+</span><span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>,<span class="at">show.legend =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()<span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>())<span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">300</span>),<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">100</span>,<span class="dv">300</span>,<span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(sport))<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>()<span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Proportion"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Weight(lbs)"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">""</span>,</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Looking at Men in Contact Sports"</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle=</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>women_den<span class="ot">&lt;-</span>fe_filt<span class="sc">|&gt;</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>weight_lb,<span class="at">fill=</span>sport))<span class="sc">+</span><span class="fu">geom_density</span>(<span class="at">alpha=</span><span class="fl">0.5</span>,<span class="at">show.legend =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_d</span>()<span class="sc">+</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> <span class="fu">label_percent</span>())<span class="sc">+</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">300</span>),<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">100</span>,<span class="dv">300</span>,<span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(sport))<span class="sc">+</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>()<span class="sc">+</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">""</span>,</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">""</span>,</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">""</span>,</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Looking at Women in Contact Sports"</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle=</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>)</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>(men_den<span class="sc">*</span>women_den)<span class="sc">+</span><span class="fu">plot_annotation</span>(</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Distribution of Olympic Medalists' Weight Proportions"</span>,</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Data Source:120 years of Olympic history: athletes and results by rgriffin"</span>,</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">12</span>,<span class="at">color=</span><span class="st">"#373d3d"</span>,<span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t=</span><span class="dv">17</span>,<span class="at">b=</span><span class="dv">0</span>,<span class="at">r=</span><span class="dv">0</span>,<span class="at">l=</span><span class="dv">0</span>)),</span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>                <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"#fdf6e3"</span>))</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1394 rows containing non-finite outside the scale range
+(`stat_density()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 34 rows containing non-finite outside the scale range
+(`stat_density()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/density-plot-weight-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>males<span class="ot">&lt;-</span><span class="fu">ggplot</span>(male_filt, <span class="fu">aes</span>(<span class="at">x =</span> weight_lb, <span class="at">y =</span> height_ft)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hex</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">n.breaks =</span> <span class="dv">10</span>)<span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">250</span>),<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">100</span>,<span class="dv">250</span>,<span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(sport))<span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>()<span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">"Height (ft)"</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">"Weight(lbs)"</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">""</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Looking at Men in Contact Sports"</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle=</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>)</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>females<span class="ot">&lt;-</span><span class="fu">ggplot</span>(fe_filt, <span class="fu">aes</span>(<span class="at">x =</span> weight_lb, <span class="at">y =</span> height_ft)) <span class="sc">+</span></span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hex</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_viridis_c</span>() <span class="sc">+</span></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">8</span>),<span class="at">n.breaks =</span> <span class="dv">10</span>)<span class="sc">+</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">100</span>,<span class="dv">250</span>),<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">100</span>,<span class="dv">250</span>,<span class="dv">25</span>))<span class="sc">+</span></span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(sport))<span class="sc">+</span></span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_solarized</span>()<span class="sc">+</span></span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>   <span class="fu">labs</span>(</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">y=</span><span class="st">""</span>,</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">x=</span><span class="st">""</span>,</span>
+<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span><span class="st">""</span>,</span>
+<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Looking at Women in Contact Sports"</span></span>
+<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.subtitle=</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"italic"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,<span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb14-39"><a href="#cb14-39" aria-hidden="true" tabindex="-1"></a>     <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>),</span>
+<span id="cb14-40"><a href="#cb14-40" aria-hidden="true" tabindex="-1"></a>     <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">7</span>)</span>
+<span id="cb14-41"><a href="#cb14-41" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-42"><a href="#cb14-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-43"><a href="#cb14-43" aria-hidden="true" tabindex="-1"></a>(males<span class="sc">*</span>females)<span class="sc">+</span><span class="fu">plot_annotation</span>(</span>
+<span id="cb14-44"><a href="#cb14-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="st">"Hexagonal heatmap looking at Olympic Medal Winners Weight and Height"</span>,</span>
+<span id="cb14-45"><a href="#cb14-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">"Data Source:120 years of Olympic history: athletes and results by rgriffin"</span>,</span>
+<span id="cb14-46"><a href="#cb14-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme =</span> <span class="fu">theme</span>(<span class="at">plot.title =</span><span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>,<span class="at">hjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb14-47"><a href="#cb14-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">12</span>,<span class="at">color=</span><span class="st">"#373d3d"</span>,<span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">t=</span><span class="dv">17</span>,<span class="at">b=</span><span class="dv">0</span>,<span class="at">r=</span><span class="dv">0</span>,<span class="at">l=</span><span class="dv">0</span>)),</span>
+<span id="cb14-48"><a href="#cb14-48" aria-hidden="true" tabindex="-1"></a>                <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill=</span><span class="st">"#fdf6e3"</span>))</span>
+<span id="cb14-49"><a href="#cb14-49" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 1473 rows containing non-finite outside the scale range
+(`stat_binhex()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 38 rows containing non-finite outside the scale range
+(`stat_binhex()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/hex-plot-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="discussion-1" class="level3">
+<h3 class="anchored" data-anchor-id="discussion-1">Discussion</h3>
+<p>The visualizations reveal distinct physical characteristic patterns among Olympic medalists across different contact sports. In Image 3, the density plots show weight distributions where men consistently have higher median weights than women in the same sports, with football (soccer) and rugby sevens displaying the most pronounced gender differences. Speed skating athletes exhibit the lowest weights overall, clustering around 150-160 lbs, likely reflecting the advantage of lower body mass for speed and agility. Notably, women’s distributions appear more staggered or multimodal (particularly evident in speed skating), reflecting the varying developmental stages of women’s sports globally and differences in athlete development across countries.</p>
+<p>Image 4’s hexagonal heatmaps illustrate the relationship between height and weight, showing strong positive correlations across all sports—taller athletes tend to be heavier. Basketball displays the most vertical spread, with male athletes reaching heights above 7 feet while maintaining proportionate weight-to-height ratios. The global inequality in resources dedicated to women’s sports likely contributes to less homogenized physical characteristics than we see in men’s sports, where greater competition tends to narrow the range of “successful” body types. This differential resource allocation creates distinct physical clusters in women’s sports.</p>
+<p>These patterns reflect the complex interplay between biological differences, societal influences, and the evolutionary trajectory of sports on the global stage. Sport-specific positional requirements in disciplines like rugby sevens and field hockey might further explain the multimodal distributions, particularly in women’s competitions where role specialization creates distinct physical sub-populations. Women’s elite sports are still discovering their optimal physical parameters in many cases, while men’s sports have had longer to converge on “ideal” physiques through decades of competition. As women’s sports continue to develop globally with more equitable support and participation, we might see these distributions either normalize toward single modes (as in men’s sports) or maintain their distinctive patterns, establishing unique optimization strategies different from men’s competitions.</p>
+</section>
+</section>
+<section id="presentation" class="level2">
+<h2 class="anchored" data-anchor-id="presentation">Presentation</h2>
+<p>Our presentation can be found <a href="./presentation.html">here</a>.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>Griffin, R. (2018). <em>120 years of Olympic history: athletes and results</em> [Data set]. Kaggle. Retrieved February 11, 2025, from https://www.kaggle.com/datasets/rgriffin/120-years-of-olympic-history-athletes-and-results</p>
+<p>R for Data Science Community. (2024). <em>Tidytuesday 2024-04-30: World Bureaucracy Indicators</em> [Data set]. GitHub. Retrieved February 11, 2025, from <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-04-30/readme.md" class="uri">https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-04-30/readme.md</a></p>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>List any references here. You should, at a minimum, list your data source.</p>
+<p>Data Source:</p>
+<p><a href="https://www.kaggle.com/datasets/heesoo37/120-years-of-olympic-history-athletes-and-results/">RGriffin Kaggle dataset: 120 years of Olympic history: athletes and results</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

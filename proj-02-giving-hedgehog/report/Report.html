@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Report</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="Report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Report_files/libs/quarto-html/quarto.js"></script>
+<script src="Report_files/libs/quarto-html/popper.min.js"></script>
+<script src="Report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Report</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="visualizing-global-spotify-trends-through-an-interactive-dashboard" class="level1">
+<h1>Visualizing Global Spotify Trends through an Interactive Dashboard</h1>
+</section>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<section id="objectives" class="level2">
+<h2 class="anchored" data-anchor-id="objectives">Objectives</h2>
+<p>Music is intrinsic to life and culture across the world. It is used not only for entertainment, but also for a diverse range of applications from neuroscience, healthcare, marketing, and business intelligence. As an illustrative example, the audio attribute <strong>valence</strong> that measures how positive or unpleasant a tune makes someone feel is widely applied to study emotional reaction—and is being used for therapeutic purposes as a method for treating chronic pain or stress disorders.</p>
+<p>Additional musical qualities like <strong>danceability</strong>, <strong>energy</strong>, <strong>loudness</strong>, and <strong>liveliness</strong> also come into play when creating listener experience. A danceable, high energy song could be ideal for a workout playlist, but a low energy track could be chosen for relaxation or introspection purposes. Like listeners, producers, curators, and even app developers want to pair the music with a corresponding atmosphere, mood, or audience, and knowledge of these characteristics is important for them to accomplish that.</p>
+<p>Our research aims to investigate how the musical characteristics differ throughout countries and across time by building an interactive <strong>Shiny dashboard</strong>. With the help of this tool, the users are able to visualize:</p>
+<ul>
+<li>Who are the most dominant global and regional artists or tracks?</li>
+<li>How do musical characteristics shift over time and location?</li>
+<li>How much alignment exists between a region’s top charts and global popularity?</li>
+</ul>
+<p>We seek to narrate stories of music consumption, affective tone, and cultural difference by analyzing Spotify’s Top 50 dataset using audio analytics and interactive visualization.</p>
+</section>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>We worked with the <strong>Top Spotify Songs in 73 Countries (Daily Updated)</strong> dataset from Kaggle. This dataset has a large collection of <strong>over 1.9 million records</strong> comprehensive details on Spotify rankings globally, audio features, metadata, as well as listener activity.</p>
+<p>Key variables include:</p>
+<ul>
+<li><strong><code>name</code></strong> – Track title<br>
+</li>
+<li><strong><code>artists</code></strong> – Name of the artist(s)<br>
+</li>
+<li><strong><code>country</code></strong> – Country of chart entry<br>
+</li>
+<li><strong><code>snapshot_date</code></strong> – Date of ranking<br>
+</li>
+<li><strong><code>streams</code></strong> – Number of daily streams<br>
+</li>
+<li><strong><code>danceability</code>, <code>energy</code>, <code>loudness</code>, <code>speechiness</code></strong> – Audio features (0–1 scale)<br>
+</li>
+<li><strong><code>popularity</code></strong> – Score based on Spotify’s internal ranking system</li>
+</ul>
+<p>The geographical, musical, and temporal dimensions combined create a dataset perfectly suited to be used for data storytelling and discovery.</p>
+</section>
+</section>
+<section id="justification-of-approach" class="level1">
+<h1>Justification of Approach</h1>
+<section id="dashboard-structure" class="level2">
+<h2 class="anchored" data-anchor-id="dashboard-structure">Dashboard Structure</h2>
+<p>To support exploration, we designed the app with three interactive modules:</p>
+<ol type="1">
+<li><strong>Global Overview</strong>
+<ul>
+<li>View top artists or tracks by appearance or popularity<br>
+</li>
+<li>Interactive date filter<br>
+</li>
+<li>Choropleth map showing either global artist overlap or average popularity</li>
+</ul></li>
+<li><strong>Regional Deep Dive</strong>
+<ul>
+<li>Select country and time range<br>
+</li>
+<li>View top artists/tracks and a time series showing artist overlap or average popularity<br>
+</li>
+<li>Regional focus allows comparison to global patterns</li>
+</ul></li>
+<li><strong>Audio Feature Explorer</strong>
+<ul>
+<li>Filter by country, date, and up to four audio features<br>
+</li>
+<li>Explore time series trends and average values via radar charts</li>
+</ul></li>
+</ol>
+<p>Each tab is fully reactive and uses <strong>Plotly</strong> for smooth interactivity and detailed hover insights.</p>
+</section>
+<section id="tool-selection-and-learning" class="level2">
+<h2 class="anchored" data-anchor-id="tool-selection-and-learning">Tool Selection and Learning</h2>
+<p>Although we were introduced to basic Shiny concepts in class, many advanced components of our app were <strong>self-learned</strong>, including:</p>
+<ul>
+<li>Implementing <strong>custom date range filters</strong></li>
+<li><strong>Synchronizing multiple user inputs</strong> (e.g., country + feature + date + view) to drive reactive plots</li>
+<li>Creating <strong>combined dashboards</strong> with sidebar filters and layouts with multiple charts</li>
+<li>Developing <strong>interactive choropleth maps</strong> and <strong>radar charts</strong> with Plotly</li>
+</ul>
+<p>We studied external documentation, forums, and tutorials to master these advanced techniques.</p>
+</section>
+<section id="design-rationale" class="level2">
+<h2 class="anchored" data-anchor-id="design-rationale">Design Rationale</h2>
+<section id="choosing-metrics-for-artists-and-tracks" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-metrics-for-artists-and-tracks">Choosing Metrics for Artists and Tracks</h3>
+<p>One of the most important choices we made in defining our dashboard was making a distinction between how we ranked top artists and top tracks. We decided to use appearance count when ranking artists because that ensures measurement of an artist’s breadth and consistency of popularity over time. Multiple artists have multiple songs or collaborate with other artists, and counting appearances more accurately tracks those artists’ long term influence.</p>
+<p>When we first used appearance count to rate tracks, we discovered that top tracks tended to have appearance frequencies that were very close together. The resulting chart yielded little contrast or information. On those grounds, we decided to use Spotify’s internal popularity score in ranking individual tracks. The score is between 0 and 100 and signifies a song’s current engagement based on streaming, saving, and activity in playlists, making it more applicable for comparing separate tracks.</p>
+</section>
+<section id="visualization-choices" class="level3">
+<h3 class="anchored" data-anchor-id="visualization-choices">Visualization Choices</h3>
+<p>Every one of our visualizations was chosen to enable a particular type of user question or interaction.</p>
+<p>Top artists and top tracks are easily compared using bar charts, which enable users to see instantly who are the dominating names. With the choropleth map, we wanted to see how various countries’ charts compared to global Top 50.</p>
+<p>The map provides an answer for the question: “Which countries’ top artists/tracks are in sync with global trends?” The visual fits in beautifully within our larger investigation of globalization and cultural difference within music. By displaying overlap among artist appearance or track popularity between national charts and global leaderboard, the map provides an indication of regional versus global mindedness of each country.</p>
+<p>Time-series plots enhance this exploratory process even more by enabling users to visualize trends developing over time—increasing and decreasing popularity, or changes in alignment between global and local music.</p>
+<p>Radar charts in the Audio Feature Explorer also summarize several dimensions of music in a single overview. With this, users are able to easily take in a “shape” of an area’s music over a time period and compare emotional or stylistic profiles between places.</p>
+</section>
+<section id="tab-based-structure" class="level3">
+<h3 class="anchored" data-anchor-id="tab-based-structure">Tab-Based Structure</h3>
+<p>We structured the application into three tabs—Global Overview, Regional Deep Dive, and Audio Feature Explorer—to support distinct modes of discovery.</p>
+<ul>
+<li><strong>Global Overview</strong>: enables high level pattern detection, enabling users to estimate global dominance and cross country alignment.</li>
+<li><strong>Regional Deep Dive</strong>: enables users to zoom in on a single country and examine local patterns in finer detail.</li>
+<li><strong>Audio Feature Explorer</strong>: changes the perspective to what music sounds like, demonstrating how features of music such as energy, speechiness, or danceability change over place and time.</li>
+</ul>
+<p>The use of three tabs avoids mental overload while enabling users to easily transition among theme areas.</p>
+</section>
+<section id="flexible-date-selection" class="level3">
+<h3 class="anchored" data-anchor-id="flexible-date-selection">Flexible Date Selection</h3>
+<p>As a final step, we decided to enable users to set date ranges of choice rather than being restricted to fixed Windows such as “previous 30 days” or “previous 90 days.” Fixed time frames may make for easier UI design, but they are inflexible. Much of what we want to do with our analyses—notably comparing trends in music during holidays, regions, or release cycles—calls for more flexible time frames.</p>
+<p>By making it possible for users to choose dates themselves, we are able to let users set the context for what they are interested in—an entire season, a single month, or a year long pattern. The choice indicates our design intention for crafting an exploratory tool, rather than one that is simply descriptive.</p>
+</section>
+</section>
+</section>
+<section id="key-insights-and-outcomes" class="level1">
+<h1>Key Insights and Outcomes</h1>
+<p>Our dashboard reveals a variety of insights, including:</p>
+<ul>
+<li><strong>Dominant Global Artists</strong>: Bad Bunny, Kendrick Lamar, and Bruno Mars top the global charts based on appearance count.</li>
+<li><strong>Cultural Overlap</strong>: The artist overlap map shows that countries like the U.S. and Canada share more artists with global trends, while Brazil and Japan show stronger local preferences.</li>
+<li><strong>Time-Shifted Audio Trends</strong>: In the UAE, global alignment fluctuates over time—visible in the regional time series view.</li>
+<li><strong>Feature Patterns</strong>: Across countries, features like danceability and valence exhibit stable average values but spike periodically (e.g., in December holidays).</li>
+</ul>
+<p>These insights help surface how music trends reflect cultural, regional, and seasonal differences.</p>
+</section>
+<section id="limitations" class="level1">
+<h1>Limitations</h1>
+<p>We recognize the following limitations:</p>
+<ul>
+<li><strong>Dataset scope</strong>: Includes only top charted songs; niche genres are excluded.</li>
+<li><strong>Timeframe constraint</strong>: Our analysis used a static snapshot, not the live updating version.</li>
+<li><strong>Popularity ambiguity</strong>: Spotify’s popularity metric is a black box based on saves, streams, and playlists.</li>
+<li><strong>User learning curve</strong>: Advanced audio terms may not be intuitive without definitions.</li>
+</ul>
+<p>We mitigated these by:</p>
+<ul>
+<li>Using clear plot labels and tooltips</li>
+<li>Offering global vs.&nbsp;regional comparison views</li>
+<li>Selecting accessible chart types like bar and line plots</li>
+</ul>
+</section>
+<section id="conclusion" class="level1">
+<h1>Conclusion</h1>
+<p>This project combined data storytelling, interface design, and technical implementation using R, Shiny, and Plotly to deliver a comprehensive, user friendly music analytics dashboard. While we began with a foundational understanding of Shiny, many of the app’s core features—such as multi-input reactivity, choropleth mapping, radar visualization, and advanced UI layout which required independent learning and experimentation. Mastering these elements allowed us to transform raw streaming data into a compelling, explorable interface that uncovers meaningful trends in global music consumption.</p>
+<p>Throughout the project, we refined not only our technical skills but also our ability to think critically about visualization design. We learned how to structure a Shiny app around user questions, implement responsive charts with rich interactivity, and convey abstract audio features in ways that feel intuitive and engaging. The process deepened our understanding of how cultural patterns emerge through data, and how visual tools can bring those patterns to life.</p>
+<p>Our dashboard now enables users to explore questions about global dominance, local taste, and musical evolution over time. It offers flexibility in filtering and exploration while maintaining clarity through thoughtful layout and design. Ultimately, this project affirmed our belief that data visualization is not just a technical output. It’s a storytelling medium, one that invites discovery and reflection.</p>
+<section id="future-work" class="level2">
+<h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
+<p>Looking ahead, there are several exciting directions in which this project could grow. A key opportunity lies in integrating real time data through the Spotify API, which would allow the dashboard to reflect the latest trends and artist movements. This would not only improve relevance but also enable users to track ongoing events such as album drops or seasonal chart shifts.</p>
+<p>We are also interested in adding a feature that allows users to upload their own playlists or compare genres, which could support more personalized or genre based exploration. Additionally, tooltips or onboarding explanations for technical audio features like “speechiness” or “valence” would make the app more accessible to general audiences.</p>
+<p>Finally, building visualizations that enable side-by-side regional comparisons. For example, showing feature trends in two countries simultaneously could enrich our analysis of globalization versus localism in music. These enhancements would turn the app from a music trend explorer into a more personalized, culturally aware storytelling engine.</p>
+<p>In its current form, the dashboard tells a compelling story about what people are listening to, where, and how it sounds. But its design leaves the door open for deeper questions and richer both technically and culturally exploration.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

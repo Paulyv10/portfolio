@@ -1,0 +1,343 @@
+---
+title: Brewing Demographics
+subtitle: Unpacking Coffee Trends Across Age, Employment, and Ethnicity
+author: Giving-cap <br> Maggie Lam, Oliver Li, Jiaying Yuan
+date: 3.2.25
+format: 
+  revealjs:
+    transition: slide
+    css: styles.css
+  
+execute:
+  fig-width: 7
+  fig-asp: 0.618
+  fig-retina: 2
+  font-size: 0.6
+  dpi: 150
+  fig-align: center
+  out-width: 80%
+---
+
+# Introduction {.center style="font-size: 25px; margin-top: 0px;"}
+- The Great American Coffee Taste Test: 4,042 responses and 57 columns covering demographics, spending, and coffee preferences
+- Variables Used: 
+  - Demographics: Age, Education, Ethnicity
+  - Spending: Most willing to pay, Total monthly spend
+  - Work Settings: Work-from-home (WFH) vs. In-Person
+  - Preferences: Coffee strength & style
+
+
+
+
+
+
+```{r}
+library("tidyverse")
+coffee_df <- read.csv("data/coffee_survey.csv")
+
+```
+
+## Q1: How do demographic factors influence spending habits on coffee? {.center style="font-size: 35px; margin-top: 0px;"}
+
+# Visualization 1 {.center style="font-size: 25px; margin-top: 0px;"}
+:::: {.columns}
+
+::: {.column width="65%"}
+```{r fig.width=10}
+coffee_df <- coffee_df %>%
+  mutate(age = case_when(
+    age == "18-24 years old" ~ "18-24",   
+    age == "25-34 years old" ~ "25-34",   
+    age == "35-44 years old" ~ "35-44",    
+    age == "45-54 years old" ~ "45-54",   
+    age == "55-64 years old" ~ "55-64",    
+    age == "<18 years old" ~ "Under 18", 
+    age == ">65 years old" ~ "Over 65", 
+    TRUE ~ age  
+  ))
+
+coffee_df <- coffee_df %>%
+  mutate(most_willing_numeric = case_when(
+    most_willing == "Less than $2" ~ 1,
+    most_willing == "$2-$4" ~ 3,
+    most_willing == "$4-$6" ~ 5,
+    most_willing == "$6-$8" ~ 7,
+    most_willing == "$8-$10" ~ 9,
+    most_willing == "$10-$15" ~ 12.5,
+    most_willing == "$15-$20" ~ 17.5,
+    most_willing == "More than $20" ~ 22,
+    TRUE ~ NA_real_
+  ))
+
+coffee_df <- coffee_df %>%
+  mutate(education_category = case_when(
+    education_level %in% c("Less than high school", "High school graduate") ~ "Low(High School or Less)",
+    education_level %in% c("Some college or associate's degree", "Bachelor's degree") ~ "Medium(College Degree)",
+    education_level %in% c("Master's degree", "Doctorate or professional degree") ~ "High(Graduate/Doctorate Degree)",
+    TRUE ~ NA_character_
+  ))
+
+filtered_df <- coffee_df %>%
+  filter(!is.na(most_willing_numeric), !is.na(age), !is.na(education_category))
+
+
+mean_willing <- filtered_df %>%
+  group_by(age, education_category) %>%
+  summarise(mean_most_willing = mean(most_willing_numeric, na.rm = TRUE), .groups = "drop")
+
+
+age_order <- c("Under 18", "18-24", "25-34", "35-44",
+               "45-54", "55-64", "Over 65")
+mean_willing$age <- factor(mean_willing$age, levels = age_order)
+
+
+edu_order <- c("Low(High School or Less)", "Medium(College Degree)", "High(Graduate/Doctorate Degree)")
+mean_willing$education_category <- factor(mean_willing$education_category, levels = edu_order)
+
+edu_colors <- c(
+  "Low(High School or Less)" = "#6F4F28",  # Rich brown (Classic Coffee)
+  "Medium(College Degree)" = "#D17B29",    # Warm orange-brown (Cappuccino)
+  "High(Graduate/Doctorate Degree)" = "#cc9929" # Soft golden yellow (Latte)
+)
+
+
+
+ggplot(mean_willing, aes(x = age, y = mean_most_willing, group = education_category, color = education_category)) +
+  geom_line(size = 1) +
+  geom_point(size = 3, shape = 21, fill = "white") +
+  labs(
+    title = "How Does Age and Education Influence Willingness to Pay",
+    subtitle = "An analysis of how different age groups and education levels impact the average\n amount individuals are willing to spend on coffee.",
+    x = "Age Group (years)",
+    y = "Average Willingness to Pay for Coffee (USD)",
+    color = "Education Level"
+  ) +
+  theme_minimal() +
+  scale_color_manual(values = edu_colors) +  # Apply the custom colors
+  scale_y_continuous(labels = scales::dollar_format()) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14, family = "serif"),
+    plot.subtitle = element_text(hjust = 0.5, face = "italic", size = 10, family = "serif"),
+    legend.position = "right",
+    legend.title = element_text(face = "bold"),
+    axis.title = element_text(size = 10,  family = "serif"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+```
+:::
+
+::: {.column width="35%"}
+- Higher education → higher willingness to pay
+- Spending drops significantly after age 44
+- Graduate/Doctorate group has the highest willingness to pay
+:::
+
+::::
+
+
+# Visualization 2 {.center style="font-size: 25px; margin-top: 0px;"}
+
+:::: {.columns}
+
+::: {.column width="65%"}
+```{r fig.width=10}
+
+coffee_df <- coffee_df %>%
+  mutate(total_spend_numeric = case_when(
+    total_spend == "Less than $2" ~ 1,
+    total_spend == "<$20" ~ 10, 
+    total_spend == "$20-$40" ~ 30,    
+    total_spend == "$40-$60" ~ 50,    
+    total_spend == "$60-$80" ~ 70,    
+    total_spend == "$80-$100" ~ 90,   
+    total_spend == ">$100" ~ 110,     
+    TRUE ~ NA_real_
+  ))
+
+# Remove the outlier 
+coffee_df <- coffee_df %>%
+  filter(!(ethnicity_race == "Other (please specify)" & age == "Under 18"))
+
+
+filtered_df_race_spend <- coffee_df %>%
+  filter(!is.na(total_spend_numeric), !is.na(age), !is.na(ethnicity_race)) %>%
+  mutate(ethnicity_race = as.character(ethnicity_race))
+
+mean_spend_race <- filtered_df_race_spend  %>%
+  group_by(age, ethnicity_race) %>%
+  summarise(mean_total_spend_race = mean(total_spend_numeric, na.rm = TRUE), .groups = "drop") 
+
+mean_spend_race$ethnicity_race <- mean_spend_race$ethnicity_race %>%
+  fct_recode("Other" = "Other (please specify)")
+ethnicity_order <- c("Asian/Pacific Islander", "White/Caucasian", 
+                     "Black/African American", "Hispanic/Latino", 
+                     "Native American/Alaska Native", "Other")
+mean_spend_race$ethnicity_race <- factor(mean_spend_race$ethnicity_race, levels = ethnicity_order)
+
+mean_spend_race$age <- factor(mean_spend_race$age, levels = age_order, ordered = TRUE)
+
+ethnicity_colors <- c(
+  "Asian/Pacific Islander" = "#376F5A",   # Coffee brown (darker shade)
+  "White/Caucasian" = "#3E2723",           # Dark coffee brown
+  "Black/African American" = "#574B92",    # Darker brown, a bit more reddish
+  "Hispanic/Latino" = "#FF7043",           # Light orange-brown
+  "Native American/Alaska Native" = "#D17B29", # Rich orange-brown
+  "Other" = "#F2C35C"                      # Light coffee yellow (Latte)
+)
+
+ggplot(mean_spend_race, aes(x = age, y = mean_total_spend_race, fill = ethnicity_race)) +
+  geom_col(position = "dodge") +  
+  facet_wrap(~ ethnicity_race) +
+  labs(
+    title = "Exploring Coffee Spending Across Different Age and Ethnicity Groups",
+    subtitle = "A look at how varying age groups and ethnic backgrounds influence the\naverage monthly amount spent on coffee.",
+    x = "Age Group (years)",
+    y = "Average Monthly Spending on Coffee (USD)"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::dollar_format()) +
+  scale_fill_manual(values = ethnicity_colors) +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, family = "serif", hjust = 0.5),
+    plot.subtitle = element_text(face = "italic", size = 12, family = "serif", hjust = 0.5),
+    strip.text = element_text(face = "bold"),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title = element_text(size = 12, family = "serif"),
+    legend.position = "none"  # Remove legend as it's redundant due to faceting
+  )
+
+```
+:::
+
+::: {.column width="35%"}
+- Asian/Pacific Islanders → Spending increases after age 65
+- Black/African Americans → Low Spending under 18
+- White & Hispanic individuals → More stable spending patterns
+- Bell curve shape generally -  total monthly spending peaks around 25-44 years old
+
+
+:::
+
+::::
+
+
+## Q2: How do factors like work from home or in person and employment status influence an individual's overall coffee preference on style and stength? {.center style="font-size: 35px; margin-top: 0px;"}
+
+# Visualization 1 {.center style="font-size: 25px; margin-top: 0px;"}
+
+:::: {.columns}
+
+::: {.column width="62%"}
+```{r fig.width=10}
+
+coffee_df <- coffee_df %>%
+  mutate(
+    strength = str_to_title(strength), 
+    style = str_to_title(style),       
+    wfh = str_to_title(wfh)     
+  )
+
+# Define Strength Order
+strength_levels <- c("Weak", "Somewhat Light", "Medium", "Somewhat Strong", "Very Strong")
+coffee_df <- coffee_df %>%
+  mutate(strength = factor(strength, levels = strength_levels, ordered = TRUE))
+
+# Remove NA values
+filtered_strength_df <- coffee_df %>%
+  filter(!is.na(strength), !is.na(employment_status)) %>%  
+  mutate(strength = factor(strength, levels = strength_levels, ordered = TRUE)) 
+
+# ---- PLOT 1: Employment Status vs. Coffee Strength ----
+ggplot(filtered_strength_df, aes(x = employment_status, fill = strength)) +
+  geom_bar(position = "fill") +
+  labs(
+    title = "Exploring Coffee Strength Preferences by Employment Status",
+    subtitle = "A breakdown of how different employment statuses influence preferred coffee strength",
+    x = "Employment Status",
+    y = "Proportion of Responses",
+    fill = "Strength Level:"
+  ) +
+  scale_fill_manual(values = c("#D2B79D","#A98F63","#6E4F37","#4E342E","#291b14"), 
+                    breaks = strength_levels,
+                    guide = guide_legend(reverse = TRUE)) +
+  theme_minimal() +
+  scale_y_continuous(labels = scales::percent) +
+  coord_flip() +
+  theme(
+    legend.position = "top",
+    axis.title.x = element_blank(),
+    plot.title = element_text(face = "bold", size = 14, family = "serif",hjust = 0.5),
+    plot.subtitle = element_text(face = "italic", size = 10, family = "serif",hjust = 0.5),
+    axis.title = element_text(size = 12, family = "serif"),
+    axis.text = element_text(size = 10, family = "serif"),
+    legend.title = element_blank()
+  )
+```
+:::
+
+::: {.column width="38%"}
+- Medium & Somewhat Strong coffee are most preferred
+- Retired & full-time employees → Prefer stronger coffee
+- Homemakers → Higher proportion of “Somewhat Light” coffee drinkers
+:::
+
+::::
+
+
+
+# Visualization 2 {.center style="font-size: 25px; margin-top: 0px;"}
+
+:::: {.columns}
+
+::: {.column width="62%"}
+```{r fig.width=10}
+filtered_style_df <- coffee_df %>%
+  filter(!is.na(style), !is.na(wfh))
+
+style_summary <- filtered_style_df %>%
+  group_by(wfh, style) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  group_by(wfh) %>%
+  mutate(prop = count / sum(count)) 
+
+
+ggplot(style_summary, aes(x = "", y = prop, fill = style)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +  
+  coord_polar("y", start = 0) + 
+  facet_wrap(~ wfh) + 
+  geom_text(aes(label = paste0(round(prop * 100, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 3, color = "white", face= "bold") +  
+  labs(
+    title = "Coffee Style Preferences Based on Work Condition",
+    subtitle = "A breakdown of coffee style preferences across different work conditions, \nshowing the proportion of each  style per group",
+    fill = "Coffee Style",
+    color = "Coffee Style"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_blank(),  
+    axis.text.y = element_blank(),
+    panel.grid = element_blank(),  
+    legend.position = "bottom",
+    axis.title.x = element_blank(), 
+    axis.title.y = element_blank(),
+    plot.title = element_text(face = "bold", size = 18, family = "serif", hjust = 0.5),
+    plot.subtitle = element_text(face = "italic", size = 10, family = "serif", hjust = 0.5)
+  )
+
+```
+:::
+
+::: {.column width="38%"}
+- Fruity coffee is most popular across all work conditions
+- Remote workers → More likely to drink Chocolatey & Full-bodied coffee
+- In-person workers → More balanced preferences across different styles
+:::
+
+::::
+
+
+# Thank you!
+

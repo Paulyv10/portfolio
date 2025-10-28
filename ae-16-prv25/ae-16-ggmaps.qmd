@@ -1,0 +1,235 @@
+---
+title: "AE 16: Drawing maps with {ggmap}"
+author: Paul Vermette
+format: html
+---
+
+# Packages
+
+```{r}
+#| label: load-packages
+#| message: false
+
+library(tidyverse)
+library(ggmap)
+
+# set default theme
+theme_set(theme_minimal())
+```
+
+# Load NYC 311 reports
+
+Let's first load a subset of 311 service requests in New York City.^[These reports were obtained from the [NYC Open Data portal](https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9/about_data) API.]
+
+```{r}
+#| label: import-data
+
+# load data
+nyc_311 <- read_csv(file = "data/nyc-311.csv")
+glimpse(nyc_311)
+```
+
+This subset includes 311 service requests related to Food Poisoning in commercial establishments (e.g. restaurants, cafeterias, food carts).
+
+# Register a Stadia Maps API Key
+
+**Your turn:** Store your Stadia Maps API key using the function
+
+```r
+register_stadiamaps(key = "YOUR-API-KEY", write = TRUE)
+```
+
+replacing `"YOUR-API-KEY"` with your actual API key. Otherwise you will not be able to obtain map tiles and complete the application exercise.
+
+# Obtain map tiles for New York City
+
+**Your turn:** Use [bboxfinder.com](http://bboxfinder.com/) to find bounding box coordinates for New York City. Then, use `get_stamenmap()`  to obtain map tiles for New York City and visualize the map.
+
+::: callout-note
+
+I recommend a `zoom` level of between 8-12. Trial and error should help you decide on the best value.
+
+:::
+
+```{r}
+#| label: tiles-nyc
+
+register_stadiamaps(key = "2cfd311e-f7e5-4264-8ec6-31d7e6c623cc", write = TRUE)
+
+nyc_bb <- c(
+  left = -74.25,
+  bottom = 40.50,
+  right = -73.70,
+  top = 40.92
+)
+
+nyc <- get_stadiamap(
+  bbox = nyc_bb,
+  zoom = 11
+)
+
+ggmap(nyc)
+
+```
+
+# Food poisoning rates
+
+![](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZTVqcWhmN2wydmJ1bGkwaTJtbmVnc2NoazNvazFlMGU1MzBzZnY1dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gPgBMNqdIArIRGpKmX/giphy.gif){fig-align="center" fig-alt="A video clip from the TV show 'Parks and Recreation' where a character is in a hospital gown and saying to himself in a mirror 'Stop. Pooping.'"}
+
+The COVID-19 pandemic caused massive disruption in the restaurant industry. Due to social distancing measures and lockdowns, restaurant traffic decreased significantly.
+
+While this had significant financial ramifications, one potentially overlooked consequence is the impact on food poisoning rates. With fewer people eating out, the number of food poisoning complaints may have decreased.
+
+**Your turn:** Visualize the geospatial distribution of complaints related to food poisoning in NYC in March, April, and May over a four-year time period (2018-23). Construct the chart in such a way that you can make valid comparisons over time and geographically. What impact did COVID-19 have on food poisoning cases in NYC? Did it vary geographically?
+
+```{r}
+#| label: covid-food-poison
+#| 
+# Process data for March-May for years 2018-2023
+nyc_covid_food_poison <- nyc_311 |>
+  # Generate a year variable
+  mutate(year = year(created_date)) |>
+  # Only keep reports in March, April, and May from 2018-23
+  filter(month(created_date) %in% 3:5, year %in% 2018:2023)
+
+ggmap(nyc) +
+  geom_point(
+    data = nyc_covid_food_poison,
+    aes(x = longitude, y = latitude, color = factor(year)),
+    alpha = 0.7,
+    size = 1.2  
+  ) +
+  facet_wrap(~year, ncol = 2) +
+  scale_color_viridis_d() +
+  labs(
+    title = "Food Poisoning Complaints in NYC (March-May)",
+    subtitle = "Comparing 2018-2023 to observe COVID-19 impact",
+    color = "Year",
+    caption = "Data source: NYC 311 Service Requests"
+  ) +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(size = 14, face = "bold"),
+    strip.text = element_text(size = 12, face = "bold"),  # Larger facet labels
+    axis.text = element_text(size = 10)  # Larger axis text
+  ) +
+  coord_fixed(ratio = 1.3)
+
+years <- unique(nyc_covid_food_poison$year)
+
+for (yr in years) {
+  year_data <- nyc_covid_food_poison |> filter(year == yr)
+  
+  p <- ggmap(nyc, darken = 0.1) +  
+    geom_point(
+      data = year_data,
+      aes(x = longitude, y = latitude),
+      color = "black",
+      alpha = 0.8,
+      size = 1
+    ) +
+    labs(
+      title = paste("Food Poisoning Complaints in NYC -", yr),
+      subtitle = "March-May",
+      caption = "Data source: NYC 311 Service Requests"
+    ) +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 16, face = "bold"),
+      plot.subtitle = element_text(size = 14),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14)
+    )
+  
+  print(p)
+}
+
+ggmap(nyc) +
+  stat_density2d_filled(
+    data = nyc_covid_food_poison,
+    aes(x = longitude, y = latitude),
+    alpha = 0.7
+  ) +
+  facet_wrap(~year, ncol = 2) +
+  labs(
+    title = "Density of Food Poisoning Complaints in NYC",
+    subtitle = "March-May, 2018-2023",
+    caption = "Data source: NYC 311 Service Requests"
+  ) +
+  theme(
+    legend.position = "none", 
+    plot.title = element_text(size = 14, face = "bold"),
+    strip.text = element_text(size = 12, face = "bold"),
+    axis.text = element_text(size = 10)
+  )
+```
+
+**Your turn:** Now visualize the change in food complaints over time *without making a map.* How else could you represent this data? Does making it a map improve the understanding of the data, or add more confusion?
+
+```{r}
+#| label: covid-food-poison-line
+
+nyc_covid_food_poison |>
+  mutate(month = month(created_date, label = TRUE)) |>
+  count(year, month) |>
+  ggplot(aes(x = month, y = n, fill = factor(year))) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Monthly Food Poisoning Complaints in NYC",
+    subtitle = "Spring months (March-May) comparison across years",
+    x = "Month",
+    y = "Number of Complaints",
+    fill = "Year"
+  ) +
+  scale_fill_viridis_d() +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+
+nyc_covid_food_poison |>
+  mutate(
+    year_month = as.Date(paste(year, month(created_date), "01", sep = "-"))
+  ) |>
+  count(year_month) |>
+  ggplot(aes(x = year_month, y = n)) +
+  geom_line(linewidth = 1, color = "steelblue") +
+  geom_point(size = 2, color = "steelblue") +
+  labs(
+    title = "Food Poisoning Complaints in NYC Over Time",
+    subtitle = "March-May 2018-2023, showing COVID-19 impact",
+    x = "Month",
+    y = "Number of Complaints"
+  ) +
+  scale_x_date(date_breaks = "3 months", date_labels = "%b %Y") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+# Visualize food poisoning complaints on Roosevelt Island
+
+**Your turn:** Now focus on food poisoning complaints on or around Roosevelt Island.^[Also the location of Cornell Tech.] Use `get_stamenmap()` to obtain map tiles for the Roosevelt Island region and overlay with the food poisoning complaints. What type of chart is more effective for this task?
+
+::: callout-note
+
+## Tips and extensions
+
+- Consider adjusting your `zoom` for this geographic region.
+- Try a different set of map tiles. Which one looks both interpretable as well as aesthetically pleasing?
+
+:::
+
+```{r}
+#| label: food-poison-roosevelt
+
+# Obtain map tiles for Roosevelt Island
+roosevelt_bb <- c(
+  left = TODO,
+  bottom = TODO,
+  right = TODO,
+  top = TODO
+)
+roosevelt <- get_stadiamap(
+  bbox = roosevelt_bb,
+  zoom = TODO
+)
+
+# add code here
+```
