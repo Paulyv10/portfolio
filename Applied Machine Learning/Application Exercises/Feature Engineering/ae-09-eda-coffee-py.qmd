@@ -1,0 +1,284 @@
+---
+title: "AE 09: Explore coffee taste tests"
+author: Your name
+format: html
+---
+
+# The Great American Coffee Taste Test
+
+```{python}
+# | label: packages
+
+import pandas as pd
+import numpy as np
+from plotnine import *
+from skimpy import skim
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+from pandas.plotting import scatter_matrix
+import missingno as msno
+
+# Set random seed
+np.random.seed(167)
+```
+
+In October 2023, [James Hoffmann](https://www.youtube.com/watch?v=bMOOQfeloH0) and coffee company [Cometeer](https://cometeer.com/pages/the-great-american-coffee-taste-test) held the "Great American Coffee Taste Test" on YouTube, during which viewers were asked to fill out a survey about 4 coffees they ordered from Cometeer for the tasting. [Tidy Tuesday published the data set we are using](https://github.com/rfordatascience/tidytuesday/blob/master/data/2024/2024-05-14/readme.md).
+
+```{python}
+#| label: import-coffee
+
+coffee_survey = pd.read_csv("data/coffee_survey.csv")
+
+# partition into training and test sets
+coffee_train, coffee_test = train_test_split(coffee_survey, test_size=0.2, random_state=167)
+```
+
+It includes the following features:
+
+| variable | class | description |
+|:---------------------------|:---------------|:---------------------------|
+| submission_id | character | Submission ID |
+| age | character | What is your age? |
+| cups | character | How many cups of coffee do you typically drink per day? |
+| where_drink | character | Where do you typically drink coffee? |
+| brew | character | How do you brew coffee at home? |
+| brew_other | character | How else do you brew coffee at home? |
+| purchase | character | On the go, where do you typically purchase coffee? |
+| purchase_other | character | Where else do you purchase coffee? |
+| favorite | character | What is your favorite coffee drink? |
+| favorite_specify | character | Please specify what your favorite coffee drink is |
+| additions | character | Do you usually add anything to your coffee? |
+| additions_other | character | What else do you add to your coffee? |
+| dairy | character | What kind of dairy do you add? |
+| sweetener | character | What kind of sugar or sweetener do you add? |
+| style | character | Before today's tasting, which of the following best described what kind of coffee you like? |
+| strength | character | How strong do you like your coffee? |
+| roast_level | character | What roast level of coffee do you prefer? |
+| caffeine | character | How much caffeine do you like in your coffee? |
+| expertise | numeric | Lastly, how would you rate your own coffee expertise? |
+| coffee_a_bitterness | numeric | Coffee A - Bitterness |
+| coffee_a_acidity | numeric | Coffee A - Acidity |
+| coffee_a_personal_preference | numeric | Coffee A - Personal Preference |
+| coffee_a_notes | character | Coffee A - Notes |
+| coffee_b_bitterness | numeric | Coffee B - Bitterness |
+| coffee_b_acidity | numeric | Coffee B - Acidity |
+| coffee_b_personal_preference | numeric | Coffee B - Personal Preference |
+| coffee_b_notes | character | Coffee B - Notes |
+| coffee_c_bitterness | numeric | Coffee C - Bitterness |
+| coffee_c_acidity | numeric | Coffee C - Acidity |
+| coffee_c_personal_preference | numeric | Coffee C - Personal Preference |
+| coffee_c_notes | character | Coffee C - Notes |
+| coffee_d_bitterness | numeric | Coffee D - Bitterness |
+| coffee_d_acidity | numeric | Coffee D - Acidity |
+| coffee_d_personal_preference | numeric | Coffee D - Personal Preference |
+| coffee_d_notes | character | Coffee D - Notes |
+| prefer_abc | character | Between Coffee A, Coffee B, and Coffee C which did you prefer? |
+| prefer_ad | character | Between Coffee A and Coffee D, which did you prefer? |
+| prefer_overall | character | Lastly, what was your favorite overall coffee? |
+| wfh | character | Do you work from home or in person? |
+| total_spend | character | In total, much money do you typically spend on coffee in a month? |
+| why_drink | character | Why do you drink coffee? |
+| why_drink_other | character | Other reason for drinking coffee |
+| taste | character | Do you like the taste of coffee? |
+| know_source | character | Do you know where your coffee comes from? |
+| most_paid | character | What is the most you've ever paid for a cup of coffee? |
+| most_willing | character | What is the most you'd ever be willing to pay for a cup of coffee? |
+| value_cafe | character | Do you feel like you’re getting good value for your money when you buy coffee at a cafe? |
+| spent_equipment | character | Approximately how much have you spent on coffee equipment in the past 5 years? |
+| value_equipment | character | Do you feel like you’re getting good value for your money when you buy coffee at a cafe? |
+| gender | character | Gender |
+| gender_specify | character | Gender (please specify) |
+| education_level | character | Education Level |
+| ethnicity_race | character | Ethnicity/Race |
+| ethnicity_race_specify | character | Ethnicity/Race (please specify) |
+| employment_status | character | Employment Status |
+| number_children | character | Number of Children |
+| political_affiliation | character | Political Affiliation |
+
+Our ultimate goal on a future assignment is to **predict whether or not individuals like coffee D** based on their survey responses and taste tests for coffees A-C.^[Think of it as a recommendation engine for future customers who do a survey and taste test for three varieties of coffee.] We will use a binary form of `coffee_d_personal_preference` variable as our target.
+
+A quick skim of the data:
+
+```{python}
+#| label: skim
+
+print(coffee_train.info())
+print(coffee_train.describe())
+print(coffee_train.isnull().sum())
+```
+
+# Examining continuous variables
+
+**Your turn:** Examine `expertise` using a histogram and appropriate `binwidth`. Describe the features of this variable.
+
+```{python}
+#| label: expertise
+
+# add code here
+```
+
+*Add response here.*
+
+**Your turn:** Each coffee has three numeric ratings by the respondents: bitterness, acidity, and personal preference. Create a histogram for each of these characteristics, faceted by coffee type. What do you notice?
+
+::: {.callout-tip title="Wrangling the data for easier visualization"}
+
+The original structure of the data is one column for each coffee for each characteristic. You could create separate graphs for each of the 12 columns, but that seems like a lot of work. Instead, consider using the `pivot_longer()` function to restructure the data to one row per coffee per characteristic. This will make it easier to create the faceted histograms.
+
+```{python}
+#| label: coffee-pivot-demo
+
+# Select columns starting with "coffee" but not ending with "notes"
+coffee_cols = [col for col in coffee_train.columns 
+               if col.startswith('coffee_') and not col.endswith('_notes')]
+
+# Reshape the data using melt (pandas equivalent of pivot_longer)
+coffee_long = coffee_train[coffee_cols].melt(
+    var_name='coffee_measure',
+    value_name='value'
+)
+
+# Split the column names to separate coffee type and measure
+coffee_long[['coffee', 'measure']] = coffee_long['coffee_measure'].str.replace('coffee_', '').str.split('_', n=1, expand=True)
+
+# Drop the original combined column and reorder
+coffee_long = coffee_long[['coffee', 'measure', 'value']]
+
+coffee_long
+```
+
+:::
+
+```{python}
+#| label: coffee-characteristics
+
+# add code here
+```
+
+*Add response here.*
+
+# Examining categorical variables
+
+**Your turn:** Examine `prefer_overall` graphically. Record your observations.
+
+```{python}
+#| label: preferred-brew
+
+# add code here
+```
+
+*Add response here.*
+
+**Your turn:** Examine `cups`, `brew`, and `roast_level`. Record your observations, in particular how you might need to handle these variables in the modeling stage.
+
+```{python}
+#| label: cups
+
+# add code here
+```
+
+*Add response here.*
+
+```{python}
+#| label: brew
+
+# add code here
+```
+
+*Add response here.*
+
+```{python}
+#| label: roast
+
+# add code here
+```
+
+*Add response here.*
+
+# Making comparisons
+
+**Your turn:** Compare the relationship between `coffee_d_personal_preference` and the respondents' preferred roast levels. Use a **proportional bar chart** to visualize the relationship.
+
+::: callout-tip
+Use `position='fill'` with `geom_bar()` to automatically calculate percentages for the chart.
+:::
+
+```{python}
+#| label: pref-by-roast
+
+# add code here
+```
+
+*Add response here.*
+
+**Your turn:** Examine the relationship between the respondents' numeric ratings for acidity, bitterness, and personal preference for each of the four coffees and compare to their overall preference. Record your observations.
+
+```{python}
+#| label: pref-by-traits
+
+```
+
+*Add response here.*
+
+# Data quality
+
+## Missingness
+
+**Demonstration:** Use [`missingno`](https://github.com/ResidentMario/missingno) to visualize missingness patterns in the data set.
+
+```{python}
+#| label: py-missingness-1
+
+# Quick glance of missingness by row/column order
+msno.matrix(coffee_train)
+```
+
+```{python}
+#| label: py-missingness-2
+
+# Reorder columns based on % missing
+msno.matrix(coffee_train.loc[:, coffee_train.isnull().sum().sort_values(ascending=False).index])
+```
+
+```{python}
+#| label: py-missingness-3
+
+# Cluster rows based on similarity in missingness patterns
+msno.dendrogram(coffee_train)
+```
+
+**Your turn:** Record your observations on the missingness patterns in the data set. What variables have high missingness? Is this surprising? What might you do to variables or observations with high degrees of missingness?
+
+*Add response here.*
+
+## Outliers
+
+**Demonstration:** Generate a scatterplot matrix for all the numeric variables in the data set.^[Not particularly helpful for this dataset, but a good practice to get into.]
+
+```{python}
+#| label: num-outliers
+
+# Get all numeric columns
+numeric_cols = coffee_train.select_dtypes(include=[np.number]).columns
+
+# Create scatterplot matrix using pandas
+fig, axes = plt.subplots(figsize=(15, 15))
+scatter_matrix(coffee_train[numeric_cols], alpha=0.6, figsize=(15, 15), diagonal='hist')
+plt.show()
+```
+
+**Your turn:** Examine the distribution of roast/gender and roast/cups. Describe the patterns you see and anything that is of particular interest given the model we will estimate.
+
+```{python}
+#| label: roast-gender
+
+# add code here
+```
+
+```{python}
+#| label: roast-cups
+
+# add code here
+```
+
+*Add response here.*

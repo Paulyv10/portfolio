@@ -1,0 +1,524 @@
+title: "Homework 04 - Predict coffee preferences"
+subtitle: "INFO 4940/5940 - Fall 2025"
+author: "Paul Vermette"
+date: today
+format: typst
+engine: knitr
+---
+
+# Setup
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  cache = TRUE,
+  fig.width = 8,
+  fig.height = 6
+)
+
+set.seed(20241006)
+```
+
+
+```{r load-packages}
+install.packages(c("tidyverse", "tidymodels", "probably", "vip", "gt", "here"))
+library(tidyverse)
+library(tidymodels)
+library(probably)
+library(vip)
+library(gt)
+library(here)
+
+theme_set(theme_minimal())
+```
+
+
+# Exercise 1
+
+```{r import-data}
+
+coffee_raw <- read_csv(
+  here("data", "coffee_survey.csv"),
+  show_col_types = FALSE
+)
+
+
+glimpse(coffee_raw)
+```
+
+
+```{r data-prep}
+
+coffee_clean <- coffee_raw |>
+
+  select(
+    # Demographics
+    age,
+    gender,
+    education_level,
+    ethnicity_race,
+    employment_status,
+    number_children,
+    political_affiliation,
+
+    # Coffee habits and preferences
+    cups,
+    where_drink,
+    brew,
+    purchase,
+    favorite,
+    additions,
+    dairy,
+    sweetener,
+    style,
+    strength,
+    roast_level,
+    caffeine,
+    expertise,
+
+    # Lifestyle and spending
+    wfh,
+    total_spend,
+    why_drink,
+    taste,
+    know_source,
+    most_paid,
+    most_willing,
+    value_cafe,
+    spent_equipment,
+    value_equipment,
+
+    # Outcome variable
+    coffee_d_personal_preference
+  ) |>
+
+  drop_na(coffee_d_personal_preference) |>
+
+  mutate(
+    liked_coffee_d = factor(
+      if_else(coffee_d_personal_preference > 3, "liked", "not_liked"),
+      levels = c("not_liked", "liked") # Set reference level
+    )
+  ) |>
+
+  # make all binary
+  select(-coffee_d_personal_preference) |>
+
+  # Conversion
+  mutate(across(where(is.character), as.factor))
+
+# Check the distro
+coffee_clean |>
+  count(liked_coffee_d) |>
+  mutate(proportion = n / sum(n)) |>
+  gt() |>
+  tab_header(title = "Distribution of Coffee D Preference")
+```
+
+**Explanation of data prep decisions** 
+
+1. **Variable selection**: We kept ONLY variables that would be available before a customer tries coffee D - demographics, general coffee preferences, and consumption habits. We excluded ratings for coffees A, B, and C to stimulate a realistic prediction scenario. 
+
+2. **Binary outcome**: We converted the personal preference by rating (likely 1-5 scale) to a binary outcome where ratings > 3 indicate the customer liked the coffee. It simplifies interpretation, and is more actionable for business decisions. 
+
+3. **Factor conversion**: Converting character variables to factors is important for tidymodels to handle categorical variables correctly in recipes.
+
+
+
+# Exercise 2
+
+**we are going to split our data into training and test sets, then create resamples of the training data for model evaluation.**
+
+```{r datasplit}
+
+set.seed(456)
+
+coffee_split <- initial_split(
+  coffee_clean,
+  prop = 0.75,
+  strata = liked_coffee_d
+)
+```
+
+```{r}
+coffee_train <- training(coffee_split)
+coffee_test <- testing(coffee_split)
+
+# Display sizes of our datasets
+cat("Training set size:", nrow(coffee_train), "\n")
+cat("Test set size:", nrow(coffee_test), "\n")
+```
+
+
+```{r resamples}
+
+coffee_folds <- vfold_cv(
+  coffee_train,
+  v = 10, # Number of folds
+  strata = liked_coffee_d # Stratify to maintain outcome distribution in each fold
+)
+
+coffee_folds
+
+```
+
+**Justification for resampling choice** 
+
+- I chose 10-fold cross-validation because: 
+    1. **Balanced bias variance tradeoff**: 10 folds gives good balance between computational cost and reliable performance estimates. Each fold uses 90% of training data, giving stable estimates.
+
+    2. **Stratification**: We converted the personal preference rating (likely 1-5 scale) to a binary outcome where ratings > 3 indicate the customer liked the coffee. This simplifies interpretation and is more actionable for business decisions.
+
+    3. **Standard practice**: Converting character variables to factors is important for tidymodels to handle categorical variables correctly in recipes.
+
+
+
+
+# Exercise 3: Null Model
+
+The null model predicts the majority class for ALL observations, offering a baseline for our comparison
+
+```{r nullmodelspec}
+
+coffee_train$liked_coffee_d <-
+  forcats::fct_relevel(coffee_train$liked_coffee_d, "not_liked", "liked")
+
+
+options(yardstick.event_first = FALSE)
+
+# Null model specification
+null_spec <- logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+
+# Intercept-only recipe (no predictors, no steps)
+null_recipe <- recipe(liked_coffee_d ~ 1, data = coffee_train)
+
+# Workflow
+null_wflow <- workflow() |>
+  add_model(null_spec) |>
+  add_recipe(null_recipe)
+
+# Metric set
+null_metrics <- yardstick::metric_set(
+  accuracy,
+  brier_class,
+  roc_auc,
+  bal_accuracy
+)
+
+ctrl <- control_resamples(save_pred = TRUE)
+
+
+set.seed(456)
+null_rs <- fit_resamples(
+  null_wflow,
+  resamples = coffee_folds,
+  metrics = null_metrics,
+  control = ctrl
+)
+
+
+collect_notes(null_rs)
+
+# Summarize
+collect_metrics(null_rs)
+```
+
+# interpretation: A true null model - ~54.5% accuracy, .5 balanced accuracy, .5 ROC AUC, and 0.248 Brier score. This is a solid baseline. 
+
+
+
+# Exercise 4
+
+```{r}
+# Model specification
+
+log_spec <- logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+```
+
+```{r}
+
+log_recipe <- recipe(liked_coffee_d ~ ., data = coffee_train) |>
+  step_zv(all_predictors()) |>
+  step_dummy(all_nominal_predictors()) |>
+  step_normalize(all_numeric_predictors())
+```
+
+```{r}
+# workflow
+
+log_wflow <- workflow() |>
+  add_model(log_spec) |>
+  add_recipe(log_recipe)
+```
+
+```{r}
+# cross validation
+
+set.seed(456)
+log_rs <- fit_resamples(
+  log_wflow,
+  resamples = coffee_folds,
+  metrics = null_metrics,
+  control = ctrl
+)
+```
+
+```{r}
+# Summarize metrics
+collect_metrics(log_rs) |>
+  select(metric = .metric, mean, std_err) |>
+  gt() |>
+  fmt_number(columns = c(mean, std_err), decimals = 4) |>
+  tab_header(title = "Logistic Regression Model Performance")
+```
+
+# Interpreation: Accuracy is slightly below random guessing compared to the null's 0.545. The model misclassifies more often than than always majority rule. Balanced accuracy is solid at 0.486, brier is MUCH worse than the null (0.248), meaning the predicated probabilities are poorly calibrated. ROC AUC <0.5 means the model is slightly reversing signal, ranking positives BELOW negatives...
+
+
+```{r}
+# Compare null vs logistic regression
+bind_rows(
+  collect_metrics(null_rs) |> mutate(model = "Null"),
+  collect_metrics(log_rs) |> mutate(model = "Logistic")
+) |>
+  select(model, .metric, mean, std_err) |>
+  arrange(.metric) |>
+  gt() |>
+  fmt_number(columns = c(mean, std_err), decimals = 4) |>
+  tab_header(title = "Comparison: Null vs. Logistic Regression")
+```
+
+
+# Interpretation: Accuracy dropped 7 points, balanced accuracy still solid, Brier (0.522) shows the model's probabilities are much less reliable, and the AUC shows that the real model is performing worse than the random ordering.. 
+
+
+
+
+# Exercise 5
+
+
+```{r}
+# LASSO
+
+log_spec_tuned <- logistic_reg(
+  penalty = tune(), # strength of shrinkage
+  mixture = 1 # 1 = LASSO; 0 = ridge; between 0-1 = elastic net
+) |>
+  set_engine("glmnet") |>
+  set_mode("classification")
+```
+
+```{r}
+# recipe :)
+
+log_recipe_tuned <- recipe(liked_coffee_d ~ ., data = coffee_train) |>
+
+  step_unknown(all_nominal_predictors()) |>
+  step_impute_median(all_numeric_predictors()) |>
+
+  step_other(all_nominal_predictors(), threshold = 0.005) |>
+
+  step_dummy(all_nominal_predictors()) |>
+
+  step_zv(all_predictors()) |>
+  step_normalize(all_numeric_predictors())
+```
+
+```{r}
+# workflow!
+
+log_wflow_tuned <- workflow() |>
+  add_model(log_spec_tuned) |>
+  add_recipe(log_recipe_tuned)
+```
+
+```{r}
+# tuning grid
+
+set.seed(456)
+lambda_grid <- grid_regular(penalty(range = c(-4, 0)), levels = 20)
+
+lasso_tuned_rs <- tune_grid(
+  log_wflow_tuned,
+  resamples = coffee_folds,
+  grid = lambda_grid,
+  metrics = null_metrics,
+  control = control_grid(save_pred = TRUE)
+)
+
+
+collect_notes(lasso_tuned_rs)
+```
+
+```{r}
+# LASSO BEST
+
+best_lambda <- tune::select_best(lasso_tuned_rs, metric = "roc_auc")
+
+final_lasso_wflow <- tune::finalize_workflow(log_wflow_tuned, best_lambda)
+
+set.seed(456)
+final_lasso_fit <- tune::fit_resamples(
+  final_lasso_wflow,
+  resamples = coffee_folds,
+  metrics = null_metrics,
+  control = ctrl
+)
+
+collect_metrics(final_lasso_fit)
+```
+
+# Interpretation: Lasso substantially improved all metrics, which is exactly what this exercise is meant to show. Regularization eliminated noisy predictors and overfitting from the plain logistic model. 
+
+
+
+
+# Exercise 6
+
+```{r}
+# refitting LASSo w/best lambda via exercise 5:
+
+final_lasso_fit_full <- fit(final_lasso_wflow, data = coffee_train)
+final_lasso_fit_full
+```
+
+# This retrains the model on ALL available trainings folds w/optimal regularization strength.
+```{r}
+# Generate both class and probability predictions
+test_preds <- predict(final_lasso_fit_full, coffee_test, type = "prob") |>
+  bind_cols(predict(final_lasso_fit_full, coffee_test)) |>
+  bind_cols(coffee_test)
+
+glimpse(test_preds)
+```
+
+
+```{r}
+# Key test metrics
+test_accuracy <- yardstick::accuracy(
+  test_preds,
+  truth = liked_coffee_d,
+  estimate = .pred_class
+)
+test_roc_auc <- yardstick::roc_auc(
+  test_preds,
+  truth = liked_coffee_d,
+  .pred_liked
+)
+test_brier <- yardstick::brier_class(
+  test_preds,
+  truth = liked_coffee_d,
+  .pred_liked
+)
+
+# Confusion matrix for deeper insight
+conf_mat(test_preds, truth = liked_coffee_d, estimate = .pred_class)
+
+tibble(
+  Metric = c("Accuracy", "ROC AUC", "Brier Score"),
+  Value = c(
+    test_accuracy$.estimate,
+    test_roc_auc$.estimate,
+    test_brier$.estimate
+  )
+)
+```
+
+# Interpretation: ROC AUC is super low (0.202) but accuracy (0.736) and balanced predictions (366 vs 327) CEARLY show it is doing well but I think event_level is causing the ROC AUC to calculate backwards, where it is treating not_liked as the positive event. I did this before in hw2 I believe, ugh. I will now fix it. 
+
+
+
+```{r}
+test_accuracy <- yardstick::accuracy(
+  test_preds,
+  truth = liked_coffee_d,
+  estimate = .pred_class
+)
+test_roc_auc <- yardstick::roc_auc(
+  test_preds,
+  truth = liked_coffee_d,
+  .pred_liked,
+  event_level = "second"
+)
+test_brier <- yardstick::brier_class(
+  test_preds,
+  truth = liked_coffee_d,
+  .pred_liked
+)
+
+
+conf_mat(test_preds, truth = liked_coffee_d, estimate = .pred_class)
+
+tibble(
+  Metric = c("Accuracy", "ROC AUC", "Brier Score"),
+  Value = c(
+    test_accuracy$.estimate,
+    test_roc_auc$.estimate,
+    test_brier$.estimate
+  )
+)
+```
+
+
+# Interpretation: NOW it is what we expected, with the Accuracy (0.736), ROC AUC (0.798), and Brier Score (0.448) scoring well within our standards. The model classifies 'liked' and 'not liked' coffee correctly in most cases. 
+
+
+
+# Exercise 7
+
+```{r}
+
+# comparing models
+
+cmp <- dplyr::bind_rows(
+  collect_metrics(null_rs) |> dplyr::mutate(Model = "Null"),
+  collect_metrics(log_rs) |> dplyr::mutate(Model = "Logistic (Baseline)"),
+  collect_metrics(final_lasso_fit) |> dplyr::mutate(Model = "LASSO (Final)")
+) |>
+  dplyr::filter(.estimator == "binary") |>
+  dplyr::select(Model, .metric, mean) |>
+  tidyr::pivot_wider(
+    names_from = .metric,
+    values_from = mean
+  )
+
+cmp |>
+  gt::gt() |>
+  gt::fmt_number(columns = -Model, decimals = 3) |>
+  gt::tab_header(title = "Model Comparison (CV Means, Single Config per Model)")
+```
+
+
+# Interpretation: comparing ALL models highlights how complexity and regularization shape predictive performance! The null model establishes a 0.55 accuracy baseline. A plain logistic regression underperforms due to overfitting and poor handling of sparse categorical data (AUC ~0.49). After tuning, the LASSO regression dramatically improves to 0.74 accuracy and 0.79 AUC, indicating both superior discrimination and stability. Regularization eliminated noise & retained only the strongest predictors of coffee preference, which gives us a model that generalizes well and remains interpretable. These results confirm the value of penalized regression in high dimenstional survey data
+
+
+
+
+# Exercise 8
+
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
+
+
+
+# GAI self-reflection
+
+
+

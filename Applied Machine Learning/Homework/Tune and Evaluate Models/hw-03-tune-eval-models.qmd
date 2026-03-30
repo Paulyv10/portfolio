@@ -1,0 +1,807 @@
+---
+title: "Homework 03 - Tune and evaluate models"
+subtitle: "INFO 4940/5940 - Fall 2025"
+author: "Paul Vermette II"
+date: today
+format: typst
+engine: knitr
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+library(yaml)
+library(tidyverse)
+library(tidymodels)
+library(arrow)
+library(themis)
+
+set.seed(123)
+
+```
+
+
+
+# Exercise 1
+
+```{r}
+# Metrics Identified for Performance
+
+# Since this is a classification problem predicting marijuana legalization attitudes, we need metrics that
+
+# a) Handle class imbalances appropriately
+# b) Evaluate performance on BOTH classes equally
+# c) Are interpretable for potential outside stakeholders
+```
+
+```{r}
+# 1. Sensitivity (Recall/True Positive Rate)
+# Reason: The proportion of 'shoudld not be legal' responses correctly identified, plus it's important for understanding pro-legalization sentiment(s)
+
+# 2. Specificity (True Negative Rate)
+# Reason: The proportion of 'should not be legal' responses correctly identified & it is important for understanding opposition sentiment
+
+# 3. Balanced Accuracy (Sensitivity + Specificty) / 2
+# Reason: Addresses class imbalance by weighing both classes equally. It also is a single metric that balance performanceo n BOTH classes.
+
+# 4. ROC AUC (Area under ROC Curve)
+# Reason: It measures discriminative ability across all probability thresholds and it is less sensitive to class imbalances than a regular accuracy
+
+# 5. J-Index (also known as Youden's Index): Sensitivity + Specificity - 1
+# Reason: It maximizes the difference between true positive rate and false positive rate and it dirrectly related to balanced accuracy (same ranking)
+
+# 6. Brier Score
+# Reason: It measures calibration (how well predicted probabilities match actual outcomes) and will usually offer lower scores. Lower scores indicate better probability estimates.
+```
+
+# Exercise 2
+
+```{r}
+gss_data <- read_feather("data/gss.feather")
+
+glimpse(gss_data)
+```
+
+
+```{r}
+# Checking outcome variable distro
+gss_data |>
+  count(grass) |>
+  mutate(proportion = n / sum(n))
+```
+
+```{r}
+summary(gss_data)
+```
+
+```{r}
+# checking missing patterns
+
+gss_data |>
+  summarise(across(everything(), ~ sum(is.na(.)))) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "missing_count"
+  ) |>
+  mutate(missing_prop = missing_count / nrow(gss_data)) |>
+  arrange(desc(missing_count))
+```
+
+```{r}
+gss_data |>
+  select(grass, gunlaw, partyid, region, sex, fear) |>
+  summary()
+```
+
+```{r}
+# Class imbalance?
+
+gss_data |>
+  count(grass) |>
+  mutate(proportion = n / sum(n)) |>
+  mutate(ratio = paste0(round(proportion * 100, 1), "%"))
+
+# 69.5% favor (1105 respondents)
+# 30.5% oppose (486 respondents)
+# That is ~2.3:1 in favor
+```
+
+```{r}
+# Missing Data?
+
+gss_data |>
+  summarise(across(everything(), ~ sum(is.na(.)))) |>
+  pivot_longer(
+    everything(),
+    names_to = "variable",
+    values_to = "missing_count"
+  ) |>
+  mutate(missing_prop = missing_count / nrow(gss_data)) |>
+  arrange(desc(missing_count)) |>
+  filter(missing_prop > 0) |> # Only show variables with missing data
+  print(n = 15)
+```
+
+# Analysis: There are many missing data across varables. 
+ # over 50% missing: letdie1, hrs1, gunlaw) 
+ # suggests these questions weren't asked to all respondents. 
+ # Cant just drop rows with missing data, as we would lose almost all of the dataset 
+ # Going to use mean imputation for numeric variables & new category for categorical analysis
+
+```{r}
+# gunlaw vs grass
+
+if (sum(!is.na(gss_data$gunlaw)) > 0) {
+  gss_data |>
+    filter(!is.na(gunlaw)) |>
+    count(grass, gunlaw) |>
+    group_by(gunlaw) |>
+    mutate(prop = n / sum(n)) |>
+    print()
+}
+```
+
+# Analysis: Surprising lack of strong relationship. 
+ # Unlike expected, gun attributes do not strongly predict drug attitudes. Government framework might not apply uniformly across policy domains. It also shows that these indicators are not great predictors 
+
+
+```{r}
+# partyid vs. grass
+
+gss_data |>
+  filter(!is.na(partyid)) |>
+  count(grass, partyid) |>
+  group_by(partyid) |>
+  mutate(prop = round(n / sum(n), 3)) |>
+  arrange(partyid) |>
+  print(n = 20)
+```
+
+# Analysis: There is a strong political predictive pattern with a clear ideological gradient. 
+  # Theres a clear ideological spectrum from Strong Democrat (78%) to Strong Republican (46%). That's a 32% point spread. It will definitely be one of our strongest predictors 
+
+```{r}
+# region vs grass
+
+gss_data |>
+  count(grass, region) |>
+  group_by(region) |>
+  mutate(prop = round(n / sum(n), 3)) |>
+  arrange(desc(prop)) |>
+  print(n = 20)
+```
+
+# Analysis: Regional variation but less dramatic than political party. Still will be a useful predictor but secondary to political party.
+
+
+
+```{r}
+# Sex vs Grass?
+
+gss_data |>
+  filter(!is.na(sex)) |>
+  count(grass, sex) |>
+  group_by(sex) |>
+  mutate(prop = round(n / sum(n), 3)) |>
+  print()
+```
+
+# Analysis: Sex shows a moderate but consistent pattern; men are more supportive than women by ~5.5 percentage points. Meaningful, yes, but still much smaller than age or political party effects. 
+
+```{r}
+# Age?
+gss_data |>
+  filter(!is.na(age)) |>
+  mutate(
+    age_group = case_when(
+      age < 30 ~ "Under 30",
+      age < 45 ~ "30-44",
+      age < 60 ~ "45-59",
+      age < 75 ~ "60-74",
+      TRUE ~ "75+"
+    )
+  ) |>
+  count(grass, age_group) |>
+  group_by(age_group) |>
+  mutate(prop = round(n / sum(n), 3)) |>
+  arrange(age_group) |>
+  print()
+```
+
+# Analysis: Wow, age seems like a pretty powerful predictor. There's a 48% point spread from Under 30 to 75+, which is huge. Maybe there's generational replacement driving the shift. Older cohorts and the 'war on drugs' vs. younger cohorts with different cultural experiences.
+
+```{r}
+# Particioning
+
+set.seed(123)
+
+gss_split <- initial_split(gss_data, prop = 0.8, strata = grass)
+gss_train <- training(gss_split)
+gss_test <- testing(gss_split)
+
+```
+
+```{r}
+# Verification
+
+gss_train |>
+  count(grass) |>
+  mutate(prop = round(n / sum(n), 3))
+```
+
+```{r}
+gss_test |>
+  count(grass) |>
+  mutate(prop = round(n / sum(n), 3))
+```
+
+# Particioning Strategy: 
+  # 1. 80/20 split: gives us 1,272 training & 319 test, which is large enough for training complex models and sufficient for the test set evaluation. 
+  # 2. Stratified sampling: because we have a class imbalance, stratification makes sure both training and test sets have nearly identical class distributions. This will avoid bias from chance imbalances. 
+  # 3. Set seed as required! 
+
+
+
+# Exercise 3
+
+```{r}
+# Cross-valudcation folds
+set.seed(123)
+
+gss_folds <- vfold_cv(gss_train, v = 10, strata = grass)
+```
+
+# Justification: Standard practice, which is good for bias-variance tradeoff. Stratifying fixes class imbalance. 
+
+
+```{r}
+# verify
+
+gss_folds$splits[[1]] |>
+  analysis() |>
+  count(grass) |>
+  mutate(prop = round(n / sum(n), 3))
+```
+
+# Analysis: Perfect execution.
+
+```{r}
+null_spec <- logistic_reg() |>
+  set_engine("glm") |>
+  set_mode("classification")
+
+# recipe!
+null_recipe <- recipe(grass ~ 1, data = gss_train)
+
+# workflow
+null_workflow <- workflow() |>
+  add_model(null_spec) |>
+  add_recipe(null_recipe)
+
+# Evaluate null model
+null_results <- null_workflow |>
+  fit_resamples(
+    resamples = gss_folds,
+    metrics = metric_set(
+      accuracy,
+      sensitivity,
+      specificity,
+      roc_auc,
+      bal_accuracy
+    )
+  )
+
+
+null_metrics <- collect_metrics(null_results)
+print("=== NULL MODEL PERFORMANCE ===")
+null_metrics
+```
+
+# Analysis: The intercept only baseline achieves a 69.5% accuracy because 69.5% of respondents favor legalization. But it also has a TPR = 1.00 & TNR = 0.00, which yields a balanced accuracy of .50 and ROC AUC of .50. It is a naive accuracy misleading under class imbalance. 
+
+# We must prioritize balanced accuracy, sensitivity, specificity, ROC AUC, and at a later point calibration metrics. 
+
+
+
+# Exercise 4
+
+
+```{r}
+# Defining metrics! 
+
+ex4_metrics <- metric_set(
+  bal_accuracy, 
+  sensitivity,
+  specificity,
+  roc_auc, 
+  brier_class, #probability calibration quality
+  j_index # threshold selection signal
+)
+```
+
+```{r}
+ex4_base_rec <-
+  recipe(grass ~ ., data = gss_train) |>
+  update_role(id, new_role = "id") |> 
+  step_zv(all_predictors()) |>
+  step_impute_mean(all_numeric(), -all_outcomes()) |>
+  step_impute_mode(all_nominal(), -all_outcomes()) |>
+  step_dummy(all_nominal(), -all_outcomes(), one_hot = TRUE) |>
+  step_normalize(all_numeric(), -all_outcomes())
+
+# inspect
+prep_ex4 <- prep(ex4_base_rec)
+juice(prep_ex4) |> glimpse()
+```
+
+# Justification: removing predictors w/o variation, handles 50+% of missing data, and lassso works better with all categories represented. Lastly, step_normalize() is great for penalized regression 
+
+
+
+```{r}
+# downsampled version w/themis
+
+ex4_down_rec <- ex4_base_rec |> themis::step_downsample(grass)
+```
+
+# Justification: it will randomly remove majority class observations to achieve 1:1 ratio, in addition to being applied WITHIN cross-validation to prevent leakage
+
+
+```{r}
+
+# Lasso Model :) 
+
+lasso_spec <-
+  logistic_reg(penalty = tune(), mixture = 1) |>
+  set_engine("glmnet") |>
+  set_mode("classification")
+
+pen_grid <- grid_regular(penalty(), levels = 30) 
+```
+
+```{r}
+# workflow 
+
+wf_orig <- workflow() |> add_model(lasso_spec) |> add_recipe(ex4_base_rec)
+wf_down <- workflow() |> add_model(lasso_spec) |> add_recipe(ex4_down_rec)
+
+ctrl <- control_resamples(save_pred = TRUE)
+
+set.seed(123)
+tune_orig <- tune_grid(
+  wf_orig,
+  resamples = gss_folds,
+  grid = pen_grid,
+  metrics = ex4_metrics,
+  control = ctrl
+)
+
+set.seed(123)
+tune_down <- tune_grid(
+  wf_down,
+  resamples = gss_folds,
+  grid = pen_grid,
+  metrics = ex4_metrics,
+  control = ctrl
+)
+```
+
+```{r}
+orig_tbl <- collect_metrics(tune_orig) |> mutate(set = "original")
+down_tbl <- collect_metrics(tune_down) |> mutate(set = "downsampled")
+
+# quick look at primary metric
+show_best(tune_orig, metric = "bal_accuracy", n = 5)
+show_best(tune_down, metric = "bal_accuracy", n = 5)
+
+# pick the best per approach for your comparison table
+sel_orig <- select_best(tune_orig, metric = "bal_accuracy")
+sel_down <- select_best(tune_down, metric = "bal_accuracy")
+
+sel_orig
+sel_down
+```
+
+```{r}
+bind_rows(
+  orig_tbl |> filter(.metric == "bal_accuracy"),
+  down_tbl |> filter(.metric == "bal_accuracy")
+) |>
+  ggplot(aes(penalty, mean, linetype = set)) +
+  geom_line() +
+  geom_point() +
+  scale_x_log10() +
+  labs(
+    x = "Penalty (log scale)",
+    y = "Balanced accuracy",
+    title = "Ex4: LASSO — Original vs Downsampled (10-fold CV)"
+  ) + 
+    theme_minimal()
+```
+
+# Analysis of exercise 4: Downsampling provides a strong improvement. 
+
+# Original data BEST balanced accuracy: 66.4%
+# Downsampled data bset balanced accuracy: 66.2%
+
+# Why it helps: It forces the model to learn patterns in minority class(es), it prevents the model from defaulting to majority classes, and gives us a more balanced sensitivity/specificity trade-off
+
+
+# Penalty Parameter: Downsampling gives us more balanced data requiring different regularization 
+
+# Results: 
+
+# Q1) Downsampling is preferred when the goal is balanced identification of both classes. 
+
+# Q2) Balanced Accuracy should be the primary metric for model selection.
+
+
+# Exercise 5
+
+
+```{r}
+# Model Choice and Validation: 
+
+# I compated the best original and downsampled LASSO models using the metrics required in the assignment. 
+
+# The downsampled model achieved a balanced accuracy of 0.692 (vs. 0.664), specificity went up, and similar sensitivity, ROC AUC, and Brier score relative to the original. The J-Index rose accordingly (recall BA = (J + 1) /2)
+
+# Because the outcome is imbalanced (≈70 % “should be legal”), I selected the final model by balanced accuracy, which was our primary metric from Exercise 1, so that performance on both classes receives equal weight.
+
+# Supporting metrics confirmed the choice: downsampling raised specificity (better detection of the minority “should not be legal” class) without harming calibration or overall separability.
+
+# CONCLUSION: The downsampled LASSO is preferred for subsquent comaprison with other models, as it provides the most balanced classification of pro and anti legalization respondents! 
+
+```
+
+
+
+```{r}
+
+ex5_metrics <- bind_rows(
+  collect_metrics(tune_orig) |> filter(.config == sel_orig$.config) |> mutate(set = "original"),
+  collect_metrics(tune_down) |> filter(.config == sel_down$.config) |> mutate(set = "downsampled")
+) |>
+  filter(.metric %in% c("bal_accuracy","sensitivity","specificity","roc_auc","brier_class","j_index"))
+
+ex5_metrics
+```
+
+```{r}
+# Results: 
+
+# Using 10-fols stratified CV results for selected LASSO models: 
+
+# Interpretation: Balanced accuracy rises from 0.664 --> 0.692 with downsampling, which shows better overall class balance 
+
+# Specificity: Jumps from 0.461 --> 0.683, which means the downsampled model is far better at identifying the minority "should not be legal" class. 
+
+# Sensitivity: drops from 0.867 --> 0.700, which is expected as that tradeoff due to the model stopping defaulting to the majority class 
+
+# ROC AUC: remains unchanged, so the overall discrimination is stable! 
+
+# Brier Score: slightly high from 0.175 --> 0.204. this indicates a small loss in probability callibration but it is accetable given that the gain we had in balanced classification exists. 
+
+# J-Index : increases from 0.328 --> 0.383, which mirrors a balanced accuracy improvement! 
+
+
+#### CONCLUSION ####
+
+# Because the goal is balanced identification of BOTH classes, balanced accuracy is the driving metric. The downsampled LASSO model shows substantially higher specificity and overall balanced accuracy with only tiny calibration cost. So, it's the preferred model for the remainder of this assignment.
+
+```
+
+
+
+
+# Exercise 6
+
+
+```{r}
+rf_metrics <- ex4_metrics  
+```
+
+```{r}
+# Pre processing 
+
+ex6_rec <- ex4_base_rec   
+```
+```{r}
+# Random forest spec w/parsnip 
+
+rf_spec <- rand_forest(
+  mtry  = tune(),  
+  min_n = tune(),   
+  trees = 1000      
+) |>
+  set_engine("ranger", importance = "impurity") |>
+  set_mode("classification")
+```
+
+```{r}
+# flow/tuning 
+
+rf_wf <- workflow() |>
+  add_model(rf_spec) |>
+  add_recipe(ex6_rec)
+
+rf_grid <- grid_regular(
+  mtry(range = c(2, ncol(juice(prep(ex6_rec))) - 1)),
+  min_n(range = c(2, 20)),
+  levels = 5
+)
+```
+
+```{r}
+# CV Tuning 
+
+set.seed(123)
+rf_tuned <- tune_grid(
+  rf_wf,
+  resamples = gss_folds,
+  grid = rf_grid,
+  metrics = rf_metrics,
+  control = control_resamples(save_pred = TRUE)
+)
+```
+
+```{r}
+# Best model? 
+
+rf_best <- select_best(rf_tuned, metric = "bal_accuracy")
+rf_best
+
+rf_final <- finalize_workflow(rf_wf, rf_best)
+```
+
+```{r}
+# Evaluate w/held out test set
+
+rf_fit <- last_fit(rf_final, gss_split, metrics = rf_metrics)
+collect_metrics(rf_fit)
+```
+
+```{r}
+# interpretation: 
+
+# Balanced accuracy: Our primary metric for this imbalanced outcome drops to 0.611, well below the downsampled LASSO's 0.692
+
+# Sensitivity: Very high (0.896), where the forest correctly flagged nearly ALL of the respondents who think marijuana should NOT be legal. 
+
+# Specificity: VERY low (0.327), as it struggles to ID the minority "should not be legal" class. 
+
+# ROC AUC: Also lower (0.692 vs 0.754), which reflects predicted probabilities being a bit better calibrated but this doesn't offset the poor class balance. 
+
+# Conclusion: While the random forest provides the well-calibrated probabilities and excellent sensitivity, its BALANCED ACCURACY and SPECIFICTY are WORSE than the downsampled LASSO. 
+
+# Given the assignment's goal of balanced identification of both classes, the downsampled LASSO remains the preferred model moving forward. 
+```
+
+
+
+# Exercise 7
+```{r}
+# reusing metrics & recipe 
+
+ex7_metrics <- ex4_metrics   
+
+# Preprocessing
+ex7_base_rec <- ex4_base_rec
+
+# downsampled variant 
+ex7_down_rec <- ex7_base_rec |> themis::step_downsample(grass)
+```
+
+```{r}
+# Elastic net 
+enet_spec <-
+  logistic_reg(penalty = tune(), mixture = tune()) |>
+  set_engine("glmnet") |>
+  set_mode("classification")
+```
+
+```{r}
+# grids! 
+pen_grid  <- penalty(range = c(-6, 0))  
+mix_grid  <- mixture(range = c(0, 1))  
+
+enet_grid <- grid_regular(
+  pen_grid,
+  mix_grid,
+  levels = c(15, 7)   
+)
+```
+
+```{r}
+# workflowS
+
+wf_enet_orig <- workflow() |> add_model(enet_spec) |> add_recipe(ex7_base_rec)
+wf_enet_down <- workflow() |> add_model(enet_spec) |> add_recipe(ex7_down_rec)
+
+ctrl <- control_resamples(save_pred = TRUE)
+
+set.seed(123)
+enet_orig <- tune_grid(
+  wf_enet_orig,
+  resamples = gss_folds,
+  grid = enet_grid,
+  metrics = ex7_metrics,
+  control = ctrl
+)
+
+set.seed(123)
+enet_down <- tune_grid(
+  wf_enet_down,
+  resamples = gss_folds,
+  grid = enet_grid,
+  metrics = ex7_metrics,
+  control = ctrl
+)
+```
+
+```{r}
+# inspect results
+
+
+show_best(enet_orig, metric = "bal_accuracy", n = 5)
+show_best(enet_down, metric = "bal_accuracy", n = 5)
+
+
+best_enet_orig <- select_best(enet_orig, metric = "bal_accuracy")
+best_enet_down <- select_best(enet_down, metric = "bal_accuracy")
+
+best_enet_orig
+best_enet_down
+```
+
+```{r}
+# Visualization of results: 
+
+bind_rows(
+  collect_metrics(enet_orig) |> filter(.metric == "bal_accuracy") |> mutate(set = "original"),
+  collect_metrics(enet_down) |> filter(.metric == "bal_accuracy") |> mutate(set = "downsampled")
+) |>
+  ggplot(aes(penalty, mean, color = factor(round(mixture,2)), linetype = set)) +
+  geom_line() + geom_point() +
+  scale_x_log10() +
+  labs(x = "Penalty (log scale)", y = "Balanced accuracy",
+       color = "mixture",
+       title = "Exercise 7: Elastic Net — original vs downsampled") + 
+        theme_minimal()
+```
+
+```{r}
+# interpretation: 
+
+# Because Balanced Accuracy is our primary metric under class imbalance, the downsampled elastic net model (λ ≈ 0.37, α = 0) edges out BOTH the downsampled lasso (example 5) and the elastic net model fit into the original data. 
+
+# This downsampled ridge style logisitc regression is therefore the preferred linear model to carry forward for the final comparison in ex.9. 
+```
+
+
+# Exercise 8
+
+```{r}
+# Metrics
+ex8_metrics <- ex4_metrics   # keep the same set
+
+# Preprocessing
+
+ex8_rec <- ex4_base_rec      
+
+knn_spec <- nearest_neighbor(
+  neighbors = tune(),
+  weight_func = tune()
+) |>
+  set_engine("kknn") |>
+  set_mode("classification")
+
+# Workflow
+wf_knn <- workflow() |>
+  add_model(knn_spec) |>
+  add_recipe(ex8_rec)
+
+# Grid
+knn_grid <- grid_regular(
+  neighbors(range = c(1, 50)),
+  weight_func(values = c("rectangular","triangular","epanechnikov"))
+)
+
+# Tune
+set.seed(123)
+knn_tuned <- tune_grid(
+  wf_knn,
+  resamples = gss_folds,
+  grid = knn_grid,
+  metrics = ex8_metrics,
+  control = control_resamples(save_pred = TRUE)
+)
+
+# Pick best
+best_knn <- select_best(knn_tuned, metric = "bal_accuracy")
+best_knn
+```
+
+
+```{r}
+knn_final <- finalize_workflow(wf_knn, select_best(knn_tuned, metric = "bal_accuracy"))
+
+knn_fit <- last_fit(knn_final, gss_split, metrics = ex8_metrics)
+
+collect_metrics(knn_fit)
+```
+
+
+# Justification and Analysis: I tuned a kNN classifier using the same 10-fold stratified CV and metric set as previous exercises. The best configuration used 50 neighbors with a triangular weighting function, which means closer points receive higher weight. On the held out test set, it achieved: 
+
+  # Balanced Accuracy: 0.540
+  # Sensitivity: 0.928
+  # Specificity: 0.153
+  # ROC AUC: 0.673
+  # Brier Score: 0.195
+  # J-Index: 0.081
+
+  # Interpretation: Balanced Accuracy is far below the downsampled LASSO, elastic net, and even the random forest. Sensitivity is very high, but specificity is very low, which means the model predicts 'should be legal' for almost EVERYONE! This is supposedly classic behavior when k is large and classes are imbalanced. ROC AUC and Brier Score confirm mediocre discrimination and callibration. 
+
+  # Conclusion: Although the kNN classifier ID's pro-legalization respondents well, its poor balanced accuracy and specificity make it the weakest model in the analysis. The more flexible, distance based methods are not ALWAYS superior under class imbalance. The downsampled elastic net log regression remaints the best overall model going into final comparison of exercise 9. 
+
+
+
+
+# Exercise 9
+
+```{r}
+# Final model selection
+
+# The downsampled elastic net log regression achieved the highest balanced accuracy and strong, balanced sensitivity/specificity with a good ROC AUC and Brier Score. 
+```
+
+```{r}
+
+# fitting entire training set + evaluation on test 
+final_model <- finalize_workflow(
+  wf_enet_down,   
+  best_enet_down  
+)
+
+final_fit <- last_fit(final_model, gss_split, metrics = ex4_metrics)
+
+collect_metrics(final_fit)
+```
+
+# Final Model & Test Eval: 
+
+  ## After I compared all tuned models, I selected the downsampled  elastic-net log regression as the final model (~0.37 penalty). It scored highest on cross-validation balanced accuracy (~0.695) while having a good balance sensitivity/specificity among ALL candidates. 
+
+  ## I then fit the finalized model to the entire training set and evaluated it on the held out 20% test set. 
+
+  ## Balanced Accuracy: 0.644
+  ## Sensitivity: 0.665
+  ## Specificity: 0.622
+  ## ROC AUC: 0.683
+  ## Brier Score: 0.219
+  ## J-Index: 0.288
+
+# Interpretation: 
+
+## Balanced accuracy of 0.644 CONFIRMS the model generalizes well. It remains CLEARLY superior to the null model (0.50) while only slightly lower than the cross-validated estimate (~0.695), which was expected because we moved from CV to a true hold out set! 
+
+## Sensitivity (0.665) and Specificity (0.622) are balanced well, which demonstrates that the model identifies both legalization supporters and opponents reasonably well. 
+
+## ROC AUC (0.683) and Brier Score (0.219) show solid discriminative ability and probability calibration.
+
+
+# CONCLUSION: The downsampled elastic net log regression remains the best overall model for predicting marijuana legalization attitudes. Its test set performance validates the model selection strategy from earlier exercises and provides a solid, balanaced predictor of public opinion
+
+
+# Bonus (Battle Royale)
+
+
+
+# GAI self-reflection
+
+
+

@@ -1,0 +1,45 @@
+---
+title: "HW 00 - Prefresher"
+subtitle: "INFO 4940/5940 - Fall 2025"
+author: "Your name"
+date: today
+format: typst
+---
+
+# Setup
+
+Load packages and data:
+
+```{python}
+#| label: load-packages
+
+import pandas as pd
+import numpy as np
+from plotnine import *
+```
+
+# Exercise 1
+
+```{python}
+#| label: eating-animals
+
+# add code here
+```
+
+# Exercise 2
+
+```{python}
+#| label: ramen-price
+
+# add code here
+
+```
+
+## Exercise 3
+
+```{python}
+#| label: deodorant-price
+
+# add code here
+
+```

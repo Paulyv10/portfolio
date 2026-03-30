@@ -1,0 +1,17 @@
+Animal,Acceptable,Unacceptable,Not sure
+Cat,20%,70%,10%
+Chicken,86%,7%,7%
+Chimpanzee,14%,75%,11%
+Cow,81%,11%,7%
+Deer,71%,20%,9%
+Dog,18%,73%,9%
+Dolphin,24%,62%,14%
+Duck,73%,17%,10%
+Elephant,17%,69%,14%
+Salmon,79%,12%,8%
+Guinea pig,24%,60%,16%
+Horse,29%,55%,16%
+Octopus,59%,24%,17%
+Pig,78%,11%,10%
+Rabbit,65%,22%,13%
+Sheep,67%,20%,13%

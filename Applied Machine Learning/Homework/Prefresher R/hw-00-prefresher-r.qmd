@@ -1,0 +1,196 @@
+---
+title: "HW 00 - Prefresher"
+subtitle: "INFO 4940/5940 - Fall 2025"
+author: "Paul Vermette (prv25)"
+date: today
+format: typst
+engine: knitr
+output: html
+---
+
+# Setup
+
+Load packages and data:
+
+```{r}
+#| label: load-packages
+install.packages(c("tidyverse", "scales"))
+library(tidyverse)
+library(scales)
+```
+
+# Exercise 1
+
+```{r}
+#| Read Data
+
+eating_data <- read_csv("data/eating-animals.csv")
+
+```
+
+```{r}
+#| Clean data
+
+eating_long <- eating_data |>
+  mutate(across(
+    c(Acceptable, Unacceptable, `Not sure`),
+    ~ as.numeric(str_remove(.x, "%"))
+  )) |>
+  pivot_longer(
+    cols = c(Acceptable, Unacceptable, `Not sure`),
+    names_to = "Response",
+    values_to = "Percentage"
+  )
+```
+
+```{r}
+#| Create Animal Ordering
+
+animal_order <- eating_data |>
+  mutate(Acceptable = as.numeric(str_remove(Acceptable, "%"))) |>
+  arrange(Acceptable) |>
+  pull(Animal)
+```
+
+```{r}
+#| Apply Ordering
+
+eating_final <- eating_long |>
+  mutate(
+    Animal = factor(Animal, levels = animal_order),
+    Response = factor(
+      Response,
+      levels = c("Unacceptable", "Not sure", "Acceptable")
+    )
+  )
+```
+
+```{r}
+#| Creating the basic plot!
+
+ggplot(eating_final, aes(x = Animal, y = Percentage, fill = Response)) +
+  geom_col() +
+  coord_flip() +
+  theme_minimal() +
+  theme(legend.position = "top") +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_viridis_d(
+    option = "viridis",
+    breaks = c("Acceptable", "Not sure", "Unacceptable")
+  ) +
+  labs(
+    title = "Which animals do Americans think are morally acceptable to eat under normal circumstances?",
+    y = NULL,
+    x = NULL,
+    caption = "Source: YouGov Survey"
+  )
+```
+
+# Exercise 2
+
+```{r}
+#| label: ramen-price
+
+commissary <- read_csv("data/commissary-prices.csv")
+
+glimpse(commissary)
+
+```
+
+```{r}
+ramen <- commissary |>
+  filter(
+    if_any(
+      c(description, product_type, product_category),
+      ~ str_detect(
+        .x,
+        regex(
+          "\\bramen\\b|\\bnoodles?\\b|top ramen|maruchan|cup noodles?",
+          ignore_case = TRUE
+        )
+      )
+    )
+  ) |>
+  mutate(price = readr::parse_number(price)) # clean to numeric
+```
+
+```{r}
+#| Avg Ramen Price per State
+
+state_ramen_avg <- ramen |>
+  group_by(state) |>
+  summarise(avg_price = mean(price, na.rm = TRUE), .groups = "drop") |>
+  arrange(desc(avg_price))
+
+top10_ramen_states <- state_ramen_avg |>
+  slice_max(order_by = avg_price, n = 10)
+
+top10_ramen_states
+```
+
+
+
+```{r}
+ggplot(top10_ramen_states, aes(x = avg_price, y = reorder(state, avg_price))) +
+  geom_col(fill = "purple2") +
+  labs(
+    title = "Top 10 States with Most Expensive Ramen (Commissary Data)",
+    x = "Average Price ($)",
+    y = "State"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+
+## Exercise 3
+
+```{r}
+#| label: deodorant-price
+
+deodorant <- commissary |>
+  filter(str_detect(description, regex("deodorant", ignore_case = TRUE))) |>
+  mutate(price = parse_number(price))
+```
+
+
+```{r}
+#| Average price per state
+
+state_deo_avg <- deodorant |>
+  group_by(state) |>
+  summarize(avg_price = mean(price, na.rm = TRUE), .groups = "drop") |>
+  arrange(avg_price)
+
+``
+`
+```{r}
+#| Cheapest states! 
+
+top10_cheapest_deo <- state_deo_avg |> 
+    slice_min(order_by = avg_price, n = 10)
+
+top10_cheapest_deo
+`
+``
+```{r}
+ggplot(top10_cheapest_deo, aes(x = avg_price, y = reorder(state, avg_price))) +
+  geom_col(fill = "green") +
+  labs(
+    title = "Top 10 States with Cheapest Deodorant (Commissary Data)",
+    x = "Average Price ($)",
+    y = "State"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+```{r}
+#| GENAI Relection
+
+# I used ChatGPT after having issues parsing the data properly in exercise 2, as I couldn't figure out why 'ramen' wasn't giving me 10 results via the output. I had to to use the 'str_detect(.x, regex("\\bramen\\b|\\bnoodles?\\b|top ramen|maruchan|cup noodles?", ignore_case = TRUE))' line. Which is strange, because I did NOT have to for the deodorant table/graph.
+```

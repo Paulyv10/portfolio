@@ -1,0 +1,462 @@
+---
+title: "Homework 01 - Make a model"
+subtitle: "INFO 4940/5940 - Fall 2025"
+author: "Paul Vermette II"
+date: today
+format: typst
+---
+
+# Setup
+ 
+Load packages and data:
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(themis)
+library(scales)
+library(broom)
+```
+
+
+# Exercise 1
+
+```{r}
+squirrels_data <- read_csv("data/squirrels-lite.csv")
+
+glimpse(squirrels_data)
+
+squirrels_data <- squirrels_data |>
+  mutate(
+    squirrels = forcats::fct_relevel(squirrels, "squirrels"),
+    cats = as.factor(cats),
+    dogs = as.factor(dogs),
+    nearby_feeders = as.factor(nearby_feeders),
+    const = 1
+  )
+```
+
+```{r}
+
+# Particioning the data
+
+set.seed(123)
+
+squirrels_split <- initial_split(squirrels_data, prop = 0.8, strata = squirrels)
+
+squirrels_train <- training(squirrels_split)
+
+squirrels_test <- testing(squirrels_split)
+
+```
+
+```{r}
+# Verification
+list(
+  n_total = nrow(squirrels_data),
+  n_train = nrow(squirrels_train),
+  n_test = nrow(squirrels_test)
+)
+
+```
+
+
+```{r}
+## Explaining approach
+
+# I'm doing cross-validation in training data and then final testing the evaluation. We don't need a 3-way split, so we don't need to a separate validation set. Also, in principle, we keep the test set completely untouched until the final evaluation.
+
+# I used 80/20 as a sufficient balance for training and test datasets
+
+# 'set.seed(123)' makes sure that we have consistent splits
+```
+
+# Exercise 2
+
+```{r}
+# Exploratory Analysis!
+
+squirrels_train |>
+  count(squirrels) |>
+  mutate(pct = n / sum(n)) |>
+  ggplot(aes(x = squirrels, y = pct)) +
+  geom_col() +
+  geom_text(aes(label = percent(pct, accuracy = 0.1)), vjust = -0.3) +
+  labs(title = "Class distribution (train)", x = NULL, y = "Proportion") +
+  ylim(0, 1) +
+  theme_minimal()
+```
+
+
+```{r}
+# Quick missingness scan
+
+squirrels_train |>
+  summarise(across(everything(), ~ sum(is.na(.)))) |>
+  pivot_longer(everything(), names_to = "variable", values_to = "n_missing") |>
+  arrange(desc(n_missing)) |>
+  print(n = 20)
+```
+
+# Analysis: There are some heavily missing features. The numfeeders_thistle (over 55% missing), as well as other num_feeders ranged from 40-50% missing. Habitate indicators were also not represented well. Overall, these are not random. It's mostly due to yards varying, and if they have a specific feeder or habitat. 
+
+```{r}
+# Cats!
+
+squirrels_train |>
+  filter(!is.na(cats)) |>
+  count(cats, squirrels) |>
+  group_by(cats) |>
+  mutate(prop = n / sum(n)) |>
+  ggplot(aes(x = cats, y = prop, fill = squirrels)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Squirrel presence by cat presence",
+    x = "Cats present (0/1)",
+    y = "Within-group proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+
+```
+
+# Analysis: Having a cat makes zero difference whether or not squirrels are present. That's probably because not every cat is an outdoor cat. 
+
+```{r}
+# dogs :)
+
+squirrels_train |>
+  filter(!is.na(dogs)) |>
+  count(dogs, squirrels) |>
+  group_by(dogs) |>
+  mutate(prop = n / sum(n)) |>
+  ggplot(aes(x = dogs, y = prop, fill = squirrels)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Squirrel presence by dog presence",
+    x = "Dogs present (0/1)",
+    y = "Within-group proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+
+```
+
+# Analysis: Dogs are SLIGHLTY more succesful at deterring squirrels, but almost identical to the cat output. Not significant. 
+
+
+```{r}
+
+# Nearby feeders
+
+squirrels_train |>
+  filter(!is.na(nearby_feeders)) |>
+  count(nearby_feeders, squirrels) |>
+  group_by(nearby_feeders) |>
+  mutate(prop = n / sum(n)) |>
+  ggplot(aes(x = nearby_feeders, y = prop, fill = squirrels)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = percent) +
+  labs(
+    title = "Squirrel presence by nearby feeders",
+    x = "Nearby feeders (0/1)",
+    y = "Within-group proportion",
+    fill = "Outcome"
+  ) +
+  theme_minimal()
+
+```
+
+# Analysis: Feeders has a slight difference in squirrel presence! 
+
+
+```{r}
+
+# Deciduous trees
+
+squirrels_train |>
+  filter(!is.na(dcid_trees_atleast)) |>
+  ggplot(aes(x = squirrels, y = dcid_trees_atleast)) +
+  geom_boxplot(fill = "blue") +
+  labs(
+    title = "Deciduous tree cover by outcome",
+    x = NULL,
+    y = "Deciduous trees (0–11)"
+  ) +
+  theme_minimal()
+
+```
+
+# Analysis: Deciduous tree presence makes for a significant identifying feature for squirrel presence. 
+
+```{r}
+# Housing density
+squirrels_train |>
+  filter(!is.na(housing_density)) |>
+  ggplot(aes(x = squirrels, y = housing_density)) +
+  geom_boxplot(fill = "blue") +
+  labs(
+    title = "Housing density",
+    x = NULL,
+    y = "Housing density (1 = sparse ... 4 = dense)"
+  ) +
+  theme_minimal()
+```
+
+# Not seeing anything noteworthy here. Proximity to other homes isn't a strong indicator of anything. 
+
+```{r}
+# Chi square
+cats_chi <- chisq.test(table(squirrels_train$squirrels, squirrels_train$cats))
+dogs_chi <- chisq.test(table(squirrels_train$squirrels, squirrels_train$dogs))
+near_chi <- chisq.test(table(
+  squirrels_train$squirrels,
+  squirrels_train$nearby_feeders
+))
+dcid_chi <- chisq.test(table(
+  squirrels_train$squirrels,
+  squirrels_train$dcid_trees_atleast
+))
+housing_chi <- chisq.test(table(
+  squirrels_train$squirrels,
+  squirrels_train$housing_density
+))
+
+list(
+  chisq_pvals = c(
+    cats = cats_chi$p.value,
+    dogs = dogs_chi$p.value,
+    nearby_feeders = near_chi$p.value,
+    dcid_trees_atleast = dcid_chi$p.value,
+    housing_density = housing_chi$p.value
+  )
+)
+```
+
+# Analysis: Cats don't indicate squirrel presence (p = 0.835), at least so far. Dogs (p = 0.153) neither. Nearby feeders (p < 0.001) shows a strong evidence of association between nearby feeders and squirrels. Deciduous Trees ( p < 0.001) are also significant. Housing density ( p < 0.001) as well! I will keep them, as my intuition is telling me that even though they aren't significant alone, that they might interact with other predictors. For instance, dogs might ONLY matter in dense housing areas. 
+
+```{r}
+# Univariate logistic regressions
+
+glm(squirrels ~ housing_density, family = binomial(), data = squirrels_train) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+
+glm(
+  squirrels ~ dcid_trees_atleast,
+  family = binomial(),
+  data = squirrels_train
+) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+
+glm(squirrels ~ cats, family = binomial(), data = squirrels_train) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+
+glm(squirrels ~ dogs, family = binomial(), data = squirrels_train) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+
+glm(squirrels ~ nearby_feeders, family = binomial(), data = squirrels_train) |>
+  tidy(exponentiate = TRUE, conf.int = TRUE)
+```
+
+# Analysis: It appears that each unit increase in density increases the odds of squirrels by 30%. Each unit in tree coverage increases the odds of squirrels by 12%. Having nearby feeders increases the odds of squirrels by 63%. Cats/dogs were not significant. With dogs, there was a slightly negatie assication (7% decrease in odds). Could suggest that dogs might deter squirrels, but the evidence is weak. 
+
+
+# Exercise 3
+
+```{r}
+# Resample the training set
+
+set.seed(123)
+squirrels_folds <- vfold_cv(
+  squirrels_train,
+  v = 5,
+  repeats = 5,
+  strata = squirrels
+)
+cls_metrics <- metric_set(accuracy, roc_auc)
+
+```
+
+
+
+```{r}
+# Null
+
+null_spec <- logistic_reg(mode = "classification") |>
+  set_engine("glm")
+
+null_recipe <- recipe(squirrels ~ ., data = squirrels_train) |>
+  step_rm(all_predictors())
+
+null_wf <- workflow() |>
+  add_model(null_spec) |>
+  add_recipe(null_recipe)
+
+null_rs <- fit_resamples(
+  null_wf,
+  resamples = squirrels_folds,
+  metrics = cls_metrics,
+  control = control_resamples(save_pred = TRUE)
+)
+
+collect_metrics(null_rs)
+```
+
+# Analysis: The NULL model is working exactly how it should be - Accuracy: 0.501, ROC AUC: 0.5
+ 
+# Exercise 4
+
+```{r}
+# Simple Logistic
+
+simple_spec <- logistic_reg() |>
+  set_engine("glm")
+
+simple_wf <- workflow() |>
+  add_model(simple_spec) |>
+  add_formula(squirrels ~ nearby_feeders + dcid_trees_atleast + housing_density) #
+
+simple_rs <- fit_resamples(
+  simple_wf,
+  resamples = squirrels_folds,
+  metrics = cls_metrics,
+  control = control_resamples(save_pred = TRUE),
+  strata = squirrels
+)
+
+collect_metrics(simple_rs)
+
+```
+
+# Analysis: No great but shows some discriminatory power
+
+
+
+
+```{r}
+# Random Forest
+
+rf_spec <- rand_forest(trees = 50) |>
+  set_engine("ranger") |>
+  set_mode("classification")
+
+rf_wf <- workflow() |>
+  add_model(rf_spec) |>
+  add_formula(squirrels ~ .)
+rf_rs <- fit_resamples(
+  rf_wf,
+  resamples = squirrels_folds,
+  metrics = cls_metrics,
+  control = control_resamples(save_pred = TRUE),
+  strata = squirrels
+)
+
+collect_metrics(rf_rs)
+
+```
+
+# Analysis: ~67% accuracy, best performer of the three models ran. ROAC - 0.732, also the best ability to separate negative/positive cases
+
+```{r}
+# Decision Tree
+
+tree_spec <- decision_tree(
+  cost_complexity = 0.01,
+  tree_depth = 10,
+  min_n = 20
+) |>
+  set_engine("rpart") |>
+  set_mode("classification")
+
+tree_wf <- workflow() |>
+  add_model(tree_spec) |>
+  add_formula(
+    squirrels ~
+      nearby_feeders + dcid_trees_atleast + housing_density + cats + dogs
+  )
+
+tree_rs <- fit_resamples(
+  tree_wf,
+  resamples = squirrels_folds,
+  metrics = cls_metrics,
+  control = control_resamples(save_pred = TRUE),
+  strata = squirrels
+)
+
+collect_metrics(tree_rs)
+```
+
+# Analysis: ~61% Accuracy, ROC = 0.621. Simpler model, but weaker than random forest and even logsitic regression here.
+
+
+```{r}
+# Compare all models!
+
+all_metrics <- bind_rows(
+  collect_metrics(null_rs) |> mutate(model = "Null (Baseline)"),
+  collect_metrics(simple_rs) |> mutate(model = "Simple Logistic"),
+  collect_metrics(rf_rs) |> mutate(model = "Random Forest"),
+  collect_metrics(tree_rs) |> mutate(model = "Decision Tree")
+)
+
+# Performance table
+all_metrics |>
+  select(model, .metric, mean, std_err) |>
+  pivot_wider(names_from = .metric, values_from = c(mean, std_err)) |>
+  arrange(desc(mean_roc_auc))
+
+```
+
+# Just for a clearer picture
+
+# Exercise 5
+
+```{r}
+# Final fit
+
+final_rf <- rf_wf |>
+  fit(data = squirrels_train)
+
+# Predict
+rf_preds <- predict(final_rf, squirrels_test, type = "prob") |>
+  bind_cols(predict(final_rf, squirrels_test)) |>
+  bind_cols(squirrels_test |> select(squirrels))
+
+# Evaluate
+rf_metrics <- rf_preds |>
+  metrics(truth = squirrels, estimate = .pred_class)
+
+rf_auc <- rf_preds |>
+  roc_auc(truth = squirrels, .pred_squirrels)
+
+list(
+  accuracy = rf_metrics |> filter(.metric == "accuracy"),
+  roc_auc = rf_auc
+)
+
+roc_data <- rf_preds |>
+  roc_curve(truth = squirrels, .pred_squirrels)
+
+ggplot(roc_data, aes(x = 1 - specificity, y = sensitivity)) +
+  geom_line(color = "blue", size = 1) +
+  geom_abline(linetype = "dashed", color = "red") +
+  labs(
+    title = "ROC Curve - Random Forest",
+    x = "False Positive Rate (FPR)",
+    y = "True Positive Rate (TPR)"
+  ) +
+  theme_minimal()
+```
+
+# Analysis: The model classifies correctly about 2/3 of the time. It has good discriminatory ability (ROC AUC = 0.712)
+
+# The Random Forest was correctly chosen as the best model. It clearly outperforms the null and simpler models. While 65% accuracy means there is still unexplained variance (tricky little squirrels), the AUC > 0.70 shows that the model is meaningfully useful for ranking yards by likelihood of having squirrels. 
+
+# GAI self-reflection
+
+# I only used GAI during exercise 4, where I was confused by the original AUC was 0.288. I didn't realize it was because I flipped the model by assigning higher probabilities to the wrong class. I just had to make a change in order to the first chunk. It took 2 minutes.
+
+
