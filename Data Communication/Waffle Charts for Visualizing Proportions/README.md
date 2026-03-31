@@ -41,3 +41,5 @@ theme_void()
 ## The Data
 
 Three penguin species from the Palmer Archipelago (Antarctica): Adelie, Chinstrap, and Gentoo. Adelie makes up the plurality, with Chinstrap the smallest group. The waffle chart makes these proportions immediately readable without needing to decode angles or arc lengths.
+
+[![Waffle chart of Palmer penguin species proportions](figures/waffle-penguins.png)](figures/waffle-penguins.png)

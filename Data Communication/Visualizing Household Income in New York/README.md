@@ -29,6 +29,10 @@ A step-by-step refinement of a choropleth map:
 
 The income geography of New York State follows familiar patterns: high-income suburban counties around NYC (Westchester, Nassau, Putnam), the wealthy suburbs of Long Island, and lower-income rural areas in the North Country and Southern Tier. NYC itself shows intense within-borough variation at the tract level — wealthy Manhattan tracts immediately adjacent to low-income tracts a few blocks away.
 
+[![NY household income choropleth — continuous scale](figures/ny-income-continuous.png)](figures/ny-income-continuous.png)
+
+[![NY household income choropleth — discrete bins](figures/ny-income-discrete.png)](figures/ny-income-discrete.png)
+
 ---
 
 ## Projection Matters

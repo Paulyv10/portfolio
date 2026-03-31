@@ -30,3 +30,5 @@ From there, a progression of chart attempts:
 Part-time faculty and graduate student employment have grown substantially since 1975. The share of full-time tenured faculty has declined. This trend — the casualization of academic labor — is one of the most discussed structural shifts in US higher education, and it's visible clearly in a well-constructed line chart.
 
 The "sad plot" version buried this story in stacked bars. The fixed version puts it front and center.
+
+[![Faculty employment trends 1975–2011](images/staff-employment.png)](images/staff-employment.png)

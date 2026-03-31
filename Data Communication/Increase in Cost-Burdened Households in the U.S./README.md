@@ -25,6 +25,8 @@ Cost burden trends vary substantially by metro area. Some cities have seen stead
 
 The interesting comparison isn't just "which cities are most burdened" (Miami and LA consistently rank high) — it's which cities saw the sharpest acceleration post-2020 as pandemic-era rent increases hit renters hard.
 
+[![Rental cost burden trend by metro area](figures/rental-burden-trend.png)](figures/rental-burden-trend.png)
+
 ---
 
 ## Static vs. Interactive

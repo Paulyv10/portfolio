@@ -29,6 +29,8 @@ Baby name choices have become more geographically polarized over time. Names tha
 
 The beeswarm animation format works here because the story is about distributional change over time — you want to see the whole spread shift, not just a summary statistic. A static line chart of the mean would miss the widening of the distribution.
 
+[![Partisan name polarization beeswarm](figures/partisan-names-beeswarm.png)](figures/partisan-names-beeswarm.png)
+
 ---
 
 ## Animation as a Tool

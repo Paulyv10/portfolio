@@ -19,6 +19,8 @@ Bar chart of bedroom counts — straightforward frequency distribution. Then sta
 - **Dodged**: Better for comparing bedroom counts within a decade
 - **Relative frequency**: Best for seeing proportional shifts — e.g., whether newer homes skew toward more bedrooms
 
+[![Relative frequency of bedrooms by decade](figures/beds-proportion.png)](figures/beds-proportion.png)
+
 ---
 
 ## Part 2: Price Distribution by Decade
@@ -31,3 +33,7 @@ Four geoms applied to the same question (how do home prices vary by decade built
 - **Strip/jitter**: Shows individual points — useful for small groups where aggregate summaries can mislead
 
 The key takeaway: there's no universal best geom. The right choice depends on sample size per group, whether you care about outliers, and whether distribution shape matters for the question being asked.
+
+[![Home price boxplot by decade built](figures/price-boxplot.png)](figures/price-boxplot.png)
+
+[![Home price violin plot by decade built](figures/price-violin.png)](figures/price-violin.png)

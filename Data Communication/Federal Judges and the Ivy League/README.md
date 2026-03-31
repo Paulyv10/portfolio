@@ -32,6 +32,8 @@ There's a clear ideological pattern in Ivy League representation — Democratic 
 
 Horizontal bars work better here than vertical: president names are long, and the horizontal axis gives more room to read them without rotation.
 
+[![Ivy League share of federal judicial appointments by president](figures/ivy-league-appointments.png)](figures/ivy-league-appointments.png)
+
 ---
 
 ## Implementation Notes
