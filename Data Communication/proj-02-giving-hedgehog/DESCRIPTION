@@ -1,6 +1,0 @@
-Imports:
-  usethis,
-  styler,
-  reprex,
-  miniUI,
-  tidyverse
