@@ -1,8 +1,0 @@
-# ignore output folders
-_extensions
-_freeze
-_output
-
-# knitr and R markdown default cache directories
-*_cache/
-/cache/
