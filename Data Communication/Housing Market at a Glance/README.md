@@ -4,31 +4,33 @@
 
 ---
 
-A Quarto dashboard that puts the U.S. housing market crisis in context — mortgage rates, price-to-income ratios, and origination patterns by state, all in one place.
+A Quarto dashboard that puts the U.S. housing affordability crisis in context — mortgage rates, price-to-income ratios, and origination patterns by state, woven into a single interactive view.
 
-## The Story in the Data
+## The Story
 
-Three datasets tell three parts of the same story:
+Three datasets, three layers of the same crisis.
 
-**Weekly mortgage rates** (NAHB, 15- and 30-year fixed) show the dramatic spike starting in 2022 — from historic lows near 3% to peaks above 7%. The line chart uses `scale_y_continuous(labels = label_percent())` and encodes both loan terms in `scale_color_viridis_d()`, reversed so the 30-year (higher rate) maps to the darker color.
+**Mortgage rates** from the NAHB document the dramatic rate environment since 2022. After a decade hovering near historic lows (2–3%), 30-year fixed rates climbed above 7% by late 2023 — the fastest sustained rise since the early 1980s. Both the 15- and 30-year rates are encoded in the same line chart using `scale_color_viridis_d()`, reversed so the higher-rate 30-year maps to the darker line.
 
-**Price-to-income ratio** (FRED) tracks median home sale price against median household income since the 1980s. A `geom_ribbon()` shades the gap between the two lines — the widening gulf is the clearest visual signal in the dashboard. By the latest observation the gap has never been larger: median home prices have climbed far beyond what median incomes can support.
+**The price-to-income gap** from FRED is the centerpiece of the affordability story. Median home sale price and median household income are plotted as two lines, but the real signal is the `geom_ribbon()` shading the gap between them. Through the 1980s and 1990s the gap was manageable. By the 2020s it has stretched to the widest spread in the dataset's history — median homes now cost roughly 6× the median annual household income.
 
-**Mortgage origination by state** captures mortgages originated per 1,000 residents across all 50 states. Two visualizations serve different questions:
-- A `geofacet` small-multiple line chart (one panel per state, 2000–present) reveals geographic patterns — Nevada and Florida show boom/bust cycles while Midwestern states stay flat
-- A `plotly` animated choropleth lets users scrub through years interactively, watching origination intensity shift across the country in real time
+[![Price-to-income and mortgage rate chart](docs/index_files/figure-html/unnamed-chunk-7-1.png)](docs/index_files/figure-html/unnamed-chunk-7-1.png)
 
-## Dashboard Layout
+[![Mortgage originations geofacet](docs/index_files/figure-html/unnamed-chunk-5-1.png)](docs/index_files/figure-html/unnamed-chunk-5-1.png)
 
-Built with Quarto's `format: dashboard` using the `litera` Bootswatch theme with custom SCSS. Three columns:
+**Mortgage originations per capita** (mortgages originated per 1,000 residents) tell the geographic story. The `geofacet` small-multiple layout — one panel per state, all sharing the same axes — reveals that the 2005–2008 housing bubble and subsequent crash were not uniformly distributed. Nevada, Florida, and Arizona show dramatic boom-bust cycles. Midwest states show relative stability. This design choice was deliberate: a single national aggregate would have hidden exactly the geographic variation that mattered most.
 
-- **Stats (20%):** Three value boxes — current 30-year rate, current 15-year rate, national median home price — all computed dynamically with `slice_tail()` and `label_percent()` / `label_dollar(scale_cut = cut_short_scale())` so values update with the data
-- **Center:** The `geofacet` origination chart (height 50%) and an interactive `gt` table of weekly mortgage rates with `opt_interactive(use_search = TRUE, pagination_type = "jump")` stacked below
-- **Right:** The interest rate line chart and the price-to-income ribbon chart stacked vertically
+[![Additional dashboard chart](docs/index_files/figure-html/unnamed-chunk-7-2.png)](docs/index_files/figure-html/unnamed-chunk-7-2.png)
 
-## Key Design Decision
+## Dashboard Design
 
-Showing the price-to-income gap as a `geom_ribbon()` rather than two separate lines makes the affordability crisis immediately legible. A viewer doesn't need to mentally compute the difference — the shaded area does it for them.
+Built with Quarto's `format: dashboard` using the `litera` Bootswatch theme. Three columns:
+
+- **Stats (20% width):** Three value boxes — current 30-year rate, current 15-year rate, national median home price — all computed dynamically with `slice_tail()` so they update with the data rather than hardcoding the values
+- **Center:** The `geofacet` origination chart stacked above an interactive `gt` table of weekly mortgage rates (`opt_interactive(use_search = TRUE, pagination_type = "jump")`) so users can look up any week's rate directly
+- **Right:** The interest rate line chart and price-to-income ribbon chart stacked vertically
+
+The key design decision was `geom_ribbon()` over two separate lines for the affordability gap. Two lines require the viewer to mentally compute the distance. The ribbon encodes that distance as area — the visual system processes it immediately, without arithmetic.
 
 ---
 
