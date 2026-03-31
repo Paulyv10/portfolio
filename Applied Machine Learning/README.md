@@ -9,9 +9,9 @@ Course work from Cornell's Applied Machine Learning course. Projects use R (tidy
 ### HW-00: R & Python Prefresher
 **Folder:** `Homework/Prefresher R/`
 
-Warm-up exercises in both R and Python covering data wrangling, visualization, and basic statistical operations. Used datasets on commissary prices and eating habits.
+Warm-up exercises in both R and Python covering data wrangling, visualization, and basic statistical operations. Public opinion on eating animals and prison commissary prices by state.
 
-[View PDF (R)](Homework/Prefresher%20R/hw-00-prefresher-r.pdf) | [View PDF (Python)](Homework/Prefresher%20R/hw-00-prefresher-py.pdf)
+[Read the full writeup →](Homework/Prefresher%20R/README.md) | [View PDF (R)](Homework/Prefresher%20R/hw-00-prefresher-r.pdf) | [View PDF (Python)](Homework/Prefresher%20R/hw-00-prefresher-py.pdf)
 
 ---
 
@@ -45,9 +45,9 @@ Classifying public opinion on marijuana legalization from GSS survey data. Class
 ### HW-04: Predict Coffee Preferences
 **Folder:** `Homework/Predict Coffee Trends/`
 
-End-to-end classification pipeline predicting coffee preference outcomes from the Great American Coffee Taste Test survey. Applied ensemble methods and tuned hyperparameters, with emphasis on model interpretability and performance reporting.
+End-to-end LASSO classification pipeline predicting Coffee D preference from the Great American Coffee Taste Test survey. Plain logistic regression badly underperformed the null — LASSO fixed it, jumping from ~0.49 to 0.798 ROC AUC.
 
-[View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf) | [View HTML](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.html)
+[Read the full writeup →](Homework/Predict%20Coffee%20Trends/README.md) | [View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf) | [View HTML](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.html)
 
 ---
 
@@ -56,22 +56,9 @@ End-to-end classification pipeline predicting coffee preference outcomes from th
 ### AE-09: Feature Engineering — Coffee EDA
 **Folder:** `Application Exercises/Feature Engineering/`
 
-Exploratory data analysis on the Great American Coffee Taste Test dataset. Investigated missingness patterns and outliers in both R and Python.
+Exploratory data analysis on the Great American Coffee Taste Test dataset — the groundwork for HW-04. Missingness patterns and outlier detection in both R (`visdat` + `ggpairs`) and Python (`missingno` + `scatter_matrix`).
 
-**Python (missingno + seaborn):**
-
-[![Missingness Pattern 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-1-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-1-output-1.png)
-[![Missingness Pattern 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-2-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-2-output-1.png)
-[![Missingness Pattern 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-3-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-3-output-1.png)
-[![Outlier Detection 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-1.png)
-[![Outlier Detection 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-2.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-2.png)
-
-**R (naniar + ggplot2):**
-
-[![R Missingness 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-1.png)
-[![R Missingness 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-2.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-2.png)
-[![R Missingness 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-3.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-3.png)
-[![R Outliers](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/num-outliers-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/num-outliers-1.png)
+[Read the full writeup →](Application%20Exercises/Feature%20Engineering/README.md) | [View HTML (R)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r.html) | [View HTML (Python)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py.html)
 
 ---
 
