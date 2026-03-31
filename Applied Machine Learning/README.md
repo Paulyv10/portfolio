@@ -24,12 +24,12 @@ Built a classification model on NYC squirrel census data. Explored logistic regr
 
 **Key Outputs:**
 
-![Squirrel Model Plot 1](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-6-1.png)
-![Squirrel Model Plot 2](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-8-1.png)
-![Squirrel Model Plot 3](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-9-1.png)
-![Squirrel Model Plot 4](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-10-1.png)
-![Squirrel Model Plot 5](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-11-1.png)
-![Squirrel Model Plot 6](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-12-1.png)
+[![Squirrel Model Plot 1](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-6-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-6-1.png)
+[![Squirrel Model Plot 2](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-8-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-8-1.png)
+[![Squirrel Model Plot 3](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-9-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-9-1.png)
+[![Squirrel Model Plot 4](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-10-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-10-1.png)
+[![Squirrel Model Plot 5](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-11-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-11-1.png)
+[![Squirrel Model Plot 6](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-12-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-12-1.png)
 
 ---
 
@@ -38,7 +38,14 @@ Built a classification model on NYC squirrel census data. Explored logistic regr
 
 Feature engineering and data preprocessing on college scorecard data. Explored transformations, encoding strategies, and preprocessing pipelines in tidymodels to prepare data for downstream modeling.
 
-[View PDF](Homework/Build%20Better%20Data/hw-02-build-better-data.pdf)
+[View HTML](Homework/Build%20Better%20Data/hw-02-build-better-data.html) | [View PDF](Homework/Build%20Better%20Data/hw-02-build-better-data.pdf)
+
+**Key Outputs:**
+
+[![Feature Distribution](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-9-1.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-9-1.png)
+[![Preprocessing Pipeline Output 1](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-1.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-1.png)
+[![Preprocessing Pipeline Output 2](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-2.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-2.png)
+[![Preprocessing Pipeline Output 3](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-3.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-3.png)
 
 ---
 
@@ -49,6 +56,11 @@ Hyperparameter tuning and model evaluation using cross-validation on GSS survey 
 
 [View PDF](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models.pdf)
 
+**Key Outputs:**
+
+[![Model Tuning Results](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-28-1.png)](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-28-1.png)
+[![Model Evaluation](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-45-1.png)](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-45-1.png)
+
 ---
 
 ### HW-04: Predict Coffee Preferences
@@ -56,7 +68,7 @@ Hyperparameter tuning and model evaluation using cross-validation on GSS survey 
 
 End-to-end classification pipeline predicting coffee preference outcomes from survey data. Applied ensemble methods and tuned hyperparameters, with emphasis on model interpretability and performance reporting.
 
-[View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf)
+[View HTML](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.html) | [View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf)
 
 ---
 
@@ -69,18 +81,18 @@ Exploratory data analysis on the Great American Coffee Taste Test dataset. Inves
 
 **Python (missingno + seaborn):**
 
-![Missingness Pattern 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-1-output-1.png)
-![Missingness Pattern 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-2-output-1.png)
-![Missingness Pattern 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-3-output-1.png)
-![Outlier Detection 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-1.png)
-![Outlier Detection 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-2.png)
+[![Missingness Pattern 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-1-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-1-output-1.png)
+[![Missingness Pattern 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-2-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-2-output-1.png)
+[![Missingness Pattern 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-3-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/py-missingness-3-output-1.png)
+[![Outlier Detection 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-1.png)
+[![Outlier Detection 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-2.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-py_files/figure-html/num-outliers-output-2.png)
 
 **R (naniar + ggplot2):**
 
-![R Missingness 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-1.png)
-![R Missingness 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-2.png)
-![R Missingness 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-3.png)
-![R Outliers](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/num-outliers-1.png)
+[![R Missingness 1](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-1.png)
+[![R Missingness 2](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-2.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-2.png)
+[![R Missingness 3](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-3.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/missingness-3.png)
+[![R Outliers](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/num-outliers-1.png)](Application%20Exercises/Feature%20Engineering/ae-09-eda-coffee-r_files/figure-html/num-outliers-1.png)
 
 ---
 
