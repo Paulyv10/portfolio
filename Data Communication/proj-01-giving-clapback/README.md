@@ -1,84 +1,30 @@
-# proj-01
+# Project 1 — Olympic Participation: Global North vs. South
 
-# Olympic Analysis
+**Course:** INFO 3312/5312 — Data Communication, Spring 2025
+**Team:** Giving-Clapback — Israel Davidson, Emma Chase, Paul Vermette, Catherine Liu
 
-## Project Overview
+---
 
-This repository contains an analysis of Olympic participation patterns and the physical attributes of medal winners. The project is developed using R and Quarto, focusing on two main research questions:
+The Olympics is the world's largest athletic stage — but who gets to be on it? This project uses 120 years of Olympic history (Athens 1896 through Rio 2016) to examine whether the Games have ever truly been global, and what physical attributes actually predict a medal in contact sports.
 
-1. How does Global South participation in the Olympics compare to the Global North, and how does participation change during the Summer versus Winter games?
-2. How do height and weight influence the likelihood of winning an Olympic medal in contact sports, and do these factors differ between male and female athletes?
+## Question 1: Global North vs. Global South Participation Over Time
 
-## Repository Structure
+Country classification drew on the Worldwide Bureaucracy Indicator (WWBI) region column, with manual corrections for countries no longer in existence: the Soviet Union was remapped to Russia (`URS → RUS`), Czechoslovakia to Czech Republic, Yugoslavia to Serbia, and West Germany to Germany. NORRAG's Global South definition served as a second check for edge cases in the "Europe and Central Asia" WWBI region.
 
-- `/data/`: Contains the Olympic athletes dataset and documentation
-  - `olympic_athletes.csv`: Main dataset file
-  - `README.md`: Metadata and codebook for the dataset
-- `index.qmd`: Main project report Quarto document
-- `proposal.qmd`: Project proposal document
-- `presentation.qmd`: Presentation slides for the project
-- `_quarto.yml`: Configuration file for the Quarto website
-- `styles.css`: Custom CSS styling for the website
-- `/docs/`: Generated website files (created when rendering the project)
+**Line chart:** Raw athlete counts for Global North and Global South competitors, faceted by Summer and Winter games. The raw scale matters here — the Winter Games have always had far fewer total athletes. Using `geom_point()` on top of `geom_line()` marks each quadrennial event clearly.
 
-## Dataset
+The Global South has grown substantially in absolute numbers through the Summer Games — but the Winter Games tell a starker story. Arctic sports, expensive equipment, and limited training infrastructure mean the Winter field remains heavily Northern.
 
-This analysis uses the "120 years of Olympic history: athletes and results" dataset compiled by rgriffin, which includes data from the Athens 1896 Summer Olympics to the Rio 2016 Summer Olympics, as well as Winter Olympics data.
+**Proportional bar chart:** By plotting share rather than counts, the seasonal comparison becomes clean. The Summer Games have converged toward a ~40% Global South share over the past 40 years. The Winter Games have barely moved. Color choices (green/yellow for Summer, two blues for Winter) were verified against colorblindness simulators — high value contrast makes them readable for all viewers.
 
-### Codebook
+## Question 2: Does Height and Weight Predict Medals in Contact Sports?
 
-| Variable | Description | Data Type |
+The second question narrows to contact sports and asks whether physical size — height and weight — correlates with podium outcomes, and whether those relationships differ by sex.
 
-| ID | Unique identifier for each athlete | Integer |
-| Name | Athlete's name | String |
-| Sex | Athlete's sex (M or F) | String |
-| Age | Athlete's age at the time of the Olympics | Integer |
-| Height | Athlete's height in centimeters | Float |
-| Weight | Athlete's weight in pounds | Float |
-| Team | Team/Country represented | String |
-| NOC | National Olympic Committee code | String |
-| Games | Olympic Games year and season | String |
-| Year | Year of the Olympic Games | Integer |
-| Season | Season of Games (Summer or Winter) | String |
-| City | Host city of the Olympic Games | String |
-| Sport | Sport competed in | String |
-| Event | Specific event competed in | String |
-| Medal | Medal won (Gold, Silver, Bronze, or NA) | String |
+Contact sports were filtered from the events column. Logistic regression framing (medal vs. no medal) informed the visualization choices: rather than scatterplots (which overplot badly at this scale), the team used density overlays and violin plots to show the full shape of the medalists vs. non-medalists distributions.
 
-For our analysis, countries were classified into Global North and Global South categories based on the Worldwide Bureaucracy Indicator.
+Height showed a modest positive association with medals across contact sports, stronger for men than women. Weight effects were more event-specific — wrestling and judo weight classes mean the relationship is non-linear within those sports but meaningful between them.
 
-Worldwide Bureaucracy Indicator
+---
 
-|country_code | 3-letter ISO_3166-1 code 	| String|
-|region | region |String 	
-
-## R Dependencies
-
-This project uses the following R packages:
-- tidyverse
-- ggplot2
-- dplyr
-- readr
-- knitr
-- quarto
-
-## How to Run
-
-1. Clone this repository
-2. Ensure R and the dependencies are installed
-3. Open the project in RStudio
-4. Use Quarto to render the documents:
-   ```r
-   quarto render
-   ```
-
-## Team Members
-
-- Israel Davidson
-- Emma Chase
-- Paul Vermette
-- Catherine Liu
-
-## Project Date
-
-March 6, 2025
+[Read the full analysis →](docs/index.html)
