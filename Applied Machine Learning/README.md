@@ -15,60 +15,39 @@ Warm-up exercises in both R and Python covering data wrangling, visualization, a
 
 ---
 
-### HW-01: Make a Model
+### HW-01: Make a Model — NYC Squirrel Census
 **Folder:** `Homework/Prefresher/`
 
-Built a classification model on NYC squirrel census data. Explored logistic regression with tidymodels, handled class imbalance using SMOTE (themis), and evaluated model performance.
+Can you predict whether a yard will have squirrels based on tree coverage, pet ownership, and nearby feeders? EDA, logistic regression, decision tree, and random forest — the random forest won with 65% accuracy and ROC AUC of 0.712.
 
-[View PDF](Homework/Prefresher/hw-01-make-a-model.pdf)
-
-**Key Outputs:**
-
-[![Squirrel Model Plot 1](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-6-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-6-1.png)
-[![Squirrel Model Plot 2](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-8-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-8-1.png)
-[![Squirrel Model Plot 3](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-9-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-9-1.png)
-[![Squirrel Model Plot 4](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-10-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-10-1.png)
-[![Squirrel Model Plot 5](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-11-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-11-1.png)
-[![Squirrel Model Plot 6](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-12-1.png)](Homework/Prefresher/hw-01-make-a-model_files/figure-html/unnamed-chunk-12-1.png)
+[Read the full writeup →](Homework/Prefresher/README.md) | [View PDF](Homework/Prefresher/hw-01-make-a-model.pdf) | [View HTML](Homework/Prefresher/hw-01-make-a-model.html)
 
 ---
 
-### HW-02: Build Better Data
+### HW-02: Build Better Data — College Scorecard
 **Folder:** `Homework/Build Better Data/`
 
-Feature engineering and data preprocessing on college scorecard data. Explored transformations, encoding strategies, and preprocessing pipelines in tidymodels to prepare data for downstream modeling.
+Predicting median student debt at U.S. colleges. Tested five feature engineering candidates one at a time — only a quadratic cost term helped. Tuned random forest achieved a 34% RMSE reduction over the null baseline.
 
-[View HTML](Homework/Build%20Better%20Data/hw-02-build-better-data.html) | [View PDF](Homework/Build%20Better%20Data/hw-02-build-better-data.pdf)
-
-**Key Outputs:**
-
-[![Feature Distribution](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-9-1.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-9-1.png)
-[![Preprocessing Pipeline Output 1](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-1.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-1.png)
-[![Preprocessing Pipeline Output 2](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-2.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-2.png)
-[![Preprocessing Pipeline Output 3](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-3.png)](Homework/Build%20Better%20Data/hw-02-build-better-data_files/figure-html/unnamed-chunk-17-3.png)
+[Read the full writeup →](Homework/Build%20Better%20Data/README.md) | [View PDF](Homework/Build%20Better%20Data/hw-02-build-better-data.pdf) | [View HTML](Homework/Build%20Better%20Data/hw-02-build-better-data.html)
 
 ---
 
-### HW-03: Tune and Evaluate Models
+### HW-03: Tune and Evaluate Models — GSS Marijuana Legalization
 **Folder:** `Homework/Tune and Evaluate Models/`
 
-Hyperparameter tuning and model evaluation using cross-validation on GSS survey data. Compared multiple model families, tuned via grid search, and evaluated with ROC-AUC and other metrics.
+Classifying public opinion on marijuana legalization from GSS survey data. Class imbalance (70/30) made metric selection the most important decision. Downsampled elastic net logistic regression won on balanced accuracy, with age and party ID doing most of the heavy lifting.
 
-[View PDF](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models.pdf)
-
-**Key Outputs:**
-
-[![Model Tuning Results](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-28-1.png)](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-28-1.png)
-[![Model Evaluation](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-45-1.png)](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models_files/figure-html/unnamed-chunk-45-1.png)
+[Read the full writeup →](Homework/Tune%20and%20Evaluate%20Models/README.md) | [View PDF](Homework/Tune%20and%20Evaluate%20Models/hw-03-tune-eval-models.pdf)
 
 ---
 
 ### HW-04: Predict Coffee Preferences
 **Folder:** `Homework/Predict Coffee Trends/`
 
-End-to-end classification pipeline predicting coffee preference outcomes from survey data. Applied ensemble methods and tuned hyperparameters, with emphasis on model interpretability and performance reporting.
+End-to-end classification pipeline predicting coffee preference outcomes from the Great American Coffee Taste Test survey. Applied ensemble methods and tuned hyperparameters, with emphasis on model interpretability and performance reporting.
 
-[View HTML](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.html) | [View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf)
+[View PDF](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.pdf) | [View HTML](Homework/Predict%20Coffee%20Trends/hw-04-predict-coffee.html)
 
 ---
 
